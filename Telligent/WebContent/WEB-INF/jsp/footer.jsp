@@ -1,0 +1,1 @@
+<div class="footer">Copyright &copy; 2014 Telligent Solutions. All Rights Reserved.</div>
