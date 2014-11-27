@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
@@ -180,7 +181,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				totalChange = totalChange+change;
 				dto.setCurrentBudget(df.parse(String.valueOf(currentBudget))+"");
 				dto.setNewBudget(df.parse(String.valueOf(newBudget))+"");
-				dto.setChangeBudget(df.parse(String.valueOf(change))+" %");
+				dto.setChangeBudget(df.parse(String.valueOf(change))+"");
 				
 				list.add(dto);
 			}
@@ -188,7 +189,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			dto1.setAnualBudgetType("Total");
 			dto1.setCurrentBudget(df.parse(String.valueOf(totalCurrentBudget))+"");
 			dto1.setNewBudget(df.parse(String.valueOf(totalnewBudget))+"");
-			dto1.setChangeBudget(df.parse(String.valueOf(totalChange))+" %");
+			dto1.setChangeBudget(df.parse(String.valueOf(totalChange))+"");
 			list.add(dto1);
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -253,18 +254,18 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			while(rs.next()){
 				if(rs.getString("type").equalsIgnoreCase("hourly") && rs.getString("perf_grade")!=null){
 					if(rs.getString("perf_grade").equalsIgnoreCase("A"))
-						dto.setHourlyA(df.format(rs.getDouble(3)*100)+" %");
+						dto.setHourlyA(df.format(rs.getDouble(3)*100));
 					else if(rs.getString("perf_grade").equalsIgnoreCase("B"))
-						dto.setHourlyB(df.format(rs.getDouble(3)*100)+" %");
+						dto.setHourlyB(df.format(rs.getDouble(3)*100));
 					else if(rs.getString("perf_grade").equalsIgnoreCase("C"))
-						dto.setHourlyC(df.format(rs.getDouble(3)*100)+" %");
+						dto.setHourlyC(df.format(rs.getDouble(3)*100));
 				}else if(rs.getString("type").equalsIgnoreCase("office") && rs.getString("perf_grade")!=null){
 					if(rs.getString("perf_grade").equalsIgnoreCase("A"))
-						dto.setOfficeA(df.format(rs.getDouble(3)*100)+" %");
+						dto.setOfficeA(df.format(rs.getDouble(3)*100));
 					else if(rs.getString("perf_grade").equalsIgnoreCase("B"))
-						dto.setOfficeB(df.format(rs.getDouble(3)*100)+" %");
+						dto.setOfficeB(df.format(rs.getDouble(3)*100));
 					else if(rs.getString("perf_grade").equalsIgnoreCase("C"))
-						dto.setOfficeC(df.format(rs.getDouble(3)*100)+" %");
+						dto.setOfficeC(df.format(rs.getDouble(3)*100));
 				}
 			}
 			list.add(dto);
@@ -315,18 +316,18 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
     	while(rs.next()){
 			if(rs.getString("type").equalsIgnoreCase("hourly") && rs.getString("perf_grade")!=null){
 				if(rs.getString("perf_grade").equalsIgnoreCase("A"))
-					dto.setHourlyA(df.format(rs.getDouble(3)*100)+" %");
+					dto.setHourlyA(df.format(rs.getDouble(3)*100));
 				else if(rs.getString("perf_grade").equalsIgnoreCase("B"))
-					dto.setHourlyB(df.format(rs.getDouble(3)*100)+" %");
+					dto.setHourlyB(df.format(rs.getDouble(3)*100));
 				else if(rs.getString("perf_grade").equalsIgnoreCase("C"))
-					dto.setHourlyC(df.format(rs.getDouble(3)*100)+" %");
+					dto.setHourlyC(df.format(rs.getDouble(3)*100));
 			}else if(rs.getString("type").equalsIgnoreCase("office") && rs.getString("perf_grade")!=null){
 				if(rs.getString("perf_grade").equalsIgnoreCase("A"))
-					dto.setOfficeA(df.format(rs.getDouble(3)*100)+" %");
+					dto.setOfficeA(df.format(rs.getDouble(3)*100));
 				else if(rs.getString("perf_grade").equalsIgnoreCase("B"))
-					dto.setOfficeB(df.format(rs.getDouble(3)*100)+" %");
+					dto.setOfficeB(df.format(rs.getDouble(3)*100));
 				else if(rs.getString("perf_grade").equalsIgnoreCase("C"))
-					dto.setOfficeC(df.format(rs.getDouble(3)*100)+" %");
+					dto.setOfficeC(df.format(rs.getDouble(3)*100));
 			}
 		}
     	return dto;
@@ -362,5 +363,117 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			this.closeAll(conn, ps, rs);
 		}
 		return list;
+	}
+
+	@Override
+	public HashMap<String, Integer> getSalaryPlanningGridView(String empId) {
+		logger.info("in getSalaryPlanningGridView");
+		StringBuffer query = new StringBuffer();
+		query.append("select employeeIdwidth,coworker_name,type,rate,perfGrade,incrementPercentage,newRate,lumsum,jobTitle,updatedDate,grade,compaRatio,minimum,midpoint,maximum,quartile from salary_planning_gridView where employeeId=?");
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				map.put("employeeId", rs.getInt("employeeIdwidth"));
+				map.put("coworker_name", rs.getInt("coworker_name"));
+				map.put("type", rs.getInt("type"));
+				map.put("rate", rs.getInt("rate"));
+				map.put("perfGrade", rs.getInt("perfGrade"));
+				map.put("incrementPercentage", rs.getInt("incrementPercentage"));
+				map.put("newRate", rs.getInt("newRate"));
+				map.put("lumsum", rs.getInt("lumsum"));
+				map.put("jobTitle", rs.getInt("jobTitle"));
+				map.put("updatedDate", rs.getInt("updatedDate"));
+				map.put("grade", rs.getInt("grade"));
+				map.put("compaRatio", rs.getInt("compaRatio"));
+				map.put("minimum", rs.getInt("minimum"));
+				map.put("midpoint", rs.getInt("midpoint"));
+				map.put("maximum", rs.getInt("maximum"));
+				map.put("quartile", rs.getInt("quartile"));
+			}else{ // Set default width
+				map.put("employeeId", 50);
+				map.put("coworker_name", 50);
+				map.put("type", 50);
+				map.put("rate", 50);
+				map.put("perfGrade", 50);
+				map.put("incrementPercentage", 50);
+				map.put("newRate", 50);
+				map.put("lumsum", 50);
+				map.put("jobTitle", 50);
+				map.put("updatedDate", 50);
+				map.put("grade", 50);
+				map.put("compaRatio", 50);
+				map.put("minimum", 50);
+				map.put("midpoint", 50);
+				map.put("maximum", 50);
+				map.put("quartile", 50);
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			logger.info("Excpetion in getSalaryPlanningGridView"+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return map;
+	}
+	
+	public int setDefaultWidth(int width){
+		//if(width != null)
+			
+		return width;
+	}
+
+	@Override
+	public void updateSalaryPlanningColumnWidth(String field, String width,String empId) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer(); 
+		try {
+			if(field.equalsIgnoreCase("employeeId"))
+				field = "employeeIdwidth";
+			conn = this.getConnection();
+			boolean flag = checkSalaryPlanningColumnWidthExists(conn, ps, rs, empId);
+			if(flag){ // update
+				query.append("update salary_planning_gridView set ");
+				query.append(" "+field+" = '"+width+"'");
+				query.append(" where employeeId = ?");
+				ps = conn.prepareStatement(query.toString());
+				ps.setString(1, empId);
+			}else{ // insert
+				query.append("Insert into salary_planning_gridView (employeeId,"+field+" ) values (?,?)");
+				ps = conn.prepareStatement(query.toString());
+				ps.setString(1, empId);
+				ps.setString(2, width);
+			}
+			int i =ps.executeUpdate();
+			logger.info("Result in updateSalaryPlanningColumnWidth = field "+field+" width = "+width+" employee Id = "+empId+" i =="+i);
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			logger.info("Excpetion in updateSalaryPlanningColumnWidth"+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+	}
+	
+	private boolean checkSalaryPlanningColumnWidthExists(Connection conn,PreparedStatement ps,ResultSet rs,String empId){
+		try{
+			ps = conn.prepareStatement("select employeeId from salary_planning_gridView where employeeId=?");
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			if(rs.next())
+				return true;
+			else
+				return false;
+		}catch(Exception e){
+			
+		}
+		return false;
 	}
 }

@@ -52,33 +52,32 @@
 			data-options="collapsible:true
 							,pagination:true
 							,emptyMsg: 'No records found'
-							,pageSize:20">
+							,pageSize:20
+							,onResizeColumn:onResizeColumn">
 			<thead data-options="frozen:true">
 				<tr>
 					<th field="ck" checkbox="true"></th>
-					<th data-options="field:'id'" hidden="true">Id</th>
-					<th data-options="field:'employeeId',width:100" sortable="true">Employee ID</th>
-					<th data-options="field:'coworker_name',width:150" sortable="true">Employee Name</th>
+					<th data-options="field:'id'" hidden="true" align="right">Id</th>
+					<th data-options="field:'employeeId',width:${gridViewMap['employeeId']}" sortable="true" align="right">Employee ID</th>
+					<th data-options="field:'coworker_name',width:${gridViewMap['coworker_name']}" sortable="true" align="left">Employee Name</th>
 				</tr>
 			</thead>
 			<thead>
 				<tr>
-					<th data-options="field:'type',width:150,">Type</th>
-					<th data-options="field:'rate',width:150,">Current Rate</th>
-					<th data-options="field:'perfGrade',width:70,">Perf Grade</th>
-					<th data-options="field:'incrementPercentage',width:150,">Increment Percentage</th>
-					<th data-options="field:'newRate',width:100,">New Rate</th>
-					<th data-options="field:'lumsum',width:110,">Lum Sum</th>
-					<th data-options="field:'jobTitle',width:150,">Job Title</th>
-					<th data-options="field:'updatedDate',width:150,">Updated Date</th>
-					<!-- <th data-options="field:'supervisor',width:150">Supervisor</th> -->
-					<th data-options="field:'grade',width:150,">Grade</th>
-					<th data-options="field:'compaRatio',width:150,">Compa Ratio</th>
-					<th data-options="field:'minimum',width:150">Minimum</th>
-					<th data-options="field:'midpoint',width:150">Midpoint</th>
-					<th data-options="field:'maximum',width:150">Maximum</th>
-					<th data-options="field:'quartile',width:150,">Quartile</th>
-					
+					<th data-options="field:'type',width:${gridViewMap['type']}" align="left">Type</th>
+					<th data-options="field:'rate',width:${gridViewMap['rate']}" align="right">Current Rate</th>
+					<th data-options="field:'perfGrade',width:${gridViewMap['perfGrade']}" align="left">Perf Grade</th>
+					<th data-options="field:'incrementPercentage',width:${gridViewMap['incrementPercentage']}" align="right">Increment Percentage</th>
+					<th data-options="field:'newRate',width:${gridViewMap['newRate']}" align="right">New Rate</th>
+					<th data-options="field:'lumsum',width:${gridViewMap['lumsum']}" align="right">Lum Sum</th>
+					<th data-options="field:'jobTitle',width:${gridViewMap['jobTitle']}" align="left">Job Title</th>
+					<th data-options="field:'updatedDate',width:${gridViewMap['updatedDate']}" align="left">Updated Date</th>
+					<th data-options="field:'grade',width:${gridViewMap['grade']}" align="left">Grade</th>
+					<th data-options="field:'compaRatio',width:${gridViewMap['compaRatio']}" align="right">Compa Ratio</th>
+					<th data-options="field:'minimum',width:${gridViewMap['minimum']}" align="right">Minimum</th>
+					<th data-options="field:'midpoint',width:${gridViewMap['midpoint']}" align="right">Midpoint</th>
+					<th data-options="field:'maximum',width:${gridViewMap['maximum']}" align="right">Maximum</th>
+					<th data-options="field:'quartile',width:${gridViewMap['quartile']}" align="left">Quartile</th>
 				</tr>
 			</thead>
 		</table>
@@ -113,7 +112,7 @@
 					</table>
 				</td>
 				<td style="width: 50%">
-					<table id="budgetTable"  class="easyui-datagrid" title="Annual Budget Summary" style="width:100%;height:225px; padding-left: 100px"
+					<table id="budgetTable"  class="easyui-datagrid" title="Budget Summary" style="width:100%;height:225px; padding-left: 100px"
 						data-options="collapsible:true
 										,url:'anualBudgetSummary.htm'
 										,method: 'get'
@@ -121,10 +120,10 @@
 										,emptyMsg: 'No records found'">
 						<thead>
 							<tr >
-								<th data-options="field:'anualBudgetType',width:150" >Annual Budget</th>
-								<th data-options="field:'currentBudget',width:150">Current</th>
-								<th data-options="field:'newBudget',width:150">New</th>
-								<th data-options="field:'changeBudget',width:155">%Change</th>
+								<th data-options="field:'anualBudgetType',width:150"  align="left" >Annual Budget</th>
+								<th data-options="field:'currentBudget',width:150" align="right" >Current</th>
+								<th data-options="field:'newBudget',width:150" align="right" >New</th>
+								<th data-options="field:'changeBudget',width:155" align="right" >%Change</th>
 							</tr>
 						</thead>
 					</table>
@@ -340,6 +339,15 @@
 			var vc = $(target).datagrid('getPanel').children(
 			'div.datagrid-view');
 			vc.children('div.datagrid-empty').remove();
+		}
+		function onResizeColumn(field,width){
+			$.ajax({
+    			url:"updateSalaryPlanningColumnWidth.htm?field="+field+"&width="+width,
+    			type: "GET",
+    			error: function(obj){
+    			},
+    			success: function(obj){
+    			}});
 		}
 		</script>
   

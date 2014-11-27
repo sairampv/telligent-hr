@@ -1,6 +1,7 @@
 package com.telligent.model.daos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.telligent.model.dtos.BudgetSummaryDTO;
 import com.telligent.model.dtos.RatingsAndIncreaseDTO;
@@ -15,4 +16,6 @@ public interface IMeritAdministrationDAO{
     public boolean updateEmployeeDetails(SalarPlanningDTO salaryPlanDTO);
     public ArrayList<RatingsAndIncreaseDTO> ratingsAndIncreaseSummary();
     public ArrayList<SalaryPositionRangeDTO> salaryPositionRangeDetails();
+    public HashMap<String, Integer> getSalaryPlanningGridView(String empId);
+    public void updateSalaryPlanningColumnWidth(String field,String width,String empId);
 }
