@@ -14,7 +14,7 @@
 
 <div class="contentArea">
 	<div class="innerleft">
-     <table class="leftAccordion" cellspacing="1" cellpadding="5" >
+     <table class="leftAccordion" cellspacing="1" cellpadding="5" id="teamListTable">
       <tr>
         <th class="head" height="25" align="left">His Teams</th>
       </tr>
@@ -215,9 +215,13 @@
   </div>
   </div>
   <script type="text/javascript">
-  $(document).ready(function(){
-	  showGridMessage('#tt');
-  });
+	  $(document).ready(function(){
+		  showGridMessage('#tt');
+	  });
+	  $('#teamListTable a ').click(function() {
+			$('#teamListTable a').removeClass('selectLink');
+			$(this).closest('a').addClass('selectLink');
+		});
   	function getSelected(){
 	  var row = $('#tt').datagrid('getSelected');
 		  if (row){
