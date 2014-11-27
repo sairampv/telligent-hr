@@ -90,7 +90,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#226696', end
 width:100%;
 }
 .footer {
-background:#D8D9D9;text-align:center;line-height:40px;
+background:#D8D9D9;text-align:center;line-height:40px;bottom: 0;
 }
 .contentArea {
 width:100%;min-height:480px;
@@ -257,4 +257,9 @@ border-top: 0px solid #BBBBBB;
 text-align: center;
 background: none repeat scroll 0 0 #F9F9F9;
 border-top: 0px solid #BBBBBB;
+}
+.selectLink{
+	font-weight: bold;
+	font-size: 14px;
+	color: #3366cc !important;
 }
