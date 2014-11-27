@@ -90,7 +90,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#226696', end
 width:100%;
 }
 .footer {
-background:#D8D9D9;text-align:right;line-height:40px;
+background:#D8D9D9;text-align:center;line-height:40px;
 }
 .contentArea {
 width:100%;min-height:480px;

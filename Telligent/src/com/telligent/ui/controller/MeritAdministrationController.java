@@ -62,6 +62,7 @@ public class MeritAdministrationController {
 		}else{
 			mav.addObject("teamName","");
 		}
+		mav.addObject("gridViewMap", meritAdministrationDAO.getSalaryPlanningGridView(user.getEmployeeId()));
 		mav.addObject("salaryPositionRangeDetails", meritAdministrationDAO.salaryPositionRangeDetails());
 		mav.addObject("salaryPlanning", new SalarPlanningDTO());
 		mav.setViewName("meritAdministration");
@@ -102,5 +103,11 @@ public class MeritAdministrationController {
    		ArrayList<RatingsAndIncreaseDTO> details =  meritAdministrationDAO.ratingsAndIncreaseSummary();
    		JSONArray obj = (JSONArray) JSONSerializer.toJSON(details);
    		return obj;
+   	}
+    @RequestMapping(value="/updateSalaryPlanningColumnWidth.htm", method = RequestMethod.GET)
+   	public @ResponseBody void updateSalaryPlanningColumnWidth(@RequestParam("field") String field,@RequestParam("width") String width){
+   		logger.info("in updateSalaryPlanningColumnWidth");
+   		TelligentUser user = telligentUtility.getTelligentUser();
+   		meritAdministrationDAO.updateSalaryPlanningColumnWidth(field,width,user.getEmployeeId());
    	}
 }
