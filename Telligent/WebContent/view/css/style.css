@@ -6,6 +6,13 @@ padding:0px;
 margin:0px;
 color:#424242;
 }
+.header{
+	width: 100%;
+	position: fixed;
+	top: 0;
+	height: 50px !important;
+	z-index: 99;
+}
 .mainContainer {
 width:500px;margin:10% auto 0 auto;
 }
@@ -73,10 +80,10 @@ background: -o-linear-gradient(top, #226696 0%,#539ed1 100%); /* Opera 11.10+ */
 background: -ms-linear-gradient(top, #226696 0%,#539ed1 100%); /* IE10+ */
 background: linear-gradient(to bottom, #226696 0%,#539ed1 100%); /* W3C */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#226696', endColorstr='#539ed1',GradientType=0 ); /* IE6-9 */
-width:100%;height:70px;
+width:100%;height:50px;
 }
 .innertop1 h1 {
-margin:0px;padding:0px;font-size:25px;color:#fff;float:left;padding:19px 0 0 15px;
+margin:0px;padding:0px;font-size:25px;color:#fff;float:left;padding:10px 0 0 15px;
 }
 .innertop2 {
 background: #226696; /* Old browsers */
@@ -91,15 +98,21 @@ width:100%;
 }
 .footer {
 background:#D8D9D9;text-align:center;line-height:40px;bottom: 0;
+width: 100%;
+position: fixed;
 }
 .contentArea {
-width:100%;min-height:480px;
+width:100%;
+height: 100%;
+margin-top: 40px;
 }
 .boxesArea {
 width:1000px;margin:0 auto;
 }
 .contentArea1 {
-
+width:100%;
+height: 100%;
+margin-top: 70px;
 }
 .innerleft {
 float:left;width:23%;background:#F5F6F7;padding:8px;min-height:480px;
@@ -127,7 +140,7 @@ background: #fff;
 background: #F7F7F7;
 }
 .welcome {
-float:right;line-height:70px;color:#b7df2d;font-weight:bold;padding:0 20px 0 0;
+float:right;line-height:50px;color:#b7df2d;font-weight:bold;padding:0 20px 0 0;
 }
 .welcome a {
 color:#fff;text-decoration:none;margin:0 0 0 20px;
