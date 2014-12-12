@@ -9,7 +9,7 @@
 <script type="text/javascript" src="view/js/jquery/jquery.validate.js"></script>
 </head>
 <body style="background:#1A6398;">
-<form id="loginForm" method="post" action="<c:url value='/j_spring_security_check'/>" >
+<form:form id="forgotPasswordForm" method="post" action="forgotPassword.htm" commandName="user">
 <div class="mainContainer">
   <div class="innerContainer">
     <div class="logoSection">
@@ -19,7 +19,7 @@
       <div class="loginstrip">Login</div>
       <br clear="all"/>
       <table width="85%" border="0" cellspacing="0" cellpadding="0" align="center">
-      	<c:if test="${!empty message}"><div class="loginerror" style="text-align: center;">${message}</div></c:if>
+      	<c:if test="${!empty message}"><div class="loginerror" style="text-align: center;">${message} &nbsp; Please click <a href="login.htm">here</a></div></c:if>
         <tr>
           <td align="left" valign="middle" colspan="3">&nbsp;</td>
         </tr>
@@ -27,12 +27,7 @@
         <tr>
           <th width="19%" height="40" align="left" valign="middle">Username</th>
           <td width="4%" align="center" valign="middle">:</td>
-          <td width="77%" align="left" valign="middle"> <input type="text" class="textfield required" name="j_username" id="userName"/></td>
-        </tr>
-        <tr>
-          <th height="40" align="left" valign="middle">Password</th>
-          <td align="center" valign="middle">:</td>
-          <td align="left" valign="middle"> <input type="password" class="textfield required" name="j_password" id="password"/></td>
+          <td width="77%" align="left" valign="middle"> <form:input path="userName" cssClass="required"/> </td>
         </tr>
         <tr>
           <td align="left" valign="middle" colspan="3" height="5"></td>
@@ -40,34 +35,25 @@
         <tr>
           <td align="left" valign="middle">&nbsp;</td>
           <td align="center" valign="middle">&nbsp;</td>
-          <td align="left" valign="middle">
-          	<input type="submit" value="Submit" class="loginButton"/>
-          		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="forgotPassword.htm"><b>Forgot Password ?</a>
-          	</td>
+          <td align="left" valign="middle"><input type="submit" value="Submit" class="loginButton"/></td>
         </tr>
       </table>
     </div>
   </div>
   <div class="copyRight">Copyright &copy; 2014 Telligent Solutions. All Rights Reserved.</div>
 </div>
-</form>
+</form:form>
 <script type="text/javascript">
 	 $(document).ready(function(){
-		    $("#loginForm").validate({
+		    $("#forgotPasswordForm").validate({
 				rules: {
-					j_username:{
-						required:true
-					},
-					j_password:{
+					userName:{
 						required:true
 					}
 				},
 		        messages: {
-					j_username:{
+					userName:{
 						required:"Please enter username."
-					},
-					j_password:{
-						required:"Please enter password."
 					}
 				}
 			});

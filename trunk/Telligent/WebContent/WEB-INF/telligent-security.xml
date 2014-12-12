@@ -22,6 +22,7 @@
 		<sec:intercept-url pattern="/login.htm" filters="none" />
 		<sec:intercept-url pattern="/index.jsp" filters="none" />
 		<sec:intercept-url pattern="/login.jsp" filters="none" />
+		<sec:intercept-url pattern="/forgotPassword.htm" filters="none" />
 		<sec:logout logout-success-url="/login.htm" invalidate-session="true"/>
 		<sec:form-login login-page='/index.jsp'
 			default-target-url='/dashboard.htm' always-use-default-target="true" authentication-failure-url="/login.htm?login_error=1"/>

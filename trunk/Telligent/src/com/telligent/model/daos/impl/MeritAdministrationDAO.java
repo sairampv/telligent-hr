@@ -55,6 +55,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			ps.setString(1, employeeId);
 			ps.setString(2, teamId);
 			rs = ps.executeQuery();
+			DecimalFormat df1 = new DecimalFormat("###.00");
 			while(rs.next()){
 				SalarPlanningDTO dto = new SalarPlanningDTO();
 				dto.setId(rs.getInt("id"));
@@ -71,7 +72,12 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				dto.setMaximum(rs.getString("maximum"));
 				dto.setQuartile(rs.getString("quartile"));
 				dto.setPerfGrade(rs.getString("perf_grade"));
-				dto.setIncrementPercentage(rs.getString("increment_percentage"));
+				if(Float.parseFloat(rs.getString("increment_percentage"))*100 > 0)
+					try {
+						dto.setIncrementPercentage(df1.format(Float.parseFloat(rs.getString("increment_percentage"))*100) );
+					} catch (Exception e1) {}
+				else
+					dto.setIncrementPercentage(rs.getString("increment_percentage"));
 				try {
 					dto.setNewRate(nf.format(rs.getDouble("new_rate")));
 				} catch (Exception e) {}
@@ -455,7 +461,6 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			int i =ps.executeUpdate();
 			logger.info("Result in updateSalaryPlanningColumnWidth = field "+field+" width = "+width+" employee Id = "+empId+" i =="+i);
 		}catch (Exception ex) {
-			ex.printStackTrace();
 			logger.info("Excpetion in updateSalaryPlanningColumnWidth"+ex.getMessage());
 		} finally {
 			this.closeAll(conn, ps, rs);

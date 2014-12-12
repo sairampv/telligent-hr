@@ -24,6 +24,8 @@ public class TelligentUser extends org.springframework.security.core.userdetails
 	private String userName;
 	private String employeeId;
 	private String lastName;
+	private String role;
+	private boolean changePassword;
 	
 	public TelligentUser(String username, String password, boolean enabled,
 			boolean accountNonExpired, boolean credentialsNonExpired,
@@ -34,7 +36,7 @@ public class TelligentUser extends org.springframework.security.core.userdetails
 	}
 	public TelligentUser(String userName, String password, boolean enabled,
 			boolean accountNonExpired, boolean credentialsNonExpired,
-			boolean accountNonLocked, Collection<GrantedAuthority> authorities,boolean accountVerifier,String createDate,String email,String employeeId,String lastName)
+			boolean accountNonLocked, Collection<GrantedAuthority> authorities,boolean accountVerifier,String createDate,String email,String employeeId,String lastName,String role,boolean changePassword)
 			throws IllegalArgumentException {
 		super(userName, password, enabled, accountNonExpired, credentialsNonExpired,
 				accountNonLocked, authorities);
@@ -44,6 +46,8 @@ public class TelligentUser extends org.springframework.security.core.userdetails
 		this.userName = userName;
 		this.employeeId = employeeId;
 		this.lastName = lastName;
+		this.role = role;
+		this.changePassword = changePassword;
 		// TODO Auto-generated constructor stub
 	}
 	/**
@@ -118,7 +122,28 @@ public class TelligentUser extends org.springframework.security.core.userdetails
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-
-	
-	
+	/**
+	 * @return the role
+	 */
+	public String getRole() {
+		return role;
+	}
+	/**
+	 * @param role the role to set
+	 */
+	public void setRole(String role) {
+		this.role = role;
+	}
+	/**
+	 * @return the changePassword
+	 */
+	public boolean isChangePassword() {
+		return changePassword;
+	}
+	/**
+	 * @param changePassword the changePassword to set
+	 */
+	public void setChangePassword(boolean changePassword) {
+		this.changePassword = changePassword;
+	}
 }
