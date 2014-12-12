@@ -39,7 +39,7 @@ public class TelligentAuthenticationService implements UserDetailsService{
 			if(user.getUserName() !=null && user.getUserName().equalsIgnoreCase(userName)){
 				authorities.add(new GrantedAuthorityImpl("ROLE_USER"));
 				authorities.add(new GrantedAuthorityImpl(String.valueOf(user.getRole())));
-				userDetails = new TelligentUser(user.getUserName(), bouncyCastleEncryptor.decryptString(user.getPassword()), true,true,true, true, authorities, true, "", user.getRole(),user.getEmployeeId(),"");				
+				userDetails = new TelligentUser(user.getUserName(), bouncyCastleEncryptor.decryptString(user.getPassword()), true,true,true, true, authorities, true, "", user.getEmailId(),user.getEmployeeId(),"",user.getRole(),user.isChangePassword());				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

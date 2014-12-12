@@ -29,5 +29,10 @@
 	<definition name="showTeams" extends="base.definition" >
 		<put-attribute name="body" value="/WEB-INF/jsp/showTeams.jsp"></put-attribute>
 	</definition>
+	<definition name="changePassword" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/changePassword.jsp"></put-attribute>
+	</definition>
+	<definition name="forgotPassword" template="/WEB-INF/jsp/forgotPassword.jsp">
+	</definition>
 	
 </tiles-definitions>

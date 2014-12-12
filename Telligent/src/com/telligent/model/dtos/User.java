@@ -6,6 +6,9 @@ public class User {
 	private String password;
 	private String employeeId;
 	private String role;
+	private String emailId;
+	private boolean changePassword;
+	
 	/**
 	 * @return the userName
 	 */
@@ -53,6 +56,30 @@ public class User {
 	 */
 	public void setRole(String role) {
 		this.role = role;
+	}
+	/**
+	 * @return the emailId
+	 */
+	public String getEmailId() {
+		return emailId;
+	}
+	/**
+	 * @param emailId the emailId to set
+	 */
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
+	/**
+	 * @return the changePassword
+	 */
+	public boolean isChangePassword() {
+		return changePassword;
+	}
+	/**
+	 * @param changePassword the changePassword to set
+	 */
+	public void setChangePassword(boolean changePassword) {
+		this.changePassword = changePassword;
 	}
 	
 }

@@ -5,15 +5,14 @@
 <script type="text/javascript" src="view/js/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="view/js/jquery/jquery.validate.js"></script>
 <script src="view/js/jquery/jquery.colorbox.js"></script>
-
 <link rel="stylesheet" type="text/css" href="view/css/jquery/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="view/css/jquery/themes/icon.css">
 <link rel="stylesheet" type="text/css" href="view/css/jquery/demo.css">
 <script type="text/javascript" src="view/js/jquery/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="view/js/app/telligentCommon.js"></script>
-
+<div id="contentArea">
 <div class="contentArea">
-	<div class="innerleft">
+	<div class="innerleft"  id="col1">
      <table class="leftAccordion" cellspacing="1" cellpadding="5" id="teamListTable">
       <tr>
         <th class="head" height="25" align="left">His Teams</th>
@@ -25,7 +24,12 @@
       </c:forEach>
     </table>  
  </div>
-<div class="innerright">
+ <div class="innerright"  id="flow">
+ 	<a href="javascript:toggle()" title="Hide Nav 13" id="flowtab"></a>
+ 	<div style="margin:0px;cursor:auto;" id="tab">
+        <div class="wrap">  
+        <a href="#popUp" id="popUphrefId" class="button inline" onclick="setValues();"  style="display: none;">Update Rate</a>
+        <a href="#salRangePopUp" id="salRangePopUphrefId" class="button salRangePopUpClass" onclick="showSalRange();"  style="display: none;">General Guidelines</a>
     <table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="E3E3E3" align="right">
       <tr>
         <th class="head1" height="25" align="left">
@@ -38,17 +42,18 @@
 		</th>
       </tr>
     </table>
+    <br>
     <table>
     	<tr>
     		<td><input type="button" class="button" value="Assign Default Merit Increases" onclick="javascript:getSelected();"></td>
     		<td><input type="button" class="button" value="Validate Merit Increases"></td>
     		<td><input type="button" class="button" value="Send for Approval" onclick="javascript:sendForApproval()"></td>
     		<td><input type="button" class="button" value="Print / Reports"></td>
-            <td><a href="#popUp" class="button inline" onclick="setValues();"  style="text-decoration: none">Update Rate</a></td>
-            <td><a href="#salRangePopUp" class="button salRangePopUpClass" onclick="showSalRange();"  style="text-decoration: none">General Guidelines</a></td>
+            <td><input type="button" class="button" value="Update Rate" onclick="setValuesButton();" ></td>
+            <td><input type="button" class="button" value="General Guidelines" onclick="showSalRangeButton();" ></td>
     	</tr>
     </table>
-    <table id="tt" class="easyui-datagrid" title="Employee Salary Planning" style="width:100%;height:300px"
+    <table id="tt" class="easyui-datagrid" title="Employee Salary Planning" style="width:100%;height:300px;table-layout: fixed;"
 			data-options="collapsible:true
 							,pagination:true
 							,emptyMsg: 'No records found'
@@ -67,7 +72,7 @@
 					<th data-options="field:'type',width:${gridViewMap['type']}" align="left">Type</th>
 					<th data-options="field:'rate',width:${gridViewMap['rate']}" align="right">Current Rate</th>
 					<th data-options="field:'perfGrade',width:${gridViewMap['perfGrade']}" align="left">Perf Grade</th>
-					<th data-options="field:'incrementPercentage',width:${gridViewMap['incrementPercentage']}" align="right">Increment Percentage</th>
+					<th data-options="field:'incrementPercentage',width:${gridViewMap['incrementPercentage']}" align="right">Incr %</th>
 					<th data-options="field:'newRate',width:${gridViewMap['newRate']}" align="right">New Rate</th>
 					<th data-options="field:'lumsum',width:${gridViewMap['lumsum']}" align="right">Lum Sum</th>
 					<th data-options="field:'jobTitle',width:${gridViewMap['jobTitle']}" align="left">Job Title</th>
@@ -85,7 +90,7 @@
 		<table style="width: 100%;height: 100%;padding-top: 20px">
 			<tr>	
 				<td style="width: 50%">
-					<table id="budgetTable"  class="easyui-datagrid" title="Ratings & Increase Summary" style="width:100%;height:225px;padding-left: 100px"
+					<table id="budgetTable"  class="easyui-datagrid" title="Ratings & Increase Summary" style="width:100%;height:215px;padding-left: 100px"
 						data-options="collapsible:true
 										,url:'ratingsAndIncreaseSummary.htm'
 										,method: 'get'
@@ -98,9 +103,13 @@
 								<th colspan="3">Office</th>
 							</tr>
 						</thead>
-						<thead>
-							<tr >
+						<thead data-options="frozen:true">
+							<tr>
 								<th data-options="field:'type',width:185" >Performance Rating</th>
+							</tr>
+						</thead>
+						<thead>
+							<tr>
 								<th data-options="field:'hourlyA',width:70">A</th>
 								<th data-options="field:'hourlyB',width:70">B</th>
 								<th data-options="field:'hourlyC',width:70">C</th>
@@ -112,24 +121,30 @@
 					</table>
 				</td>
 				<td style="width: 50%">
-					<table id="budgetTable"  class="easyui-datagrid" title="Budget Summary" style="width:100%;height:225px; padding-left: 100px"
+					<table id="budgetTable1"  class="easyui-datagrid" title="Budget Summary" style="width:100%;height:215px; padding-left: 100px"
 						data-options="collapsible:true
 										,url:'anualBudgetSummary.htm'
 										,method: 'get'
 										,pagination:false
 										,emptyMsg: 'No records found'">
+						<thead data-options="frozen:true">
+							<tr>
+								<th data-options="field:'anualBudgetType',width:150"  align="left" >Annual Budget</th>
+							</tr>
+						</thead>
 						<thead>
 							<tr >
-								<th data-options="field:'anualBudgetType',width:150"  align="left" >Annual Budget</th>
-								<th data-options="field:'currentBudget',width:150" align="right" >Current</th>
-								<th data-options="field:'newBudget',width:150" align="right" >New</th>
-								<th data-options="field:'changeBudget',width:155" align="right" >%Change</th>
+								<th data-options="field:'currentBudget',width:100" align="right" >Current</th>
+								<th data-options="field:'newBudget',width:100" align="right" >New</th>
+								<th data-options="field:'changeBudget',width:140" align="right" >%Change</th>
 							</tr>
 						</thead>
 					</table>
 				</td>
 			</tr>
 		</table>
+  </div>
+  </div>
   </div>
   <div style="display: none;">
   <div id="popUp" style="padding:10px; background:#fff;" style="width:100px">
@@ -214,6 +229,7 @@
   </div>             
   </div>
   </div>
+</div> 
   <script type="text/javascript">
 	  $(document).ready(function(){
 		  showGridMessage('#tt');
@@ -251,6 +267,9 @@
 				return false;
 			}});
 	}
+        function setValuesButton(){
+        	$('#popUphrefId').click();
+        }
         function setValues(){
               var row = $('#tt').datagrid('getSelected');
               var row1 = $('#tt').datagrid('getSelections');
@@ -293,6 +312,9 @@
     				return false;
     			}});
     	}
+        function showSalRangeButton(){
+        	$('#salRangePopUphrefId').click();
+        }
         function showSalRange(){
        	 $(".salRangePopUpClass").colorbox({inline:true, width:"80%"});
     		
@@ -354,5 +376,6 @@
     			}});
 		}
 		</script>
+		<script type="text/javascript" src="view/js/docknavigation.js"></script>
   
 <!-- </div> -->
