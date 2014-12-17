@@ -19,7 +19,10 @@
       </tr>
       <c:forEach items="${teams}" var="item" varStatus="i">
 	      <tr>
-	        <td height="20"><a href="javascript:showTeamEmployees('${item.teamName}','${item.teamId}');">${item.teamName}</a></td>
+	        <td height="20">
+	        	<input type="checkbox" name="teamCheckBoxName" id="teamCheckBoxId${i.index}"  value="${item.teamId}">${item.teamName}</input>
+	        	<%-- <a href="javascript:showTeamEmployees('${item.teamName}','${item.teamId}');">${item.teamName}</a> --%>
+	        </td>
 	      </tr>
       </c:forEach>
     </table>  
@@ -28,7 +31,7 @@
  	<a href="javascript:toggle()" title="Hide Nav 13" id="flowtab"></a>
  	<div style="margin:0px;cursor:auto;" id="tab">
         <div class="wrap">  
-        <a href="#popUp" id="popUphrefId" class="button inline" onclick="setValues();"  style="display: none;">Update Rate</a>
+        <!-- <a href="#popUp" id="popUphrefId" class="button inline" onclick="setValues();"  style="display: none;">Update Rate</a> -->
         <a href="#salRangePopUp" id="salRangePopUphrefId" class="button salRangePopUpClass" onclick="showSalRange();"  style="display: none;">General Guidelines</a>
     <table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="E3E3E3" align="right">
       <tr>
@@ -49,15 +52,45 @@
     		<td><input type="button" class="button" value="Validate Merit Increases"></td>
     		<td><input type="button" class="button" value="Send for Approval" onclick="javascript:sendForApproval()"></td>
     		<td><input type="button" class="button" value="Print / Reports"></td>
-            <td><input type="button" class="button" value="Update Rate" onclick="setValuesButton();" ></td>
+            <!-- <td><input type="button" class="button" value="Update Rate" onclick="setValuesButton();" ></td> -->
             <td><input type="button" class="button" value="General Guidelines" onclick="showSalRangeButton();" ></td>
     	</tr>
     </table>
+    
+    <form id="updateRateForm">
+	    <table  width="100%" border="0" cellspacing="0" cellpadding="0" id="updateRateTableId" style="display: none;" class="data-table"> 
+	       <tr>
+	  			<td valign="middle" width="10%" >Perf Grade<span class="mandatory">*</span></td>
+		        <td valign="middle" width="3%">:</td>
+		        <td valign="middle" width="10%">
+		        	<select id="perfGrade" class="required">
+		        		<option value="">Select</option>
+		        		<option value="A">A</option>
+		        		<option value="B">B</option>
+		        		<option value="C">C</option>
+		        	</select>
+		        </td>
+	  			<td valign="middle" width="16%">Increment Percentage<span class="mandatory">*</span></td>
+		        <td valign="middle" width="3%">:</td>
+		        <td valign="middle" width="20%"><input id="incrementPercentage" name="incrementPercentage" class="required" onKeyPress="return numbersonly(event, true,this.value)"></input></td>
+		        <td valign="middle">&nbsp;</td>
+		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetails();" value="Update Rate" class="loginButton"/></td>
+		      </tr>
+	  	</table>
+    </form>
+    
     <table id="tt" class="easyui-datagrid" title="Employee Salary Planning" style="width:100%;height:300px;table-layout: fixed;"
 			data-options="collapsible:true
 							,pagination:true
 							,emptyMsg: 'No records found'
 							,pageSize:20
+							,onSelect:rowSelected
+							,onUnselect:rowSelected
+							,onSelectAll:rowSelected
+							,onUnSelectAll:rowSelected
+							,onCheckAll:rowSelected
+							,onUncheckAll:rowSelected
+							,onCheckAll:rowSelected
 							,onResizeColumn:onResizeColumn">
 			<thead data-options="frozen:true">
 				<tr>
@@ -87,18 +120,16 @@
 			</thead>
 		</table>
 		<div class="footer"></div>
-		<table style="width: 100%;height: 100%;padding-top: 20px">
+	<table style="width: 100%;height: 100%;padding-top: 20px">
 			<tr>	
 				<td style="width: 50%">
 					<table id="budgetTable"  class="easyui-datagrid" title="Ratings & Increase Summary" style="width:100%;height:215px;padding-left: 100px"
 						data-options="collapsible:true
-										,url:'ratingsAndIncreaseSummary.htm'
 										,method: 'get'
 										,pagination:false
 										,emptyMsg: 'No records found'">
 						<thead>
 							<tr>
-								<th></th>
 								<th colspan="3">Hourly</th>
 								<th colspan="3">Office</th>
 							</tr>
@@ -110,12 +141,12 @@
 						</thead>
 						<thead>
 							<tr>
-								<th data-options="field:'hourlyA',width:70">A</th>
-								<th data-options="field:'hourlyB',width:70">B</th>
-								<th data-options="field:'hourlyC',width:70">C</th>
-								<th data-options="field:'officeA',width:70">A</th>
-								<th data-options="field:'officeB',width:70">B</th>
-								<th data-options="field:'officeC',width:70">C</th>
+								<th data-options="field:'hourlyA',width:70" align="right" >A</th>
+								<th data-options="field:'hourlyB',width:70" align="right" >B</th>
+								<th data-options="field:'hourlyC',width:70" align="right" >C</th>
+								<th data-options="field:'officeA',width:70" align="right" >A</th>
+								<th data-options="field:'officeB',width:70" align="right" >B</th>
+								<th data-options="field:'officeC',width:70" align="right" >C</th>
 							</tr>
 						</thead>
 					</table>
@@ -123,7 +154,6 @@
 				<td style="width: 50%">
 					<table id="budgetTable1"  class="easyui-datagrid" title="Budget Summary" style="width:100%;height:215px; padding-left: 100px"
 						data-options="collapsible:true
-										,url:'anualBudgetSummary.htm'
 										,method: 'get'
 										,pagination:false
 										,emptyMsg: 'No records found'">
@@ -147,7 +177,7 @@
   </div>
   </div>
   <div style="display: none;">
-  <div id="popUp" style="padding:10px; background:#fff;" style="width:100px">
+ <%--  <div id="popUp" style="padding:10px; background:#fff;" style="width:100px">
       <form:form action="salaryPalnning.htm"  method="post" commandName="salaryPlanning" id="salaryPlanning">
           <form:hidden path="lumsum"></form:hidden>
           <form:hidden path="rate"></form:hidden>
@@ -164,7 +194,7 @@
   		<td align="left" valign="middle" width="25%" height="35">Perf Grade</td>
 	        <td align="left" valign="middle" width="3%">:</td>
 	        <td align="left" valign="middle" width="80%">
-	        	<form:select path="perfGrade">
+	        	<form:select path="perfGrade" id="perfGrade">
 	        		<form:option value="">Select</form:option>
 	        		<form:option value="A">A</form:option>
 	        		<form:option value="B">B</form:option>
@@ -175,7 +205,7 @@
   		<tr>
   		<td align="left" valign="middle" width="25%" height="35">Increment Percentage</td>
 	        <td align="left" valign="middle" width="3%">:</td>
-	        <td align="left" valign="middle" width="80%"><form:input path="incrementPercentage" onKeyPress="return numbersonly(event, true,this.value)"></form:input></td>
+	        <td align="left" valign="middle" width="80%"><form:input path="incrementPercentage" id="incrementPercentage" onKeyPress="return numbersonly(event, true,this.value)"></form:input></td>
   		</tr>
   		<tr>
 	        <td align="left" valign="middle" height="35">&nbsp;</td>
@@ -184,7 +214,7 @@
 	      </tr>
   	</table>
   	 </form:form>
-  </div>
+  </div> --%>
    
   <div id="salRangePopUp"  style="padding:10px; background:#fff;" style="width:100px">
   	<br clear="all"/>
@@ -231,151 +261,238 @@
   </div>
 </div> 
   <script type="text/javascript">
-	  $(document).ready(function(){
-		  showGridMessage('#tt');
-	  });
-	  $('#teamListTable a ').click(function() {
-			$('#teamListTable a').removeClass('selectLink');
-			$(this).closest('a').addClass('selectLink');
+  	  String.prototype.startsWith = function (str){
+	    return this.indexOf(str) == 0;
+	  };
+	  $("#teamListTable input[type='checkbox']").click( function(){
+		    var numberOfChBox = $("#teamListTable input[type='checkbox']").length;
+		    var checkArray = ""; 
+			for(var i = 0; i < numberOfChBox; i++) {
+			     if($('#teamCheckBoxId'+i).is(':checked')) {
+		            if(checkArray != "")
+			    	 checkArray = checkArray+$('#teamCheckBoxId'+i).val()+",";
+		            else
+		            	checkArray = $('#teamCheckBoxId'+i).val()+",";
+		        }
+		    }
+			checkArray = checkArray.substring(0, checkArray.length-1);
+			showTeamEmployees("", checkArray);
 		});
-  	function getSelected(){
-	  var row = $('#tt').datagrid('getSelected');
-		  if (row){
-		 	 $.messager.alert('Info', row.coworker_name+":"+row.employeeId+":"+row.supervisor);
+      	var updateList = new Array();
+		  $(document).ready(function(){
+			  showGridMessage('#tt','Please select Team on left side panel to display your team employees');
+			  showGridMessage('#budgetTable','Please select Team on left side panel to display team wise Summary');
+			  showGridMessage('#budgetTable1','Please select Team on left side panel to display team wise budget');
+		  });
+		  $('#teamListTable a ').click(function() {
+				$('#teamListTable a').removeClass('selectLink');
+				$(this).closest('a').addClass('selectLink');
+			});
+	  	function getSelected(){
+		  var row = $('#tt').datagrid('getSelected');
+			  if (row){
+			 	 $.messager.alert('Info', row.coworker_name+":"+row.employeeId+":"+row.supervisor);
+			  }
 		  }
-	  }
-  	function sendForApproval(){
-  	    var ids = [];
-  	    var rows = $('#tt').datagrid('getSelections');
-  	    for(var i=0; i<rows.length; i++){
-  	    	ids.push(rows[i].coworker_name);
-  	    }
-  	    alert(ids.join('\n'));
-  	}
-        function updateEmployeeDetails(){
-		$.ajax({
-			url:"updateEmployeeDetails.htm",
-			type: "post",
-			data: $('#salaryPlanning').serialize(),
-			error: function(obj){
-				alert(obj);
-			},
-			success: function(obj){
-				alert(obj);
-				location.reload(true);
-				window.parent.jQuery.colorbox.close();
-				return false;
-			}});
-	}
-        function setValuesButton(){
-        	$('#popUphrefId').click();
-        }
-        function setValues(){
-              var row = $('#tt').datagrid('getSelected');
-              var row1 = $('#tt').datagrid('getSelections');
-              if(row1.length > 1){
-                  alert("Please select only one row for further process");
-                  return false;
-              }else if (row){
-                  document.getElementById("employeeId").value=row.employeeId;
-                  document.getElementById("newRate").value = row.newRate;
-                  document.getElementById("rate").value = row.rate;
-                  document.getElementById("maximum").value = row.maximum;
-                  document.getElementById("lumsum").value = row.lumsum;
-                  document.getElementById("perfGrade").value = row.perfGrade;
-                  document.getElementById("incrementPercentage").value = row.incrementPercentage;
-                  $(".inline").colorbox({inline:true, width:"40%"});
-		
-                //Example of preserving a JavaScript event for inline calls.
-                $("#click").click(function(){
-                        $('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
-                        return true;
-                });
-              }else{
-                  alert("Please select row for further process");
-                  window.parent.jQuery.colorbox.close();
-                  return false;
-              }
-        }
-        
-        function anualBudgetSummary(){
-    		$.ajax({
-    			url:"anualBudgetSummary.htm",
-    			type: "get",
-    			data: $('#budgetSummary').serialize(),
-    			error: function(obj){
-    				alert(obj);
-    			},
-    			success: function(obj){
-    				alert(obj);
-    				window.parent.jQuery.colorbox.close();
-    				return false;
-    			}});
-    	}
-        function showSalRangeButton(){
-        	$('#salRangePopUphrefId').click();
-        }
-        function showSalRange(){
-       	 $(".salRangePopUpClass").colorbox({inline:true, width:"80%"});
-    		
-            //Example of preserving a JavaScript event for inline calls.
-            $("#click").click(function(){
-                    $('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
-                    return true;
-            });
+	  	function sendForApproval(){
+	  	    var ids = [];
+	  	    var rows = $('#tt').datagrid('getSelections');
+	  	    for(var i=0; i<rows.length; i++){
+	  	    	ids.push(rows[i].coworker_name);
+	  	    }
+	  	    alert(ids.join('\n'));
+	  	}
+	  	function rowSelected(){
+	  		var rows = $('#tt').datagrid('getSelections');
+	  		if(rows.length > 0){
+	  			 $("#updateRateTableId").toggle(true);
+	  		}else{
+	  			$("#updateRateTableId").toggle(false);
+	  		}
+	  	}
+       function updateEmployeeDetails(){
+	       	if($("#updateRateForm").valid()){
+	       		var rows = $('#tt').datagrid('getSelections');
+	           	var incrementPercentage = $("#incrementPercentage").val().trim(); 
+	           	var perfGrade = $("#perfGrade").val().trim();
+	           	if(perfGrade == null || perfGrade == ''){
+	             	  alert("Please enter Perf Grade percentage")
+	             	  return false;
+	               }else if(incrementPercentage == null || incrementPercentage ==''){
+	             	  alert("Please enter Increment percentage");
+	             	  return false;
+	               }else{
+	               	for(var i=0; i<rows.length; i++){
+	   	      			  var salarPlanningDTO = new Object();
+	   	      		      salarPlanningDTO.employeeId = rows[i].employeeId;
+	   	          		  salarPlanningDTO.newRate = rows[i].newRate;
+	   	          		  salarPlanningDTO.rate = rows[i].rate;
+	   	          		  salarPlanningDTO.maximum = rows[i].maximum;
+	   	          		  salarPlanningDTO.lumsum = rows[i].lumsum;
+	   	          		  salarPlanningDTO.perfGrade = perfGrade;
+	   	          		  salarPlanningDTO.incrementPercentage = incrementPercentage;
+	   	          		  updateList.push(salarPlanningDTO);
+	   	          	}
+	               	$.ajax({
+	           			url:"updateEmployeeDetails.htm",
+	           			type: "post",
+	           			data: JSON.stringify(updateList) ,
+	           			contentType : "application/json; charset=utf-8",
+	           			error: function(obj){
+	           				console.log("error");
+	           				alert(obj);
+	           			},
+	           			success: function(obj){
+	           				alert(obj);
+	           				location.reload(true);
+	           				window.parent.jQuery.colorbox.close();
+	           				return false;
+	           			}});
+	               }
+	       	}
+	    }
+       function setValuesButton(){
+       	$('#popUphrefId').click();
        }
-       function showTeamEmployees(teamName,teamId){
-    	   $('#tt').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
-    	   $('#tt').datagrid('loading');  // display loading message
-    		$.ajax({
-    			url:"getSalaryPlanningDetails.htm?teamName="+teamName+"&teamId="+teamId,
-    			type: "GET",
-    			dataType: 'json',
-    			error: function(obj){
-    				$('#tt').datagrid('loaded');  // hide loading message
-    			},
-    			success: function(obj){
-    				removeGridMessage("#tt");
-    				$('#tt').datagrid('loadData',obj); 
-    				$('#tt').prop('title', teamName+" Employee List");
-    				$('#tt').datagrid('loaded');  // hide loading message
-    			}});
-    		
-    	}
-      
-		function showGridMessage(target) {
-			var vc = $(target).datagrid('getPanel').children(
-					'div.datagrid-view');
+       function setValues(){
+             var rows = $('#tt').datagrid('getSelections');
+             if(rows.length == 1){
+           	  $(".inline").colorbox({inline:true, width:"40%"});
+                 $("#click").click(function(){
+                         $('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
+                         return true;
+                 });
+             }else if(rows.length > 1){
+           	  if(confirm("You have selected multiple. All records will update with same Rate. Do you wish to continue ?")){
+           		  $(".inline").colorbox({inline:true, width:"40%"});
+                     $("#click").click(function(){
+                             $('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
+                             return true;
+                     });
+           	  }else
+                 	return false;
+             }else{
+                 alert("Please select row for further process");
+                 window.parent.jQuery.colorbox.close();
+                 return false;
+             }
+       }
+       
+       function anualBudgetSummary(){
+   		$.ajax({
+   			url:"anualBudgetSummary.htm",
+   			type: "get",
+   			data: $('#budgetSummary').serialize(),
+   			error: function(obj){
+   				alert(obj);
+   			},
+   			success: function(obj){
+   				alert(obj);
+   				window.parent.jQuery.colorbox.close();
+   				return false;
+   			}});
+   	}
+       function showSalRangeButton(){
+       	$('#salRangePopUphrefId').click();
+       }
+       function showSalRange(){
+      	 $(".salRangePopUpClass").colorbox({inline:true, width:"80%"});
+   		
+           //Example of preserving a JavaScript event for inline calls.
+           $("#click").click(function(){
+                   $('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
+                   return true;
+           });
+      }
+      function showTeamEmployees(teamName,teamId){
+   	   $('#tt').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
+   	   $('#tt').datagrid('loading');  // display loading message
+   	   
+   	   $('#budgetTable1').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
+   	   $('#budgetTable1').datagrid('loading');  // 
+   	   
+   	   $('#budgetTable').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
+   	   $('#budgetTable').datagrid('loading');  // 
+   	   
+   		$.ajax({
+   			url:"getSalaryPlanningDetails.htm?teamName="+teamName+"&teamId="+teamId,
+   			type: "GET",
+   			dataType: 'json',
+   			error: function(obj){
+   				$('#tt').datagrid('loaded');  // hide loading message
+   			},
+   			success: function(obj){
+   				removeGridMessage("#tt");
+   				$('#tt').datagrid('loadData',obj); 
+   				$('#tt').prop('title', teamName+" Employee List");
+   				$('#tt').datagrid('loaded');  // hide loading message
+   				loadBudgetSummaryTeamWise(teamName,teamId);
+   			}});
+   	}
+       function loadBudgetSummaryTeamWise(teamName,teamId){
+       	$.ajax({
+   			url:"anualBudgetSummary.htm?teamName="+teamName+"&teamId="+teamId,
+   			type: "GET",
+   			dataType: 'json',
+   			error: function(obj){
+   				$('#budgetTable1').datagrid('loaded');  // hide loading message
+   			},
+   			success: function(obj){
+   				removeGridMessage("#budgetTable1");
+   				$('#budgetTable1').datagrid('loadData',obj); 
+   				$('#budgetTable1').prop('title', teamName+" Employee List");
+   				$('#budgetTable1').datagrid('loaded');  // hide loading message
+   				loadRatingsAndIncreaseSummaryTeamWise(teamName,teamId);
+   			}});
+       }
+       function loadRatingsAndIncreaseSummaryTeamWise(teamName,teamId){
+       	$.ajax({
+   			url:"ratingsAndIncreaseSummary.htm?teamName="+teamName+"&teamId="+teamId,
+   			type: "GET",
+   			dataType: 'json',
+   			error: function(obj){
+   				$('#budgetTable').datagrid('loaded');  // hide loading message
+   			},
+   			success: function(obj){
+   				removeGridMessage("#budgetTable");
+   				$('#budgetTable').datagrid('loadData',obj); 
+   				$('#budgetTable').prop('title', teamName+" Employee List");
+   				$('#budgetTable').datagrid('loaded');  // hide loading message
+   			}});
+       }
+       
+	function showGridMessage(target,displayText) {
+		var vc = $(target).datagrid('getPanel').children(
+				'div.datagrid-view');
+		vc.children('div.datagrid-empty').remove();
+		if (!$(target).datagrid('getRows').length) {
+			var d = $('<div class="datagrid-empty"></div>').html(displayText).appendTo(vc);
+			d.css({
+				position : 'absolute',
+				left : 0,
+				top : 50,
+				width : '100%',
+				textAlign : 'center'
+			});
+		} else {
 			vc.children('div.datagrid-empty').remove();
-			if (!$(target).datagrid('getRows').length) {
-				var d = $('<div class="datagrid-empty"></div>').html(
-						'Please select Team on left side panel to display your team employees').appendTo(vc);
-				d.css({
-					position : 'absolute',
-					left : 0,
-					top : 50,
-					width : '100%',
-					textAlign : 'center'
-				});
-			} else {
-				vc.children('div.datagrid-empty').remove();
-			}
 		}
-		function removeGridMessage(target){
-			var vc = $(target).datagrid('getPanel').children(
-			'div.datagrid-view');
-			vc.children('div.datagrid-empty').remove();
-		}
-		function onResizeColumn(field,width){
-			$.ajax({
-    			url:"updateSalaryPlanningColumnWidth.htm?field="+field+"&width="+width,
-    			type: "GET",
-    			error: function(obj){
-    			},
-    			success: function(obj){
-    			}});
-		}
-		</script>
-		<script type="text/javascript" src="view/js/docknavigation.js"></script>
+	}
+	function removeGridMessage(target){
+		var vc = $(target).datagrid('getPanel').children(
+		'div.datagrid-view');
+		vc.children('div.datagrid-empty').remove();
+	}
+	function onResizeColumn(field,width){
+		$.ajax({
+   			url:"updateSalaryPlanningColumnWidth.htm?field="+field+"&width="+width,
+   			type: "GET",
+   			error: function(obj){
+   			},
+   			success: function(obj){
+   			}});
+	}
+	</script>
+	<script type="text/javascript" src="view/js/docknavigation.js"></script>
   
 <!-- </div> -->

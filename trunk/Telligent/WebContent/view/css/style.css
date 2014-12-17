@@ -475,3 +475,6 @@ div#flow #flowtab {
 div.wrap {
 background:#ccc;
 }
+.mandatory{
+	color:red;
+}
