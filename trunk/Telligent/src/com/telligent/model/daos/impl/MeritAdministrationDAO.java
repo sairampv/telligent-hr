@@ -38,7 +38,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 	public ArrayList<SalarPlanningDTO> getSalaryPlanningDetails(String columnName,String order,String teamName,String teamId,String employeeId) {
 		logger.info("in getSalaryPlanningDetails");
 		StringBuffer query = new StringBuffer();
-		query.append("select id,coworker_name,emp_id,supervisor,job_title,grade,type,rate,compa_ratio,minimum,midpoint,maximum,quartile,perf_grade,increment_percentage,new_rate,lumsum,DATE_FORMAT(updated_date,'%Y/%m/%d') updated_date ");
+		query.append("select id,coworker_name,emp_id,supervisor,job_title,grade,type,rate,compa_ratio,minimum,midpoint,maximum,quartile,perf_grade,increment_percentage,new_rate,lumsum,DATE_FORMAT(updated_date,'%y/%m/%d') updated_date ");
 		query.append("from salary_planning sp,employee e,team t");
 		query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in("+teamId+")");
 		if(columnName !=null && !columnName.equalsIgnoreCase("") && order!=null && !order.equalsIgnoreCase("")){
