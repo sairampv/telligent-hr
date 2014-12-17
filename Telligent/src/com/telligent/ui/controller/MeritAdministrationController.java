@@ -6,11 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -79,10 +81,10 @@ public class MeritAdministrationController {
 		return obj;
 	}
     @RequestMapping(value="/updateEmployeeDetails.htm", method = RequestMethod.POST)
-	public @ResponseBody String updateEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,SalarPlanningDTO salaryPlanDTO){
+	public @ResponseBody String updateEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,
+					@RequestBody JSONArray list){
 		logger.info("In updateEmployeeDetails");
-                //String grade = req.getParameter("perfGrade");
-		boolean flag =  meritAdministrationDAO.updateEmployeeDetails(salaryPlanDTO);
+		boolean flag =  meritAdministrationDAO.updateEmployeeDetails(list);
 		if(flag)
 			return messageHandler.getMessage("label.employeeSaveSuccess");
 		else
@@ -90,17 +92,21 @@ public class MeritAdministrationController {
 	}
     
     @RequestMapping(value="/anualBudgetSummary.htm", method = RequestMethod.GET)
-	public @ResponseBody JSONArray budgetSummary(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+	public @ResponseBody JSONArray budgetSummary(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,
+						@RequestParam("teamName") String teamName,@RequestParam("teamId") String teamId){
 		logger.info("in budgetSummary");
+		TelligentUser user = telligentUtility.getTelligentUser();
 		String supervisorId = req.getParameter("supervisorId");
-		ArrayList<BudgetSummaryDTO> budgetSummaryDetails =  meritAdministrationDAO.budgetSummary(supervisorId);
+		ArrayList<BudgetSummaryDTO> budgetSummaryDetails =  meritAdministrationDAO.budgetSummary(supervisorId,teamId,teamName,user.getEmployeeId());
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(budgetSummaryDetails);
 		return obj;
 	}
     @RequestMapping(value="/ratingsAndIncreaseSummary.htm", method = RequestMethod.GET)
-   	public @ResponseBody JSONArray ratingsAndIncreaseSummary(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+   	public @ResponseBody JSONArray ratingsAndIncreaseSummary(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,
+   			@RequestParam("teamName") String teamName,@RequestParam("teamId") String teamId){
    		logger.info("in ratingsAndIncreaseSummary");
-   		ArrayList<RatingsAndIncreaseDTO> details =  meritAdministrationDAO.ratingsAndIncreaseSummary();
+   		TelligentUser user = telligentUtility.getTelligentUser();
+   		ArrayList<RatingsAndIncreaseDTO> details =  meritAdministrationDAO.ratingsAndIncreaseSummary(teamId,teamName,user.getEmployeeId());
    		JSONArray obj = (JSONArray) JSONSerializer.toJSON(details);
    		return obj;
    	}

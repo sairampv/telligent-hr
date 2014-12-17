@@ -104,7 +104,7 @@ function hideMe(){
 
 	//flow.style.width = "auto";
 	//modified to fix overflow in IE7
-	flow.style.width = "100%";
+	flow.style.width = "99%";
 	flow.style.margin = "0";
 	flow.style.styleFloat = flow.style.cssFloat = 'left';
 

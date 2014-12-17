@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import net.sf.json.JSONArray;
+
 import org.apache.log4j.Logger;
 
 import com.telligent.core.system.annotation.SpringBean;
@@ -31,14 +33,14 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 
 	DecimalFormat df = new DecimalFormat("###.##");
 	NumberFormat nf = NumberFormat.getInstance(Locale.US);
-	
+
 	@Override
 	public ArrayList<SalarPlanningDTO> getSalaryPlanningDetails(String columnName,String order,String teamName,String teamId,String employeeId) {
 		logger.info("in getSalaryPlanningDetails");
 		StringBuffer query = new StringBuffer();
-		query.append("select id,coworker_name,emp_id,supervisor,job_title,grade,type,rate,compa_ratio,minimum,midpoint,maximum,quartile,perf_grade,increment_percentage,new_rate,lumsum,updated_date ");
+		query.append("select id,coworker_name,emp_id,supervisor,job_title,grade,type,rate,compa_ratio,minimum,midpoint,maximum,quartile,perf_grade,increment_percentage,new_rate,lumsum,DATE_FORMAT(updated_date,'%Y/%m/%d') updated_date ");
 		query.append("from salary_planning sp,employee e,team t");
-		query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id = ?");
+		query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in("+teamId+")");
 		if(columnName !=null && !columnName.equalsIgnoreCase("") && order!=null && !order.equalsIgnoreCase("")){
 			if(columnName.equalsIgnoreCase("coworker_name"))
 				query.append(" order by coworker_name "+order);
@@ -53,7 +55,6 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
 			ps.setString(1, employeeId);
-			ps.setString(2, teamId);
 			rs = ps.executeQuery();
 			DecimalFormat df1 = new DecimalFormat("###.00");
 			while(rs.next()){
@@ -65,11 +66,12 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				dto.setJobTitle(rs.getString("job_title"));
 				dto.setGrade(rs.getString("grade"));
 				dto.setType(rs.getString("type"));
-				try {dto.setRate(nf.format(rs.getDouble("rate")));} catch (Exception e) {}
 				dto.setCompaRatio(rs.getString("compa_ratio"));
-				dto.setMinimum(rs.getString("minimum"));
-				dto.setMidpoint(rs.getString("midpoint"));
-				dto.setMaximum(rs.getString("maximum"));
+				try {dto.setRate(nf.format(rs.getDouble("rate")));} catch (Exception e) {}
+				try {dto.setMinimum(nf.format(rs.getDouble("minimum")));} catch (Exception e) {}
+				try {dto.setMidpoint(nf.format(rs.getDouble("midpoint")));} catch (Exception e) {}
+				try {dto.setMaximum(nf.format(rs.getDouble("maximum")));} catch (Exception e) {}
+				try {dto.setLumsum(nf.format(rs.getDouble("lumsum")));} catch (Exception e) {}
 				dto.setQuartile(rs.getString("quartile"));
 				dto.setPerfGrade(rs.getString("perf_grade"));
 				if(Float.parseFloat(rs.getString("increment_percentage"))*100 > 0)
@@ -81,7 +83,6 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				try {
 					dto.setNewRate(nf.format(rs.getDouble("new_rate")));
 				} catch (Exception e) {}
-				dto.setLumsum(rs.getString("lumsum"));
 				dto.setUpdatedDate(rs.getString("updated_date"));
 				list.add(dto);
 			}
@@ -94,68 +95,77 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		return list;
 	}
 
-    @Override
-    public boolean updateEmployeeDetails(SalarPlanningDTO salaryPlanDTO) {
+	@Override
+	public boolean updateEmployeeDetails(JSONArray list) {
 
-                logger.info("in updateEmployeeDetails");
-                StringBuffer updateQuery = new StringBuffer();
-                boolean updated = false;
-                String empId = salaryPlanDTO.getEmployeeId();
-                String empGrade = salaryPlanDTO.getPerfGrade();
-                String increment = salaryPlanDTO.getIncrementPercentage();
-                float rate = Float.parseFloat(salaryPlanDTO.getRate().replaceAll(",", ""));
-                float newRate = Float.parseFloat(salaryPlanDTO.getNewRate().replaceAll(",", ""));
-                float  incrementPer = Float.parseFloat(increment);
-                float maximum = Float.parseFloat(salaryPlanDTO.getMaximum());
-                float lumsum = Float.parseFloat(salaryPlanDTO.getLumsum());
+		logger.info("in updateEmployeeDetails");
+		StringBuffer updateQuery = new StringBuffer();
+		boolean updated = false;
+		updateQuery.append("update salary_planning set perf_grade= ? ,increment_percentage= ?,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try{
+			conn = this.getConnection();
+			ps = conn.prepareStatement(updateQuery.toString());
+			conn.setAutoCommit(false);
+			for(int i=0;i<list.size();i++){
+				String empId = list.getJSONObject(i).getString("employeeId");;
+				String empGrade = list.getJSONObject(i).getString("perfGrade");
+				String increment = list.getJSONObject(i).getString("incrementPercentage");
+				float rate = list.getJSONObject(i).getString("rate")!=null && !list.getJSONObject(i).getString("rate").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("rate").replaceAll(",", "")):0;
+				float newRate = list.getJSONObject(i).getString("newRate")!=null && !list.getJSONObject(i).getString("newRate").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("newRate").replaceAll(",", "")):0;
+				float  incrementPer = increment !=null && !increment.equalsIgnoreCase("") ? Float.parseFloat(increment):0;
+				float maximum =list.getJSONObject(i).getString("maximum")!=null && !list.getJSONObject(i).getString("maximum").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("maximum").replaceAll(",", "")):0; 
+				float lumsum = list.getJSONObject(i).getString("lumsum")!=null && !list.getJSONObject(i).getString("lumsum").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("lumsum").replaceAll(",", "")):0;
+				float newSalary ;
+				if (incrementPer > 0){
+					newSalary = rate*(1+incrementPer);
+					if (newSalary > maximum){
+						lumsum = newSalary - maximum;
+						newRate = maximum;
+					}else{
+						newRate = newSalary;
+					}
+				}
+				ps.setString(1, empGrade);
+				ps.setFloat(2, incrementPer);
+				ps.setFloat(3, newRate);
+				ps.setFloat(4, lumsum);
+				//ps.setDate(5, (java.sql.Date) new Date());
+				ps.setString(5, empId);
+				ps.addBatch();
+				empId = null;empGrade=null;increment=null;
+			}
+			int i[] = ps.executeBatch();
+			if(i.length == list.size()){
+				conn.commit();
+				updated = true;
+			}
+		}catch(Exception ex){
+			updated = false;
+			ex.printStackTrace();
+			logger.error("Exception in updateEmployeeDetails :: "+ex);
+			try {
+				conn.rollback();
+			} catch (SQLException e) {}
+		}finally{
+			this.closeAll(conn, ps);
+		}
+		return updated;
+		// throw new UnsupportedOperationException("Not supported yet.");
+	}
 
 
-                float newSalary ;
+	@Override
+	public ArrayList<BudgetSummaryDTO> budgetSummary(String supervisorId,String teamId,String teamName,String employeeId) {
+		// TODO Auto-generated method stub
 
-                if (incrementPer > 0){
-                    newSalary = rate*(1+incrementPer);
-                    if (newSalary > maximum){
-                        lumsum = newSalary - maximum;
-                        newRate = maximum;
-                    }else{
-                    newRate = newSalary;
-                    }
-                }
+		StringBuffer query = new StringBuffer();
+		//query.append("select type,sum(rate) current,sum(new_rate) new from salary_planning group by type ");
+		query.append("select type,sum(rate) current,sum(new_rate) new ");
+		query.append("from salary_planning sp,employee e,team t ");
+		query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type");
 
-                updateQuery.append("update salary_planning set perf_grade= ? ,increment_percentage= ?,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
-                Connection conn = null;
-                PreparedStatement ps = null;
-                try{
-                conn = this.getConnection();
-                ps = conn.prepareStatement(updateQuery.toString());
-                ps.setString(1, empGrade);
-                ps.setFloat(2, incrementPer);
-                ps.setFloat(3, newRate);
-                ps.setFloat(4, lumsum);
-                //ps.setDate(5, (java.sql.Date) new Date());
-                ps.setString(5, empId);
-                ps.executeUpdate();
-               // conn.commit();
-                updated = true;
-                }catch(Exception ex){
-                    updated = false;
-                    ex.printStackTrace();
-                    logger.error("Exception in updateEmployeeDetails :: "+ex);
-
-                }finally{
-                this.closeAll(conn, ps);
-                }
-        return updated;
-       // throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-
-    @Override
-    public ArrayList<BudgetSummaryDTO> budgetSummary(String supervisorId) {
-    	// TODO Auto-generated method stub
-    	
-    	StringBuffer query = new StringBuffer();
-		query.append("select type,sum(rate) current,sum(new_rate) new from salary_planning group by type ");
 		ArrayList<BudgetSummaryDTO> list = new ArrayList<BudgetSummaryDTO>();
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -163,11 +173,12 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		try {
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
 			rs = ps.executeQuery();
 			float totalCurrentBudget=0;
 			float totalnewBudget=0;
 			float totalChange=0;
-			
+
 			while(rs.next()){
 				BudgetSummaryDTO dto = new BudgetSummaryDTO();
 				float currentBudget;
@@ -175,8 +186,8 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				float change;
 				dto.setAnualBudgetType(rs.getString("type"));
 				if (dto.getAnualBudgetType() != null && dto.getAnualBudgetType().equalsIgnoreCase("Hourly")){
-				currentBudget = rs.getFloat("current")*2080;
-				newBudget = rs.getFloat("new")*2080;
+					currentBudget = rs.getFloat("current")*2080;
+					newBudget = rs.getFloat("new")*2080;
 				}else{
 					currentBudget = rs.getFloat("current");
 					newBudget = rs.getFloat("new");
@@ -185,17 +196,16 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				totalCurrentBudget = totalCurrentBudget+currentBudget;
 				totalnewBudget = totalnewBudget+newBudget;
 				totalChange = totalChange+change;
-				dto.setCurrentBudget(df.parse(String.valueOf(currentBudget))+"");
-				dto.setNewBudget(df.parse(String.valueOf(newBudget))+"");
-				dto.setChangeBudget(df.parse(String.valueOf(change))+"");
-				
+				try {dto.setCurrentBudget(nf.format(currentBudget));} catch (Exception e) {}
+				try {dto.setNewBudget(nf.format(newBudget));} catch (Exception e) {}
+				try {dto.setChangeBudget(nf.format(change*100));} catch (Exception e) {}
 				list.add(dto);
 			}
 			BudgetSummaryDTO dto1 = new BudgetSummaryDTO();
 			dto1.setAnualBudgetType("Total");
-			dto1.setCurrentBudget(df.parse(String.valueOf(totalCurrentBudget))+"");
-			dto1.setNewBudget(df.parse(String.valueOf(totalnewBudget))+"");
-			dto1.setChangeBudget(df.parse(String.valueOf(totalChange))+"");
+			try {dto1.setCurrentBudget(nf.format(totalCurrentBudget));} catch (Exception e) {}
+			try {dto1.setNewBudget(nf.format(totalnewBudget));} catch (Exception e) {}
+			try {dto1.setChangeBudget(nf.format(totalChange*100));} catch (Exception e) {}
 			list.add(dto1);
 		}catch (Exception ex) {
 			ex.printStackTrace();
@@ -204,13 +214,17 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			this.closeAll(conn, ps, rs);
 		}
 		return list;
-    }
+	}
 
 	@Override
-	public ArrayList<RatingsAndIncreaseDTO> ratingsAndIncreaseSummary() {
+	public ArrayList<RatingsAndIncreaseDTO> ratingsAndIncreaseSummary(String teamId,String teamName,String employeeId) {
 		logger.info("in ratingsAndIncreaseSummary");
 		StringBuffer query = new StringBuffer();
-		query.append("select type,perf_grade,count(perf_grade) count from salary_planning group by type,perf_grade");
+		//query.append("select type,perf_grade,count(perf_grade) count from salary_planning group by type,perf_grade");
+		query.append("select type,perf_grade,count(perf_grade) count ");
+		query.append("from salary_planning sp,employee e,team t ");
+		query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
+
 		ArrayList<RatingsAndIncreaseDTO> list = new ArrayList<RatingsAndIncreaseDTO>();
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -218,6 +232,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		try {
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
 			rs = ps.executeQuery();
 			RatingsAndIncreaseDTO dto = null;
 			/*dto.setType("Performance Rating");
@@ -252,8 +267,10 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			ps.close();
 			query = new StringBuffer();
 			rs = null;
-			query.append("select type,perf_grade,(count/(select count(perf_grade) from salary_planning where b.type=type)) percentage from (select type,perf_grade,count(perf_grade) count from salary_planning b group by type,perf_grade) b");
+			//query.append("select type,perf_grade,(count/(select count(perf_grade) from salary_planning where b.type=type)) percentage from (select type,perf_grade,count(perf_grade) count from salary_planning b group by type,perf_grade) b");
+			query.append("select type,perf_grade,(count/(select count(perf_grade) from salary_planning where b.type=type)) percentage from (select type,perf_grade,count(perf_grade) count from salary_planning b,employee e,team t  where b.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade) b");
 			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
 			rs = ps.executeQuery();
 			dto = new RatingsAndIncreaseDTO();
 			dto.setType("% for Group");
@@ -275,14 +292,18 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				}
 			}
 			list.add(dto);
-			
-			
+
+
 			rs.close();
 			ps.close();
 			query = new StringBuffer();
 			rs = null;
-			query.append("select type,perf_grade,avg(increment_percentage) count from salary_planning group by type,perf_grade");
+			//query.append("select type,perf_grade,avg(increment_percentage) count from salary_planning group by type,perf_grade");
+			query.append("select type,perf_grade,avg(increment_percentage) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
 			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
 			rs = ps.executeQuery();
 			dto = new RatingsAndIncreaseDTO();
 			dto.setType("Avg Increase");
@@ -292,8 +313,12 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			ps.close();
 			query = new StringBuffer();
 			rs = null;
-			query.append("select type,perf_grade,max(increment_percentage) count from salary_planning group by type,perf_grade");
+			//query.append("select type,perf_grade,max(increment_percentage) count from salary_planning group by type,perf_grade");
+			query.append("select type,perf_grade,max(increment_percentage) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
 			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
 			rs = ps.executeQuery();
 			dto = new RatingsAndIncreaseDTO();
 			dto.setType("High Increase");
@@ -303,8 +328,12 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			ps.close();
 			query = new StringBuffer();
 			rs = null;
-			query.append("select type,perf_grade,min(increment_percentage) count from salary_planning group by type,perf_grade");
+			//query.append("select type,perf_grade,min(increment_percentage) count from salary_planning group by type,perf_grade");
+			query.append("select type,perf_grade,min(increment_percentage) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
 			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
 			rs = ps.executeQuery();
 			dto = new RatingsAndIncreaseDTO();
 			dto.setType("Low Increase");
@@ -318,8 +347,8 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		}
 		return list;
 	}
-    private RatingsAndIncreaseDTO setPercentages(ResultSet rs, RatingsAndIncreaseDTO dto) throws SQLException{
-    	while(rs.next()){
+	private RatingsAndIncreaseDTO setPercentages(ResultSet rs, RatingsAndIncreaseDTO dto) throws SQLException{
+		while(rs.next()){
 			if(rs.getString("type").equalsIgnoreCase("hourly") && rs.getString("perf_grade")!=null){
 				if(rs.getString("perf_grade").equalsIgnoreCase("A"))
 					dto.setHourlyA(df.format(rs.getDouble(3)*100));
@@ -336,8 +365,8 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 					dto.setOfficeC(df.format(rs.getDouble(3)*100));
 			}
 		}
-    	return dto;
-    }
+		return dto;
+	}
 
 	@Override
 	public ArrayList<SalaryPositionRangeDTO> salaryPositionRangeDetails() {
@@ -428,10 +457,10 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		}
 		return map;
 	}
-	
+
 	public int setDefaultWidth(int width){
 		//if(width != null)
-			
+
 		return width;
 	}
 
@@ -466,7 +495,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			this.closeAll(conn, ps, rs);
 		}
 	}
-	
+
 	private boolean checkSalaryPlanningColumnWidthExists(Connection conn,PreparedStatement ps,ResultSet rs,String empId){
 		try{
 			ps = conn.prepareStatement("select employeeId from salary_planning_gridView where employeeId=?");
@@ -477,7 +506,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			else
 				return false;
 		}catch(Exception e){
-			
+
 		}
 		return false;
 	}

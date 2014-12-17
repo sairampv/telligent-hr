@@ -16,6 +16,10 @@ public String getAnualBudgetType() {
  * @param anualBudgetType the anualBudgetType to set
  */
 public void setAnualBudgetType(String anualBudgetType) {
+	
+	if (anualBudgetType == null || anualBudgetType.equals("0") || anualBudgetType.equals("0.0")|| anualBudgetType.equals("0.00")){
+		anualBudgetType = "";
+	}
 	this.anualBudgetType = anualBudgetType;
 }
 /**
@@ -28,6 +32,10 @@ public String getCurrentBudget() {
  * @param currentBudget the currentBudget to set
  */
 public void setCurrentBudget(String currentBudget) {
+	
+	if (currentBudget == null || currentBudget.equals("0") || currentBudget.equals("0.0")|| currentBudget.equals("0.00")){
+		currentBudget = "";
+	}
 	this.currentBudget = currentBudget;
 }
 /**
@@ -40,6 +48,10 @@ public String getNewBudget() {
  * @param newBudget the newBudget to set
  */
 public void setNewBudget(String newBudget) {
+	
+	if (newBudget == null || newBudget.equals("0") || newBudget.equals("0.0")|| newBudget.equals("0.00")){
+		newBudget = "";
+	}
 	this.newBudget = newBudget;
 }
 /**
@@ -52,6 +64,10 @@ public String getChangeBudget() {
  * @param changeBudget the changeBudget to set
  */
 public void setChangeBudget(String changeBudget) {
+	
+	if (changeBudget == null || changeBudget.equals("0") || changeBudget.equals("0.0")|| changeBudget.equals("0.00")){
+		changeBudget = "";
+	}
 	this.changeBudget = changeBudget;
 }
  

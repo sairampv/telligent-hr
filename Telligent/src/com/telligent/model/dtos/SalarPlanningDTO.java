@@ -132,8 +132,8 @@ public class SalarPlanningDTO {
 	 * @param rate the rate to set
 	 */
 	public void setRate(String rate) {
-		if (rate == null || rate.equals("")){
-			rate = "0.0";
+		if (rate == null || rate.equals("0") || rate.equals("0.0")|| rate.equals("0.00")){
+			rate = "";
 		}
 		this.rate = rate;
 	}
@@ -148,6 +148,10 @@ public class SalarPlanningDTO {
 	 */
 	public void setCompaRatio(String compaRatio) {
 		
+		if (compaRatio == null || compaRatio.equals("0") || compaRatio.equals("0.0")|| compaRatio.equals("0.00")){
+			compaRatio = "";
+		}
+		
 		this.compaRatio = compaRatio;
 	}
 	/**
@@ -160,6 +164,10 @@ public class SalarPlanningDTO {
 	 * @param minimum the minimum to set
 	 */
 	public void setMinimum(String minimum) {
+		
+		if (minimum == null || minimum.equals("0") || minimum.equals("0.0")|| minimum.equals("0.00")){
+			minimum = "";
+		}
 		this.minimum = minimum;
 	}
 	/**
@@ -172,6 +180,10 @@ public class SalarPlanningDTO {
 	 * @param midpoint the midpoint to set
 	 */
 	public void setMidpoint(String midpoint) {
+		
+		if (midpoint == null || midpoint.equals("0") || midpoint.equals("0.0")|| midpoint.equals("0.00")){
+			midpoint = "";
+		}
 		this.midpoint = midpoint;
 	}
 	/**
@@ -184,6 +196,10 @@ public class SalarPlanningDTO {
 	 * @param maximum the maximum to set
 	 */
 	public void setMaximum(String maximum) {
+		
+		if (maximum == null || maximum.equals("0") || maximum.equals("0.0")|| maximum.equals("0.00")){
+			maximum = "";
+		}
 		this.maximum = maximum;
 	}
 	/**
@@ -196,6 +212,10 @@ public class SalarPlanningDTO {
 	 * @param quartile the quartile to set
 	 */
 	public void setQuartile(String quartile) {
+		
+		if (quartile == null || quartile.equals("0") || quartile.equals("0.0")|| quartile.equals("0.00")){
+			quartile = "";
+		}
 		this.quartile = quartile;
 	}
 	/**
@@ -220,6 +240,10 @@ public class SalarPlanningDTO {
 	 * @param incrementPercentage the incrementPercentage to set
 	 */
 	public void setIncrementPercentage(String incrementPercentage) {
+		
+		if (incrementPercentage == null || incrementPercentage.equals("0") || incrementPercentage.equals("0.0")|| incrementPercentage.equals("0.00")){
+			incrementPercentage = "";
+		}
 		this.incrementPercentage = incrementPercentage;
 	}
 	/**
@@ -232,10 +256,11 @@ public class SalarPlanningDTO {
 	 * @param newRate the newRate to set
 	 */
 	public void setNewRate(String newRate) {
-		if (newRate == null || newRate.equals("")){
-			newRate = "0.0";
-			
+		
+		if (newRate == null || newRate.equals("0") || newRate.equals("0.0")|| newRate.equals("0.00")){
+			newRate = "";
 		}
+		
 		this.newRate = newRate;
 	}
 	/**
@@ -248,9 +273,8 @@ public class SalarPlanningDTO {
 	 * @param lumsum the lumsum to set
 	 */
 	public void setLumsum(String lumsum) {
-		if (lumsum == null || lumsum.equals("")){
-			lumsum = "0.0";
-			
+		if (lumsum == null || lumsum.equals("0") || lumsum.equals("0.0")|| lumsum.equals("0.00")){
+			lumsum = "";
 		}
 		this.lumsum = lumsum;
 	}
