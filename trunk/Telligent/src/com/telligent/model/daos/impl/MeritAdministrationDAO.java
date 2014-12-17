@@ -67,11 +67,11 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				dto.setGrade(rs.getString("grade"));
 				dto.setType(rs.getString("type"));
 				dto.setCompaRatio(rs.getString("compa_ratio"));
-				try {dto.setRate(nf.format(rs.getDouble("rate")));} catch (Exception e) {}
-				try {dto.setMinimum(nf.format(rs.getDouble("minimum")));} catch (Exception e) {}
-				try {dto.setMidpoint(nf.format(rs.getDouble("midpoint")));} catch (Exception e) {}
-				try {dto.setMaximum(nf.format(rs.getDouble("maximum")));} catch (Exception e) {}
-				try {dto.setLumsum(nf.format(rs.getDouble("lumsum")));} catch (Exception e) {}
+				try {dto.setRate(df.format(rs.getDouble("rate")));} catch (Exception e) {}
+				try {dto.setMinimum(df.format(rs.getDouble("minimum")));} catch (Exception e) {}
+				try {dto.setMidpoint(df.format(rs.getDouble("midpoint")));} catch (Exception e) {}
+				try {dto.setMaximum(df.format(rs.getDouble("maximum")));} catch (Exception e) {}
+				try {dto.setLumsum(df.format(rs.getDouble("lumsum")));} catch (Exception e) {}
 				dto.setQuartile(rs.getString("quartile"));
 				dto.setPerfGrade(rs.getString("perf_grade"));
 				if(Float.parseFloat(rs.getString("increment_percentage"))*100 > 0)
@@ -81,7 +81,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				else
 					dto.setIncrementPercentage(rs.getString("increment_percentage"));
 				try {
-					dto.setNewRate(nf.format(rs.getDouble("new_rate")));
+					dto.setNewRate(df.format(rs.getDouble("new_rate")));
 				} catch (Exception e) {}
 				dto.setUpdatedDate(rs.getString("updated_date"));
 				list.add(dto);
@@ -186,26 +186,26 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				float change;
 				dto.setAnualBudgetType(rs.getString("type"));
 				if (dto.getAnualBudgetType() != null && dto.getAnualBudgetType().equalsIgnoreCase("Hourly")){
-					currentBudget = rs.getFloat("current")*2080;
-					newBudget = rs.getFloat("new")*2080;
+					currentBudget = Float.parseFloat(df.format(rs.getFloat("current")*2080));
+					newBudget = Float.parseFloat(df.format(rs.getFloat("new")*2080));
 				}else{
-					currentBudget = rs.getFloat("current");
-					newBudget = rs.getFloat("new");
+					currentBudget = Float.parseFloat(df.format(rs.getFloat("current")));
+					newBudget = Float.parseFloat(df.format(rs.getFloat("new")));
 				}
-				change = 1-(currentBudget/newBudget);
+				change = Float.parseFloat(df.format(1-(currentBudget/newBudget)));
 				totalCurrentBudget = totalCurrentBudget+currentBudget;
 				totalnewBudget = totalnewBudget+newBudget;
 				totalChange = totalChange+change;
-				try {dto.setCurrentBudget(nf.format(currentBudget));} catch (Exception e) {}
-				try {dto.setNewBudget(nf.format(newBudget));} catch (Exception e) {}
-				try {dto.setChangeBudget(nf.format(change*100));} catch (Exception e) {}
+				try {dto.setCurrentBudget(currentBudget+"");} catch (Exception e) {}
+				try {dto.setNewBudget(newBudget+"");} catch (Exception e) {}
+				try {dto.setChangeBudget((change*100)+"");} catch (Exception e) {}
 				list.add(dto);
 			}
 			BudgetSummaryDTO dto1 = new BudgetSummaryDTO();
 			dto1.setAnualBudgetType("Total");
-			try {dto1.setCurrentBudget(nf.format(totalCurrentBudget));} catch (Exception e) {}
-			try {dto1.setNewBudget(nf.format(totalnewBudget));} catch (Exception e) {}
-			try {dto1.setChangeBudget(nf.format(totalChange*100));} catch (Exception e) {}
+			try {dto1.setCurrentBudget(df.format(totalCurrentBudget));} catch (Exception e) {}
+			try {dto1.setNewBudget(df.format(totalnewBudget));} catch (Exception e) {}
+			try {dto1.setChangeBudget(df.format(totalChange*100.00));} catch (Exception e) {}
 			list.add(dto1);
 		}catch (Exception ex) {
 			ex.printStackTrace();
