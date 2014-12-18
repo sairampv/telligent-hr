@@ -15,7 +15,7 @@
 	<div class="innerleft"  id="col1">
      <table class="leftAccordion" cellspacing="1" cellpadding="5" id="teamListTable">
       <tr>
-        <th class="head" height="25" align="left">His Teams</th>
+        <th class="head" height="25" align="left">My Teams</th>
       </tr>
       <c:forEach items="${teams}" var="item" varStatus="i">
 	      <tr>
@@ -74,7 +74,7 @@
 		        <td valign="middle" width="3%">:</td>
 		        <td valign="middle" width="20%"><input id="incrementPercentage" name="incrementPercentage" class="required" onKeyPress="return numbersonly(event, true,this.value)"></input></td>
 		        <td valign="middle">&nbsp;</td>
-		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetails();" value="Update Rate" class="loginButton"/></td>
+		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetails();" value="Apply" class="loginButton"/></td>
 		      </tr>
 	  	</table>
     </form>
@@ -261,16 +261,16 @@
   </div>
 </div> 
   <script type="text/javascript">
-  	  String.prototype.startsWith = function (str){
-	    return this.indexOf(str) == 0;
-	  };
-	  $("#teamListTable input[type='checkbox']").click( function(){
-		    var numberOfChBox = $("#teamListTable input[type='checkbox']").length;
+  	  	String.prototype.startsWith = function (str){
+	      return this.indexOf(str) == 0;
+	    };
+	  	$("#teamListTable input[type='checkbox']").click( function(){
+	  		var numberOfChBox = $("#teamListTable input[type='checkbox']").length;
 		    var checkArray = ""; 
 			for(var i = 0; i < numberOfChBox; i++) {
 			     if($('#teamCheckBoxId'+i).is(':checked')) {
 		            if(checkArray != "")
-			    	 checkArray = checkArray+$('#teamCheckBoxId'+i).val()+",";
+			    	 	checkArray = checkArray+$('#teamCheckBoxId'+i).val()+",";
 		            else
 		            	checkArray = $('#teamCheckBoxId'+i).val()+",";
 		        }
@@ -278,6 +278,20 @@
 			checkArray = checkArray.substring(0, checkArray.length-1);
 			showTeamEmployees("", checkArray);
 		});
+	  	function showTeamEmployeesAjax(){
+	  		var numberOfChBox = $("#teamListTable input[type='checkbox']").length;
+		    var checkArray = ""; 
+			for(var i = 0; i < numberOfChBox; i++) {
+			     if($('#teamCheckBoxId'+i).is(':checked')) {
+		            if(checkArray != "")
+			    	 	checkArray = checkArray+$('#teamCheckBoxId'+i).val()+",";
+		            else
+		            	checkArray = $('#teamCheckBoxId'+i).val()+",";
+		        }
+		    }
+			checkArray = checkArray.substring(0, checkArray.length-1);
+			showTeamEmployees("", checkArray);
+	  	}
       	var updateList = new Array();
 		  $(document).ready(function(){
 			  showGridMessage('#tt','Please select Team on left side panel to display your team employees');
@@ -344,8 +358,9 @@
 	           			},
 	           			success: function(obj){
 	           				alert(obj);
-	           				location.reload(true);
-	           				window.parent.jQuery.colorbox.close();
+	           				//location.reload(true);
+	           				$("#updateRateTableId").toggle(false);
+	           				showTeamEmployeesAjax();
 	           				return false;
 	           			}});
 	               }
