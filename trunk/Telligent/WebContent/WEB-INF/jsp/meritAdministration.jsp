@@ -63,7 +63,7 @@
 	  			<td valign="middle" width="10%" >Perf Grade<span class="mandatory">*</span></td>
 		        <td valign="middle" width="3%">:</td>
 		        <td valign="middle" width="10%">
-		        	<select id="perfGrade" class="required">
+		        	<select id="perfGrade">
 		        		<option value="">Select</option>
 		        		<option value="A">A</option>
 		        		<option value="B">B</option>
@@ -72,7 +72,7 @@
 		        </td>
 	  			<td valign="middle" width="16%">Increment Percentage<span class="mandatory">*</span></td>
 		        <td valign="middle" width="3%">:</td>
-		        <td valign="middle" width="20%"><input id="incrementPercentage" name="incrementPercentage" class="required" onKeyPress="return numbersonly(event, true,this.value)"></input></td>
+		        <td valign="middle" width="20%"><input id="incrementPercentage" name="incrementPercentage" onKeyPress="return numbersonly(event, true,this.value)"></input></td>
 		        <td valign="middle">&nbsp;</td>
 		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetails();" value="Apply" class="loginButton"/></td>
 		      </tr>
@@ -325,17 +325,13 @@
 	  		}
 	  	}
        function updateEmployeeDetails(){
-	       	if($("#updateRateForm").valid()){
+    	   updateList = new Array();
+    	    var incrementPercentage = $("#incrementPercentage").val().trim(); 
+          	var perfGrade = $("#perfGrade").val().trim();
+          	if(incrementPercentage == '' && perfGrade == '')
+          		alert("Please select Performance Grade or enter  Percentage");
+       		else{
 	       		var rows = $('#tt').datagrid('getSelections');
-	           	var incrementPercentage = $("#incrementPercentage").val().trim(); 
-	           	var perfGrade = $("#perfGrade").val().trim();
-	           	if(perfGrade == null || perfGrade == ''){
-	             	  alert("Please enter Perf Grade percentage")
-	             	  return false;
-	               }else if(incrementPercentage == null || incrementPercentage ==''){
-	             	  alert("Please enter Increment percentage");
-	             	  return false;
-	               }else{
 	               	for(var i=0; i<rows.length; i++){
 	   	      			  var salarPlanningDTO = new Object();
 	   	      		      salarPlanningDTO.employeeId = rows[i].employeeId;
@@ -363,9 +359,8 @@
 	           				showTeamEmployeesAjax();
 	           				return false;
 	           			}});
-	               }
-	       	}
 	    }
+       }
        function setValuesButton(){
        	$('#popUphrefId').click();
        }
