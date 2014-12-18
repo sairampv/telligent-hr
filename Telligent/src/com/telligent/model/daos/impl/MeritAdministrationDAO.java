@@ -78,9 +78,9 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				try {dto.setLumsum(nf.format(Double.parseDouble(df.format(rs.getDouble("lumsum")))));} catch (Exception e) {}
 				dto.setQuartile(rs.getString("quartile"));
 				dto.setPerfGrade(rs.getString("perf_grade"));
-				if(Float.parseFloat(rs.getString("increment_percentage"))*100 > 0)
+				if(Float.parseFloat(rs.getString("increment_percentage")) > 0)
 					try {
-						dto.setIncrementPercentage(df1.format(Float.parseFloat(rs.getString("increment_percentage"))*100) );
+						dto.setIncrementPercentage(df1.format(Float.parseFloat(rs.getString("increment_percentage"))) );
 					} catch (Exception e1) {}
 				else
 					dto.setIncrementPercentage(rs.getString("increment_percentage"));
@@ -105,7 +105,14 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		logger.info("in updateEmployeeDetails");
 		StringBuffer updateQuery = new StringBuffer();
 		boolean updated = false;
-		updateQuery.append("update salary_planning set perf_grade= ? ,increment_percentage= ?,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
+		if(list.getJSONObject(0).getString("incrementPercentage")!=null && !list.getJSONObject(0).getString("incrementPercentage").equalsIgnoreCase("") 
+			&& list.getJSONObject(0).getString("perfGrade")!=null && !list.getJSONObject(0).getString("perfGrade").equalsIgnoreCase(""))
+			updateQuery.append("update salary_planning set perf_grade= ? ,increment_percentage= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
+		else if(list.getJSONObject(0).getString("perfGrade")==null || list.getJSONObject(0).getString("perfGrade").equalsIgnoreCase(""))
+			updateQuery.append("update salary_planning set increment_percentage= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
+		else if(list.getJSONObject(0).getString("incrementPercentage")==null || list.getJSONObject(0).getString("incrementPercentage").equalsIgnoreCase(""))
+			updateQuery.append("update salary_planning set perf_grade= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
+			
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
@@ -131,12 +138,26 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 						newRate = newSalary;
 					}
 				}
-				ps.setString(1, empGrade);
-				ps.setFloat(2, incrementPer);
-				ps.setFloat(3, newRate);
-				ps.setFloat(4, lumsum);
-				//ps.setDate(5, (java.sql.Date) new Date());
-				ps.setString(5, empId);
+				if(increment !=null && !increment.equalsIgnoreCase("") && empGrade !=null && !empGrade.equalsIgnoreCase("")){
+					ps.setString(1, empGrade);
+					ps.setFloat(2, incrementPer);
+					ps.setFloat(3, newRate);
+					ps.setFloat(4, lumsum);
+					//ps.setDate(5, (java.sql.Date) new Date());
+					ps.setString(5, empId);
+				}else if(empGrade ==null || empGrade.equalsIgnoreCase("")){
+					ps.setFloat(1, incrementPer);
+					ps.setFloat(2, newRate);
+					ps.setFloat(3, lumsum);
+					//ps.setDate(5, (java.sql.Date) new Date());
+					ps.setString(4, empId);
+				}else if(increment ==null || increment.equalsIgnoreCase("")){
+					ps.setString(1, empGrade);
+					ps.setFloat(2, newRate);
+					ps.setFloat(3, lumsum);
+					//ps.setDate(5, (java.sql.Date) new Date());
+					ps.setString(4, empId);
+				}
 				ps.addBatch();
 				empId = null;empGrade=null;increment=null;
 			}
