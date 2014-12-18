@@ -31,8 +31,12 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 
 	public final Logger logger = Logger.getLogger(MeritAdministrationDAO.class);
 
-	DecimalFormat df = new DecimalFormat("###.##");
+	DecimalFormat df = new DecimalFormat("###.00");
 	NumberFormat nf = NumberFormat.getInstance(Locale.US);
+	
+	public MeritAdministrationDAO(){
+		df.setMaximumFractionDigits(2);
+	}
 
 	@Override
 	public ArrayList<SalarPlanningDTO> getSalaryPlanningDetails(String columnName,String order,String teamName,String teamId,String employeeId) {
@@ -67,11 +71,11 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				dto.setGrade(rs.getString("grade"));
 				dto.setType(rs.getString("type"));
 				dto.setCompaRatio(rs.getString("compa_ratio"));
-				try {dto.setRate(df.format(rs.getDouble("rate")));} catch (Exception e) {}
-				try {dto.setMinimum(df.format(rs.getDouble("minimum")));} catch (Exception e) {}
-				try {dto.setMidpoint(df.format(rs.getDouble("midpoint")));} catch (Exception e) {}
-				try {dto.setMaximum(df.format(rs.getDouble("maximum")));} catch (Exception e) {}
-				try {dto.setLumsum(df.format(rs.getDouble("lumsum")));} catch (Exception e) {}
+				try {dto.setRate(nf.format(Double.parseDouble(df.format(rs.getDouble("rate")))));} catch (Exception e) {}
+				try {dto.setMinimum(nf.format(Double.parseDouble(df.format(rs.getDouble("minimum")))));} catch (Exception e) {}
+				try {dto.setMidpoint(nf.format(Double.parseDouble(df.format(rs.getDouble("midpoint")))));} catch (Exception e) {}
+				try {dto.setMaximum(nf.format(Double.parseDouble(df.format(rs.getDouble("maximum")))));} catch (Exception e) {}
+				try {dto.setLumsum(nf.format(Double.parseDouble(df.format(rs.getDouble("lumsum")))));} catch (Exception e) {}
 				dto.setQuartile(rs.getString("quartile"));
 				dto.setPerfGrade(rs.getString("perf_grade"));
 				if(Float.parseFloat(rs.getString("increment_percentage"))*100 > 0)
@@ -81,7 +85,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				else
 					dto.setIncrementPercentage(rs.getString("increment_percentage"));
 				try {
-					dto.setNewRate(df.format(rs.getDouble("new_rate")));
+					dto.setNewRate(nf.format(Double.parseDouble(df.format(rs.getDouble("new_rate")))));
 				} catch (Exception e) {}
 				dto.setUpdatedDate(rs.getString("updated_date"));
 				list.add(dto);
@@ -196,15 +200,15 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				totalCurrentBudget = totalCurrentBudget+currentBudget;
 				totalnewBudget = totalnewBudget+newBudget;
 				totalChange = totalChange+change;
-				try {dto.setCurrentBudget(currentBudget+"");} catch (Exception e) {}
-				try {dto.setNewBudget(newBudget+"");} catch (Exception e) {}
-				try {dto.setChangeBudget((change*100)+"");} catch (Exception e) {}
+				try {dto.setCurrentBudget(nf.format(Double.parseDouble(currentBudget+"")));} catch (Exception e) {}
+				try {dto.setNewBudget(nf.format(Double.parseDouble(newBudget+"")));} catch (Exception e) {}
+				try {dto.setChangeBudget(df.format(change*100));} catch (Exception e) {}
 				list.add(dto);
 			}
 			BudgetSummaryDTO dto1 = new BudgetSummaryDTO();
 			dto1.setAnualBudgetType("Total");
-			try {dto1.setCurrentBudget(df.format(totalCurrentBudget));} catch (Exception e) {}
-			try {dto1.setNewBudget(df.format(totalnewBudget));} catch (Exception e) {}
+			try {dto1.setCurrentBudget(nf.format(Double.parseDouble(df.format(totalCurrentBudget))));} catch (Exception e) {}
+			try {dto1.setNewBudget(nf.format(Double.parseDouble(df.format(totalnewBudget))));} catch (Exception e) {}
 			try {dto1.setChangeBudget(df.format(totalChange*100.00));} catch (Exception e) {}
 			list.add(dto1);
 		}catch (Exception ex) {
