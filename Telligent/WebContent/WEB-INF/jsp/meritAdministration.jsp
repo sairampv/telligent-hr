@@ -5,12 +5,15 @@
 <script type="text/javascript" src="view/js/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="view/js/jquery/jquery.validate.js"></script>
 <script src="view/js/jquery/jquery.colorbox.js"></script>
+<script src="view/js/popup.js"></script>
+<link rel="stylesheet" type="text/css" href="view/css/popup.css">
 <link rel="stylesheet" type="text/css" href="view/css/jquery/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="view/css/jquery/themes/icon.css">
 <link rel="stylesheet" type="text/css" href="view/css/jquery/demo.css">
 <script type="text/javascript" src="view/js/jquery/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="view/js/app/telligentCommon.js"></script>
 <div id="contentArea">
+<div class="loader"></div>
 <div class="contentArea">
 	<div class="innerleft"  id="col1">
      <table class="leftAccordion" cellspacing="1" cellpadding="5" id="teamListTable">
@@ -60,8 +63,7 @@
     <form id="updateRateForm">
 	    <table  width="100%" border="0" cellspacing="0" cellpadding="0" id="updateRateTableId" style="display: none;" class="data-table"> 
 	       <tr>
-	  			<td valign="middle" width="10%" >Perf Grade<span class="mandatory">*</span></td>
-		        <td valign="middle" width="3%">:</td>
+	  			<td valign="middle" width="20%" >Enter Grade / Increase % <span class="mandatory">*</span></td>
 		        <td valign="middle" width="10%">
 		        	<select id="perfGrade">
 		        		<option value="">Select</option>
@@ -70,10 +72,7 @@
 		        		<option value="C">C</option>
 		        	</select>
 		        </td>
-	  			<td valign="middle" width="16%">Increment Percentage<span class="mandatory">*</span></td>
-		        <td valign="middle" width="3%">:</td>
 		        <td valign="middle" width="20%"><input id="incrementPercentage" name="incrementPercentage" onKeyPress="return numbersonly(event, true,this.value)"></input></td>
-		        <td valign="middle">&nbsp;</td>
 		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetails();" value="Apply" class="loginButton"/></td>
 		      </tr>
 	  	</table>
@@ -279,6 +278,7 @@
 			showTeamEmployees("", checkArray);
 		});
 	  	function showTeamEmployeesAjax(){
+	  		closeloading();
 	  		var numberOfChBox = $("#teamListTable input[type='checkbox']").length;
 		    var checkArray = ""; 
 			for(var i = 0; i < numberOfChBox; i++) {
@@ -329,8 +329,9 @@
     	    var incrementPercentage = $("#incrementPercentage").val().trim(); 
           	var perfGrade = $("#perfGrade").val().trim();
           	if(incrementPercentage == '' && perfGrade == '')
-          		alert("Please select Performance Grade or enter  Percentage");
+          		alert("Please select either Performance Grade or Enter  Percentage");
        		else{
+       			loading();
 	       		var rows = $('#tt').datagrid('getSelections');
 	               	for(var i=0; i<rows.length; i++){
 	   	      			  var salarPlanningDTO = new Object();
@@ -356,6 +357,8 @@
 	           				alert(obj);
 	           				//location.reload(true);
 	           				$("#updateRateTableId").toggle(false);
+	           				$("#incrementPercentage").val(""); 
+	           	          	$("#perfGrade").val("");
 	           				showTeamEmployeesAjax();
 	           				return false;
 	           			}});
