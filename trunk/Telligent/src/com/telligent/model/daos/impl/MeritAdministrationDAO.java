@@ -496,24 +496,26 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		ResultSet rs = null;
 		StringBuffer query = new StringBuffer(); 
 		try {
-			if(field.equalsIgnoreCase("employeeId"))
-				field = "employeeIdwidth";
-			conn = this.getConnection();
-			boolean flag = checkSalaryPlanningColumnWidthExists(conn, ps, rs, empId);
-			if(flag){ // update
-				query.append("update salary_planning_gridView set ");
-				query.append(" "+field+" = '"+width+"'");
-				query.append(" where employeeId = ?");
-				ps = conn.prepareStatement(query.toString());
-				ps.setString(1, empId);
-			}else{ // insert
-				query.append("Insert into salary_planning_gridView (employeeId,"+field+" ) values (?,?)");
-				ps = conn.prepareStatement(query.toString());
-				ps.setString(1, empId);
-				ps.setString(2, width);
+			if(!field.equalsIgnoreCase("id")){
+				if(field.equalsIgnoreCase("employeeId"))
+					field = "employeeIdwidth";
+				conn = this.getConnection();
+				boolean flag = checkSalaryPlanningColumnWidthExists(conn, ps, rs, empId);
+				if(flag){ // update
+					query.append("update salary_planning_gridView set ");
+					query.append(" "+field+" = '"+width+"'");
+					query.append(" where employeeId = ?");
+					ps = conn.prepareStatement(query.toString());
+					ps.setString(1, empId);
+				}else{ // insert
+					query.append("Insert into salary_planning_gridView (employeeId,"+field+" ) values (?,?)");
+					ps = conn.prepareStatement(query.toString());
+					ps.setString(1, empId);
+					ps.setString(2, width);
+				}
+				int i =ps.executeUpdate();
+				logger.info("Result in updateSalaryPlanningColumnWidth = field "+field+" width = "+width+" employee Id = "+empId+" i =="+i);
 			}
-			int i =ps.executeUpdate();
-			logger.info("Result in updateSalaryPlanningColumnWidth = field "+field+" width = "+width+" employee Id = "+empId+" i =="+i);
 		}catch (Exception ex) {
 			logger.info("Excpetion in updateSalaryPlanningColumnWidth"+ex.getMessage());
 		} finally {
