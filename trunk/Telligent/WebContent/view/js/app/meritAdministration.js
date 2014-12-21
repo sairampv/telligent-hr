@@ -1,6 +1,11 @@
 /**
  * 
  */
+var perfGradeList = [
+		    {value:'A',name:'A'},
+		    {value:'B',name:'B'},
+		    {value:'C',name:'C'}
+		];
 var updateList = new Array();
 $(document).ready(function(){
 	  showGridMessage('#tt','Please select Team on left side panel to display your team employees');
@@ -104,6 +109,41 @@ function sendForApproval(){
            				return false;
            			}});
     }
+   }
+   function updateEmployeeDetailsSelected(){
+	    $('#tt').datagrid('acceptChanges');
+	   	updateList = new Array();
+		loading();
+		var rows = $('#tt').datagrid('getSelections');
+       	for(var i=0; i<rows.length; i++){
+  			  var salarPlanningDTO = new Object();
+  		      salarPlanningDTO.employeeId = rows[i].employeeId;
+      		  salarPlanningDTO.newRate = rows[i].newRate;
+      		  salarPlanningDTO.rate = rows[i].rate;
+      		  salarPlanningDTO.maximum = rows[i].maximum;
+      		  salarPlanningDTO.lumsum = rows[i].lumsum;
+      		  salarPlanningDTO.perfGrade = rows[i].perfGrade;
+      		  salarPlanningDTO.incrementPercentage = rows[i].incrementPercentage;
+      		  updateList.push(salarPlanningDTO);
+      	}
+       	$.ajax({
+   			url:"updateEmployeeDetails.htm",
+   			type: "post",
+   			data: JSON.stringify(updateList) ,
+   			contentType : "application/json; charset=utf-8",
+   			error: function(obj){
+   				console.log("error");
+   				alert(obj);
+   			},
+   			success: function(obj){
+   				alert(obj);
+   				//location.reload(true);
+   				$("#updateRateTableId").toggle(false);
+   				$("#incrementPercentage").val(""); 
+   	          	$("#perfGrade").val("");
+   				showTeamEmployeesAjax();
+   				return false;
+   			}});
    }
    function setValuesButton(){
    	$('#popUphrefId').click();

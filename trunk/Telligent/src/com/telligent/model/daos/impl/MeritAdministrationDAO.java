@@ -33,7 +33,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 
 	DecimalFormat df = new DecimalFormat("###.00");
 	NumberFormat nf = NumberFormat.getInstance(Locale.US);
-	
+
 	public MeritAdministrationDAO(){
 		df.setMaximumFractionDigits(2);
 	}
@@ -105,19 +105,10 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		logger.info("in updateEmployeeDetails");
 		StringBuffer updateQuery = new StringBuffer();
 		boolean updated = false;
-		if(list.getJSONObject(0).getString("incrementPercentage")!=null && !list.getJSONObject(0).getString("incrementPercentage").equalsIgnoreCase("") 
-			&& list.getJSONObject(0).getString("perfGrade")!=null && !list.getJSONObject(0).getString("perfGrade").equalsIgnoreCase(""))
-			updateQuery.append("update salary_planning set perf_grade= ? ,increment_percentage= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
-		else if(list.getJSONObject(0).getString("perfGrade")==null || list.getJSONObject(0).getString("perfGrade").equalsIgnoreCase(""))
-			updateQuery.append("update salary_planning set increment_percentage= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
-		else if(list.getJSONObject(0).getString("incrementPercentage")==null || list.getJSONObject(0).getString("incrementPercentage").equalsIgnoreCase(""))
-			updateQuery.append("update salary_planning set perf_grade= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
-			
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try{
 			conn = this.getConnection();
-			ps = conn.prepareStatement(updateQuery.toString());
 			conn.setAutoCommit(false);
 			for(int i=0;i<list.size();i++){
 				String empId = list.getJSONObject(i).getString("employeeId");;
@@ -138,6 +129,15 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 						newRate = newSalary;
 					}
 				}
+				updateQuery = new StringBuffer();
+				if(list.getJSONObject(i).getString("incrementPercentage")!=null && !list.getJSONObject(i).getString("incrementPercentage").equalsIgnoreCase("") 
+						&& list.getJSONObject(i).getString("perfGrade")!=null && !list.getJSONObject(i).getString("perfGrade").equalsIgnoreCase(""))
+					updateQuery.append("update salary_planning set perf_grade= ? ,increment_percentage= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
+				else if(list.getJSONObject(i).getString("perfGrade")==null || list.getJSONObject(i).getString("perfGrade").equalsIgnoreCase(""))
+					updateQuery.append("update salary_planning set increment_percentage= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
+				else if(list.getJSONObject(i).getString("incrementPercentage")==null || list.getJSONObject(i).getString("incrementPercentage").equalsIgnoreCase(""))
+					updateQuery.append("update salary_planning set perf_grade= ? ,new_rate= ?,lumsum=?,updated_date = sysdate() where emp_id = ? ");
+				ps = conn.prepareStatement(updateQuery.toString());
 				if(increment !=null && !increment.equalsIgnoreCase("") && empGrade !=null && !empGrade.equalsIgnoreCase("")){
 					ps.setString(1, empGrade);
 					ps.setFloat(2, incrementPer);

@@ -56,7 +56,7 @@
     		<td><input type="button" class="button" value="Validate Merit Increases"></td>
     		<td><input type="button" class="button" value="Send for Approval" onclick="javascript:sendForApproval()"></td>
     		<td><input type="button" class="button" value="Print / Reports"></td>
-            <!-- <td><input type="button" class="button" value="Update Rate" onclick="setValuesButton();" ></td> -->
+            <!-- <td><input type="button" class="button" value="Update Rate" onclick="update();" ></td> --> 
             <td><input type="button" class="button" value="General Guidelines" onclick="showSalRangeButton();" ></td>
     	</tr>
     </table>
@@ -74,7 +74,8 @@
 		        	</select>
 		        </td>
 		        <td valign="middle" width="20%"><input id="incrementPercentage" name="incrementPercentage" onKeyPress="return numbersonly(event, true,this.value)"></input></td>
-		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetails();" value="Apply" class="loginButton"/></td>
+		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetails();" value="Apply" title="Apply Selected Rows with Same Values" class="loginButton"/></td>
+		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetailsSelected();" value="Apply Selected" title="Apply Selected Rows with Selected Values" class="loginButton"/></td>
 		      </tr>
 	  	</table>
     </form>
@@ -91,7 +92,8 @@
 							,onCheckAll:rowSelected
 							,onUncheckAll:rowSelected
 							,onCheckAll:rowSelected
-							,onResizeColumn:onResizeColumn">
+							,onResizeColumn:onResizeColumn
+							,onClickCell: onClickCell">
 			<thead data-options="frozen:true">
 				<tr>
 					<th field="ck" checkbox="true"></th>
@@ -104,8 +106,8 @@
 				<tr>
 					<th data-options="field:'type',width:${gridViewMap['type']}" align="left">Type</th>
 					<th data-options="field:'rate',width:${gridViewMap['rate']}" align="right">Current Rate</th>
-					<th data-options="field:'perfGrade',width:${gridViewMap['perfGrade']}" align="left">Perf Grade</th>
-					<th data-options="field:'incrementPercentage',width:${gridViewMap['incrementPercentage']}" align="right">Incr %</th>
+					<th data-options="field:'perfGrade',editor:{type:'combobox',options:{valueField:'value',textField:'name',data:perfGradeList}},width:${gridViewMap['perfGrade']}" align="left">Perf Grade</th>
+					<th data-options="field:'incrementPercentage',editor:{type:'numberbox',options:{precision:1}},width:${gridViewMap['incrementPercentage']}" align="right">Incr %</th>
 					<th data-options="field:'newRate',width:${gridViewMap['newRate']}" align="right">New Rate</th>
 					<th data-options="field:'lumsum',width:${gridViewMap['lumsum']}" align="right">Lum Sum</th>
 					<th data-options="field:'jobTitle',width:${gridViewMap['jobTitle']}" align="left">Job Title</th>
@@ -262,6 +264,59 @@
 </div> 
 <script type="text/javascript" src="view/js/app/meritAdministration.js"></script>
 <script type="text/javascript" src="view/js/docknavigation.js"></script>
+<script type="text/javascript">
+	$.extend($.fn.datagrid.methods, {
+		editCell : function(jq, param) {
+			return jq.each(function() {
+				var opts = $(this).datagrid('options');
+				var fields = $(this).datagrid('getColumnFields', true).concat(
+						$(this).datagrid('getColumnFields'));
+				for (var i = 0; i < fields.length; i++) {
+					var col = $(this).datagrid('getColumnOption', fields[i]);
+					col.editor1 = col.editor;
+					if (fields[i] != param.field) {
+						col.editor = null;
+					}
+				}
+				$(this).datagrid('beginEdit', param.index);
+				for (var i = 0; i < fields.length; i++) {
+					var col = $(this).datagrid('getColumnOption', fields[i]);
+					col.editor = col.editor1;
+				}
+			});
+		}
+	});
 
+	var editIndex = undefined;
+	function endEditing() {
+		if (editIndex == undefined) {
+			return true
+		}
+		if ($('#tt').datagrid('validateRow', editIndex)) {
+			$('#tt').datagrid('endEdit', editIndex);
+			editIndex = undefined;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	function onClickCell(index, field) {
+		if (endEditing()) {
+			$('#tt').datagrid('editCell', {
+				index : index,
+				field : field
+			});
+			//.datagrid('updateRow',{index: index,row:{}});
+			editIndex = index;
+		}
+	}
+	function update() {
+		$('#tt').datagrid('acceptChanges');
+		var rows = $('#tt').datagrid('getSelections');
+		for (var i = 0; i < rows.length; i++) {
+			alert(rows[i].perfGrade+"==="+rows[i].incrementPercentage);
+		}
+	}
+</script>
   
 <!-- </div> -->
