@@ -1,6 +1,59 @@
 /**
  * 
  */
+$.extend($.fn.datagrid.methods, {
+		editCell : function(jq, param) {
+			return jq.each(function() {
+				var opts = $(this).datagrid('options');
+				var fields = $(this).datagrid('getColumnFields', true).concat(
+						$(this).datagrid('getColumnFields'));
+				for (var i = 0; i < fields.length; i++) {
+					var col = $(this).datagrid('getColumnOption', fields[i]);
+					col.editor1 = col.editor;
+					if (fields[i] != param.field) {
+						col.editor = null;
+					}
+				}
+				$(this).datagrid('beginEdit', param.index);
+				for (var i = 0; i < fields.length; i++) {
+					var col = $(this).datagrid('getColumnOption', fields[i]);
+					col.editor = col.editor1;
+				}
+			});
+		}
+	});
+
+	var editIndex = undefined;
+	function endEditing() {
+		if (editIndex == undefined) {
+			return true
+		}
+		if ($('#tt').datagrid('validateRow', editIndex)) {
+			$('#tt').datagrid('endEdit', editIndex);
+			editIndex = undefined;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	function onClickCell(index, field) {
+		if (endEditing()) {
+			$('#tt').datagrid('editCell', {
+				index : index,
+				field : field
+			});
+			//.datagrid('updateRow',{index: index,row:{}});
+			editIndex = index;
+		}
+	}
+	function update() {
+		$('#tt').datagrid('acceptChanges');
+		var rows = $('#tt').datagrid('getSelections');
+		for (var i = 0; i < rows.length; i++) {
+			alert(rows[i].perfGrade+"==="+rows[i].incrementPercentage);
+		}
+	}
+
 var perfGradeList = [
 		    {value:'A',name:'A'},
 		    {value:'B',name:'B'},
@@ -8,6 +61,7 @@ var perfGradeList = [
 		];
 var updateList = new Array();
 $(document).ready(function(){
+	  //$('#container').layout();
 	  showGridMessage('#tt','Please select Team on left side panel to display your team employees');
 	  showGridMessage('#budgetTable','Please select Team on left side panel to display team wise Summary');
 	  showGridMessage('#budgetTable1','Please select Team on left side panel to display team wise budget');
