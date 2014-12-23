@@ -181,6 +181,7 @@ function sendForApproval(){
         		  salarPlanningDTO.rate = rows[i].rate;
         		  salarPlanningDTO.maximum = rows[i].maximum;
         		  salarPlanningDTO.lumsum = rows[i].lumsum;
+        		  salarPlanningDTO.type = rows[i].type;
         		  salarPlanningDTO.perfGrade = rows[i].perfGrade;
         		  salarPlanningDTO.incrementPercentage = rows[i].incrementPercentage;
         		  updateList.push(salarPlanningDTO);
@@ -197,9 +198,9 @@ function sendForApproval(){
      			success: function(obj){
      				alert(obj);
      				//location.reload(true);
-     				$("#updateRateTableId").toggle(false);
+     				/*$("#updateRateTableId").toggle(false);
      				$("#incrementPercentage").val(""); 
-     	          	$("#perfGrade").val("");
+     	          	$("#perfGrade").val("");*/
      				showTeamEmployeesAjax();
      				return false;
      			}});
@@ -269,7 +270,6 @@ function sendForApproval(){
    
    $('#budgetTable').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
    $('#budgetTable').datagrid('loading');  // 
-   
 	$.ajax({
 		url:"getSalaryPlanningDetails.htm?teamName="+teamName+"&teamId="+teamId,
 		type: "GET",
@@ -295,6 +295,13 @@ function sendForApproval(){
 		},
 		success: function(obj){
 			removeGridMessage("#budgetTable1");
+			$('#budgetTable1').datagrid({
+				rowStyler:function(index,row){
+					if (row.anualBudgetType == 'Total'){
+						return 'color:blue;font-weight:bold;';
+					}
+				}
+			});
 			$('#budgetTable1').datagrid('loadData',obj); 
 			$('#budgetTable1').prop('title', teamName+" Employee List");
 			$('#budgetTable1').datagrid('loaded');  // hide loading message
