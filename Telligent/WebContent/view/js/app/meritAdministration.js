@@ -118,6 +118,7 @@ function sendForApproval(){
 }
 	function rowSelected(index,row){
 		$('#tt').datagrid('checkRow',index);
+		$('#tt').datagrid('selectRow',index);
 	}
   	/*function rowSelected(){
   		var rows = $('#tt').datagrid('getSelections');
