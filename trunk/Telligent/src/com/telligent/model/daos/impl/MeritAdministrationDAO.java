@@ -114,6 +114,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				String empId = list.getJSONObject(i).getString("employeeId");;
 				String empGrade = list.getJSONObject(i).getString("perfGrade");
 				String increment = list.getJSONObject(i).getString("incrementPercentage");
+				String type = list.getJSONObject(i).getString("type");
 				float rate = list.getJSONObject(i).getString("rate")!=null && !list.getJSONObject(i).getString("rate").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("rate").replaceAll(",", "")):0;
 				float newRate = list.getJSONObject(i).getString("newRate")!=null && !list.getJSONObject(i).getString("newRate").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("newRate").replaceAll(",", "")):0;
 				float  incrementPer = increment !=null && !increment.equalsIgnoreCase("") ? Float.parseFloat(increment):0;
@@ -127,7 +128,11 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 						newRate = maximum;
 					}else{
 						newRate = newSalary;
+						lumsum = 0;
 					}
+				}
+				if(type.equalsIgnoreCase("hourly") || type.equalsIgnoreCase("nonexempt")){
+					lumsum = lumsum * 2080;
 				}
 				updateQuery = new StringBuffer();
 				if(list.getJSONObject(i).getString("incrementPercentage")!=null && !list.getJSONObject(i).getString("incrementPercentage").equalsIgnoreCase("") 
