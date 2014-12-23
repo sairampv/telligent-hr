@@ -57,7 +57,7 @@
     		<td><input type="button" class="button" value="Send for Approval" onclick="javascript:sendForApproval()"></td>
     		<td><input type="button" class="button" value="Print / Reports"></td>
             <!-- <td><input type="button" class="button" value="Update Rate" onclick="update();" ></td> --> 
-            <td><input type="button" class="button" value="General Guidelines" onclick="showSalRangeButton();" ></td>
+            <!-- <td><input type="button" class="button" value="General Guidelines" onclick="showSalRangeButton();" ></td> -->
     	</tr>
     </table>
     
