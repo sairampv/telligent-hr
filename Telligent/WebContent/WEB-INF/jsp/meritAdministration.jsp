@@ -24,7 +24,7 @@
       <c:forEach items="${teams}" var="item" varStatus="i">
 	      <tr>
 	        <td height="20">
-	        	<input type="checkbox" name="teamCheckBoxName" id="teamCheckBoxId${i.index}"  value="${item.teamId}">${item.teamName}</input>
+	        	<input type="checkbox" name="teamCheckBoxName" id="teamCheckBoxId${i.index}"  value="${item.teamId}">${item.teamName}
 	        	<%-- <a href="javascript:showTeamEmployees('${item.teamName}','${item.teamId}');">${item.teamName}</a> --%>
 	        </td>
 	      </tr>
@@ -155,7 +155,7 @@
 		
 	<table style="width: 100%;height: 100%;padding-top: 20px">
 			<tr>	
-				<td style="width: 50%">
+				<td style="width: 55%">
 					<table id="budgetTable"  class="easyui-datagrid" title="Ratings & Increase Summary" style="width:100%;height:215px;padding-left: 100px"
 						data-options="collapsible:true
 										,method: 'get'
@@ -169,17 +169,17 @@
 						</thead>
 						<thead data-options="frozen:true">
 							<tr>
-								<th data-options="field:'type',width:185" >Performance Rating</th>
+								<th data-options="field:'type',width:150" >Performance Rating</th>
 							</tr>
 						</thead>
 						<thead>
 							<tr>
-								<th data-options="field:'hourlyA',width:70" align="right" >A</th>
-								<th data-options="field:'hourlyB',width:70" align="right" >B</th>
-								<th data-options="field:'hourlyC',width:70" align="right" >C</th>
-								<th data-options="field:'officeA',width:70" align="right" >A</th>
-								<th data-options="field:'officeB',width:70" align="right" >B</th>
-								<th data-options="field:'officeC',width:70" align="right" >C</th>
+								<th data-options="field:'hourlyA',width:60" align="right" >A</th>
+								<th data-options="field:'hourlyB',width:60" align="right" >B</th>
+								<th data-options="field:'hourlyC',width:60" align="right" >C</th>
+								<th data-options="field:'officeA',width:60" align="right" >A</th>
+								<th data-options="field:'officeB',width:60" align="right" >B</th>
+								<th data-options="field:'officeC',width:60" align="right" >C</th>
 							</tr>
 						</thead>
 					</table>
@@ -192,14 +192,14 @@
 										,emptyMsg: 'No records found'">
 						<thead data-options="frozen:true">
 							<tr>
-								<th data-options="field:'anualBudgetType',width:150"  align="left" >Annual Budget</th>
+								<th data-options="field:'anualBudgetType',width:130"  align="left" >Annual Budget</th>
 							</tr>
 						</thead>
 						<thead>
 							<tr >
 								<th data-options="field:'currentBudget',width:100" align="right" >Current</th>
 								<th data-options="field:'newBudget',width:100" align="right" >New</th>
-								<th data-options="field:'changeBudget',width:140" align="right" >%Change</th>
+								<th data-options="field:'changeBudget',width:100" align="right" >%Change</th>
 							</tr>
 						</thead>
 					</table>
