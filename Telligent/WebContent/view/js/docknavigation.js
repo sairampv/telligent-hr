@@ -75,6 +75,9 @@ function insertToggleButton()
 	}
 }
 
+function readCookie(val){
+	return 0;
+}
 
 /* dock navigation panel functions */
 function toggle() {
@@ -229,6 +232,6 @@ function settabber() {
 	tab.style.margin = "0 0 0 12px";
 	tab.style.cursor = "auto";
 	};
-addLoadEvent(settabber);
+//addLoadEvent(settabber);
 
 
