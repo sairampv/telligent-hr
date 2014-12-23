@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.log4j.Logger;
@@ -26,6 +25,7 @@ import com.telligent.model.daos.IMeritAdministrationDAO;
 import com.telligent.model.dtos.BudgetSummaryDTO;
 import com.telligent.model.dtos.RatingsAndIncreaseDTO;
 import com.telligent.model.dtos.SalarPlanningDTO;
+import com.telligent.model.dtos.SalaryPositionRangeDTO;
 import com.telligent.model.dtos.TeamDTO;
 import com.telligent.util.TelligentUtility;
 
@@ -69,6 +69,14 @@ public class MeritAdministrationController {
 		mav.addObject("salaryPlanning", new SalarPlanningDTO());
 		mav.setViewName("meritAdministration");
 		return mav;
+	}
+	
+	@RequestMapping(value="/salaryPositionRangeDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getSalaryPlanningDetails(){
+		logger.info("In getSalaryPlanningDetails");
+		ArrayList<SalaryPositionRangeDTO> salaryPlanningDetails = meritAdministrationDAO.salaryPositionRangeDetails();
+		JSONArray obj = (JSONArray) JSONSerializer.toJSON(salaryPlanningDetails);
+		return obj;
 	}
 	
 	@RequestMapping(value="/getSalaryPlanningDetails.htm", method = RequestMethod.GET)

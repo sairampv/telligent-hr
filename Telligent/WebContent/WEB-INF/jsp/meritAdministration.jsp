@@ -126,6 +126,33 @@
 			</thead>
 		</table>
 		<div class="footer"></div>
+		
+		<table id="guideLinesTable"  class="easyui-datagrid" title="General Guidelines"  style="width:100%;height:170px;table-layout: fixed;"
+						data-options="collapsible:true
+										,method: 'post'
+										,url: 'salaryPositionRangeDetails.htm'
+										,pagination:false
+										,emptyMsg: 'No records found'" >
+							<thead style="width: 5000">
+							<tr>
+								<th colspan="2" data-options="field:'type',width:500"></th> 
+								<th colspan="4" data-options="width:186"><b>Position in Salary Range</b></th>
+							</tr>
+						</thead>
+						<thead >
+							<tr >
+								<th data-options="field:'overallPerformanceRating',width:250" align="left" >Overall Performance Rating</th>
+								<th data-options="field:'aggregateExpected',width:220" align="right" >Aggregate Expected Ratings <br/>Distribution @ Co.level</th>
+								<th data-options="field:'firstQuartile',width:125" align="right" >1 st Quartile</th>
+								<th data-options="field:'secondQuartile',width:125" align="right" >2 nd Quartile</th>
+								<th data-options="field:'thirdQuartile',width:125" align="right" >3 rd Quartile</th>
+								<th data-options="field:'fourthQuartile',width:125" align="right" >4 th Quartile</th>
+							</tr>
+							
+	 		</thead>
+
+</table>
+		
 	<table style="width: 100%;height: 100%;padding-top: 20px">
 			<tr>	
 				<td style="width: 50%">
