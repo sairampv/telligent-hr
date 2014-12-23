@@ -119,10 +119,11 @@ public class MeritAdministrationController {
    		return obj;
    	}
     @RequestMapping(value="/updateSalaryPlanningColumnWidth.htm", method = RequestMethod.GET)
-   	public @ResponseBody boolean updateSalaryPlanningColumnWidth(@RequestParam("field") String field,@RequestParam("width") String width){
+   	public @ResponseBody JSONArray updateSalaryPlanningColumnWidth(@RequestParam("field") String field,@RequestParam("width") String width){
    		logger.info("in updateSalaryPlanningColumnWidth");
    		TelligentUser user = telligentUtility.getTelligentUser();
    		meritAdministrationDAO.updateSalaryPlanningColumnWidth(field,width,user.getEmployeeId());
-   		return true;
+   		JSONArray obj = new JSONArray();
+   		return obj;
    	}
 }
