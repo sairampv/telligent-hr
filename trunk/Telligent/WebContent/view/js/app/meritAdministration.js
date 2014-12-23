@@ -26,7 +26,7 @@ $.extend($.fn.datagrid.methods, {
 	var editIndex = undefined;
 	function endEditing() {
 		if (editIndex == undefined) {
-			return true
+			return true;
 		}
 		if ($('#tt').datagrid('validateRow', editIndex)) {
 			$('#tt').datagrid('endEdit', editIndex);
@@ -205,7 +205,7 @@ function sendForApproval(){
      				return false;
      			}});
        	}else{
-       		alert("No selected rows to Apply")
+       		alert("No Changes to Apply");
        	}
    }
    function setValuesButton(){
@@ -350,6 +350,7 @@ function onResizeColumn(field,width){
 	$.ajax({
 		url:"updateSalaryPlanningColumnWidth.htm?field="+field+"&width="+width,
 		type: "GET",
+		dataType: 'json',
 		error: function(obj){
 		},
 		success: function(obj){
