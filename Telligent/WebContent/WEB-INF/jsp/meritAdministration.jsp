@@ -61,7 +61,7 @@
     	</tr>
     </table>
     
-    <form id="updateRateForm">
+    <!-- <form id="updateRateForm">
 	    <table  width="100%" border="0" cellspacing="0" cellpadding="0" id="updateRateTableId" style="display: none;" class="data-table"> 
 	       <tr>
 	  			<td valign="middle" width="20%" >Enter Grade / Increase % <span class="mandatory">*</span></td>
@@ -78,13 +78,17 @@
 		        <td valign="middle" height="2" ><input type="button" onclick="javascript:updateEmployeeDetailsSelected();" value="Apply Selected" title="Apply Selected Rows with Selected Values" class="loginButton"/></td>
 		      </tr>
 	  	</table>
-    </form>
+    </form> -->
     
     <table id="tt" class="easyui-datagrid" title="Employee Salary Planning" style="width:100%;height:300px;table-layout: fixed;"
 			data-options="collapsible:true
 							,pagination:true
 							,emptyMsg: 'No records found'
 							,pageSize:20
+							,onResizeColumn:onResizeColumn
+							,onClickCell: onClickCell
+							,toolbar:'#tb'
+							,iconCls: 'icon-edit'
 							,onSelect:rowSelected
 							,onUnselect:rowSelected
 							,onSelectAll:rowSelected
@@ -92,11 +96,11 @@
 							,onCheckAll:rowSelected
 							,onUncheckAll:rowSelected
 							,onCheckAll:rowSelected
-							,onResizeColumn:onResizeColumn
-							,onClickCell: onClickCell">
+							,checkOnSelect: false
+							,selectOnCheck: false">
 			<thead data-options="frozen:true">
 				<tr>
-					<th field="ck" checkbox="true"></th>
+					<th data-options="field:'ck',checkbox:'true'" ></th>
 					<th data-options="field:'id'" hidden="true" align="right">Id</th>
 					<th data-options="field:'employeeId',width:${gridViewMap['employeeId']}" sortable="true" align="right">Employee ID</th>
 					<th data-options="field:'coworker_name',width:${gridViewMap['coworker_name']}" sortable="true" align="left">Employee Name</th>
@@ -179,45 +183,6 @@
   </div>
   </div>
   <div style="display: none;">
- <%--  <div id="popUp" style="padding:10px; background:#fff;" style="width:100px">
-      <form:form action="salaryPalnning.htm"  method="post" commandName="salaryPlanning" id="salaryPlanning">
-          <form:hidden path="lumsum"></form:hidden>
-          <form:hidden path="rate"></form:hidden>
-          <form:hidden path="newRate"></form:hidden>
-          <form:hidden path="maximum"></form:hidden>
-  	<table  width="100%" border="0" cellspacing="0" cellpadding="0">
-                
-                <tr>
-  		<td align="left" valign="middle" width="25%" height="35">Employee Name</td>
-	        <td align="left" valign="middle" width="3%">:</td>
-                <td align="left" valign="middle" width="80%"><form:input path="employeeId" readonly="true"></form:input></td>
-  		</tr>
-                <tr>
-  		<td align="left" valign="middle" width="25%" height="35">Perf Grade</td>
-	        <td align="left" valign="middle" width="3%">:</td>
-	        <td align="left" valign="middle" width="80%">
-	        	<form:select path="perfGrade" id="perfGrade">
-	        		<form:option value="">Select</form:option>
-	        		<form:option value="A">A</form:option>
-	        		<form:option value="B">B</form:option>
-	        		<form:option value="C">C</form:option>
-	        	</form:select>
-	        </td>
-  		</tr>
-  		<tr>
-  		<td align="left" valign="middle" width="25%" height="35">Increment Percentage</td>
-	        <td align="left" valign="middle" width="3%">:</td>
-	        <td align="left" valign="middle" width="80%"><form:input path="incrementPercentage" id="incrementPercentage" onKeyPress="return numbersonly(event, true,this.value)"></form:input></td>
-  		</tr>
-  		<tr>
-	        <td align="left" valign="middle" height="35">&nbsp;</td>
-	        <td align="left" valign="middle">&nbsp;</td>
-	        <td align="left" valign="middle"><input type="button" onclick="javascript:updateEmployeeDetails();" value="Submit" class="loginButton"/></td>
-	      </tr>
-  	</table>
-  	 </form:form>
-  </div> --%>
-   
   <div id="salRangePopUp"  style="padding:10px; background:#fff;" style="width:100px">
   	<br clear="all"/>
 	<table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="E3E3E3" align="right" >
@@ -262,61 +227,10 @@
   </div>
   </div>
 </div> 
+<div id="tb" style="height:auto">
+	<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="updateEmployeeDetailsSelected()">Apply</a>
+</div>
 <script type="text/javascript" src="view/js/app/meritAdministration.js"></script>
 <script type="text/javascript" src="view/js/docknavigation.js"></script>
-<script type="text/javascript">
-	$.extend($.fn.datagrid.methods, {
-		editCell : function(jq, param) {
-			return jq.each(function() {
-				var opts = $(this).datagrid('options');
-				var fields = $(this).datagrid('getColumnFields', true).concat(
-						$(this).datagrid('getColumnFields'));
-				for (var i = 0; i < fields.length; i++) {
-					var col = $(this).datagrid('getColumnOption', fields[i]);
-					col.editor1 = col.editor;
-					if (fields[i] != param.field) {
-						col.editor = null;
-					}
-				}
-				$(this).datagrid('beginEdit', param.index);
-				for (var i = 0; i < fields.length; i++) {
-					var col = $(this).datagrid('getColumnOption', fields[i]);
-					col.editor = col.editor1;
-				}
-			});
-		}
-	});
-
-	var editIndex = undefined;
-	function endEditing() {
-		if (editIndex == undefined) {
-			return true
-		}
-		if ($('#tt').datagrid('validateRow', editIndex)) {
-			$('#tt').datagrid('endEdit', editIndex);
-			editIndex = undefined;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	function onClickCell(index, field) {
-		if (endEditing()) {
-			$('#tt').datagrid('editCell', {
-				index : index,
-				field : field
-			});
-			//.datagrid('updateRow',{index: index,row:{}});
-			editIndex = index;
-		}
-	}
-	function update() {
-		$('#tt').datagrid('acceptChanges');
-		var rows = $('#tt').datagrid('getSelections');
-		for (var i = 0; i < rows.length; i++) {
-			alert(rows[i].perfGrade+"==="+rows[i].incrementPercentage);
-		}
-	}
-</script>
   
 <!-- </div> -->
