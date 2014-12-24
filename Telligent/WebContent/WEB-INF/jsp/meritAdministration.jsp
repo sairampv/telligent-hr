@@ -132,7 +132,8 @@
 										,method: 'post'
 										,url: 'salaryPositionRangeDetails.htm'
 										,pagination:false
-										,emptyMsg: 'No records found'" >
+										,emptyMsg: 'No records found'
+										,collapsed:true " >
 							<thead style="width: 5000">
 							<tr>
 								<th colspan="2" data-options="field:'type',width:500"></th> 
