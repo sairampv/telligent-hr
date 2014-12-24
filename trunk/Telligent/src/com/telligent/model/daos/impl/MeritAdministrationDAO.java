@@ -120,19 +120,21 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				float  incrementPer = increment !=null && !increment.equalsIgnoreCase("") ? Float.parseFloat(increment):0;
 				float maximum =list.getJSONObject(i).getString("maximum")!=null && !list.getJSONObject(i).getString("maximum").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("maximum").replaceAll(",", "")):0; 
 				float lumsum = list.getJSONObject(i).getString("lumsum")!=null && !list.getJSONObject(i).getString("lumsum").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("lumsum").replaceAll(",", "")):0;
-				float newSalary ;
+				float preUpdateNewRate ;
 				if (incrementPer > 0){
-					newSalary = rate*(1+incrementPer);
-					if (newSalary > maximum){
-						lumsum = newSalary - maximum;
-						newRate = maximum;
-					}else{
-						newRate = newSalary;
+					preUpdateNewRate = rate*incrementPer;
+					if (preUpdateNewRate <= maximum){
+						newRate = preUpdateNewRate;
 						lumsum = 0;
+					}else{
+						if(type.equalsIgnoreCase("hourly") || type.equalsIgnoreCase("nonexempt")){
+							newRate = maximum;	
+							lumsum = ((preUpdateNewRate - maximum) * 2080);
+						}else{
+							newRate = maximum;	
+							lumsum = preUpdateNewRate - maximum;
+						}
 					}
-				}
-				if(type.equalsIgnoreCase("hourly") || type.equalsIgnoreCase("nonexempt")){
-					lumsum = lumsum * 2080;
 				}
 				updateQuery = new StringBuffer();
 				if(list.getJSONObject(i).getString("incrementPercentage")!=null && !list.getJSONObject(i).getString("incrementPercentage").equalsIgnoreCase("") 
@@ -246,7 +248,166 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 		return list;
 	}
 
+	// New Method
 	@Override
+	public ArrayList<RatingsAndIncreaseDTO> ratingsAndIncreaseSummary(String teamId,String teamName,String employeeId) {
+		logger.info("in ratingsAndIncreaseSummary");
+		StringBuffer query = new StringBuffer();
+		//query.append("select type,perf_grade,count(perf_grade) count from salary_planning group by type,perf_grade");
+		int hourlyEmployees = 0;
+		int officeEmployees = 0;
+		ArrayList<RatingsAndIncreaseDTO> list = new ArrayList<RatingsAndIncreaseDTO>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = this.getConnection();
+			// Start End query to get Count
+			query.append("select type,perf_grade,count(perf_grade) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
+			rs = ps.executeQuery();
+			RatingsAndIncreaseDTO dto = null;
+			dto = new RatingsAndIncreaseDTO();
+			dto.setType("Count");
+			HashMap<String, Integer> countMap = new HashMap<String, Integer>();
+			while(rs.next()){
+				if(rs.getString("type").equalsIgnoreCase("hourly") && rs.getString("perf_grade")!=null){
+					if(rs.getString("perf_grade").equalsIgnoreCase("A")){
+						dto.setHourlyA(rs.getString("count"));
+						countMap.put("hourlyA", rs.getInt("count"));
+					}else if(rs.getString("perf_grade").equalsIgnoreCase("B")){
+						dto.setHourlyB(rs.getString("count"));
+						countMap.put("hourlyB", rs.getInt("count"));
+					}else if(rs.getString("perf_grade").equalsIgnoreCase("C")){
+						dto.setHourlyC(rs.getString("count"));
+						countMap.put("hourlyC", rs.getInt("count"));
+					}
+				}else if(rs.getString("type").equalsIgnoreCase("office") && rs.getString("perf_grade")!=null){
+					if(rs.getString("perf_grade").equalsIgnoreCase("A")){
+						dto.setOfficeA(rs.getString("count"));
+						countMap.put("officeA", rs.getInt("count"));
+					}else if(rs.getString("perf_grade").equalsIgnoreCase("B")){
+						dto.setOfficeB(rs.getString("count"));
+						countMap.put("officeB", rs.getInt("count"));
+					}else if(rs.getString("perf_grade").equalsIgnoreCase("C")){
+						dto.setOfficeC(rs.getString("count"));
+						countMap.put("officeC", rs.getInt("count"));
+					}
+				}
+			}
+			list.add(dto);
+			rs.close();
+			ps.close();
+			query = new StringBuffer();
+			// End query to get Count
+			// Start query to get total hourly / Office employees
+			query.append("select type,count(type) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type");
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				if(rs.getString("type")!=null && rs.getString("type").equalsIgnoreCase("hourly")){
+					hourlyEmployees = rs.getInt("count");
+				}else if(rs.getString("type")!=null && rs.getString("type").equalsIgnoreCase("office")){
+					officeEmployees = rs.getInt("count");
+				}
+			}
+			rs.close();
+			ps.close();
+			// End query to get total hourly / Office employees
+			query = new StringBuffer();
+			rs = null;
+			// Start - % for Group
+			//query.append("select type,perf_grade,(count/(select count(perf_grade) from salary_planning where b.type=type)) percentage from (select type,perf_grade,count(perf_grade) count from salary_planning b group by type,perf_grade) b");
+			//query.append("select type,perf_grade,(count/(select count(perf_grade) from salary_planning where b.type=type)) percentage from (select type,perf_grade,count(perf_grade) count from salary_planning b,employee e,team t  where b.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade) b");
+			query.append("select type,perf_grade,count(perf_grade) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
+			rs = ps.executeQuery();
+			dto = new RatingsAndIncreaseDTO();
+			dto.setType("% for Group");
+			while(rs.next()){
+				if(rs.getString("type").equalsIgnoreCase("hourly") && rs.getString("perf_grade")!=null){
+					if(rs.getString("perf_grade").equalsIgnoreCase("A"))
+						dto.setHourlyA(df.format((rs.getDouble(3)/hourlyEmployees)*100));
+					else if(rs.getString("perf_grade").equalsIgnoreCase("B"))
+						dto.setHourlyB(df.format((rs.getDouble(3)/hourlyEmployees)*100));
+					else if(rs.getString("perf_grade").equalsIgnoreCase("C"))
+						dto.setHourlyC(df.format((rs.getDouble(3)/hourlyEmployees)*100));
+				}else if(rs.getString("type").equalsIgnoreCase("office") && rs.getString("perf_grade")!=null){
+					if(rs.getString("perf_grade").equalsIgnoreCase("A"))
+						dto.setOfficeA(df.format((rs.getDouble(3)/officeEmployees)*100));
+					else if(rs.getString("perf_grade").equalsIgnoreCase("B"))
+						dto.setOfficeB(df.format((rs.getDouble(3)/officeEmployees)*100));
+					else if(rs.getString("perf_grade").equalsIgnoreCase("C"))
+						dto.setOfficeC(df.format((rs.getDouble(3)/officeEmployees)*100));
+				}
+			}
+			list.add(dto);
+
+			// End - % for Group
+			rs.close();
+			ps.close();
+			query = new StringBuffer();
+			rs = null;
+			//query.append("select type,perf_grade,avg(increment_percentage) count from salary_planning group by type,perf_grade");
+			query.append("select type,perf_grade,sum(increment_percentage) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
+			rs = ps.executeQuery();
+			dto = new RatingsAndIncreaseDTO();
+			dto.setType("Avg Increase");
+			dto = setAvg(rs,dto,countMap);
+			list.add(dto);
+			rs.close();
+			ps.close();
+			query = new StringBuffer();
+			rs = null;
+			//query.append("select type,perf_grade,max(increment_percentage) count from salary_planning group by type,perf_grade");
+			query.append("select type,perf_grade,max(increment_percentage) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
+			rs = ps.executeQuery();
+			dto = new RatingsAndIncreaseDTO();
+			dto.setType("High Increase");
+			dto = setHighLowIncrease(rs,dto);
+			list.add(dto);
+			rs.close();
+			ps.close();
+			query = new StringBuffer();
+			rs = null;
+			//query.append("select type,perf_grade,min(increment_percentage) count from salary_planning group by type,perf_grade");
+			query.append("select type,perf_grade,min(increment_percentage) count ");
+			query.append("from salary_planning sp,employee e,team t ");
+			query.append(" where sp.emp_id=e.employee_id and t.team_id=e.team_id and t.supervisor_employee_id =? and t.team_id in ("+teamId+") group by type,perf_grade");
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, employeeId);
+			rs = ps.executeQuery();
+			dto = new RatingsAndIncreaseDTO();
+			dto.setType("Low Increase");
+			dto = setHighLowIncrease(rs,dto);
+			list.add(dto);
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			logger.info("Excpetion in ratingsAndIncreaseSummary"+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
+	// Old method
+	/*@Override
 	public ArrayList<RatingsAndIncreaseDTO> ratingsAndIncreaseSummary(String teamId,String teamName,String employeeId) {
 		logger.info("in ratingsAndIncreaseSummary");
 		StringBuffer query = new StringBuffer();
@@ -265,14 +426,14 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			ps.setString(1, employeeId);
 			rs = ps.executeQuery();
 			RatingsAndIncreaseDTO dto = null;
-			/*dto.setType("Performance Rating");
+			dto.setType("Performance Rating");
 			dto.setHourlyA("A");
 			dto.setHourlyB("B");
 			dto.setHourlyC("C");
 			dto.setOfficeA("A");
 			dto.setOfficeB("B");
 			dto.setOfficeC("C");
-			list.add(dto);*/
+			list.add(dto);
 			dto = new RatingsAndIncreaseDTO();
 			dto.setType("Count");
 			while(rs.next()){
@@ -376,23 +537,46 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 			this.closeAll(conn, ps, rs);
 		}
 		return list;
+	}*/
+	private RatingsAndIncreaseDTO setAvg(ResultSet rs, RatingsAndIncreaseDTO dto,HashMap<String, Integer> countMap) throws SQLException{
+		while(rs.next()){//{hourlyA=1, hourlyc=1, officeA=3, officeC=3, officeB=1}
+			if(rs.getString("type").equalsIgnoreCase("hourly") && rs.getString("perf_grade")!=null){
+				if(rs.getString("perf_grade").equalsIgnoreCase("A")){
+					dto.setHourlyA(df.format(rs.getDouble(3)/countMap.get("hourlyA")));
+				}else if(rs.getString("perf_grade").equalsIgnoreCase("B")){
+					dto.setHourlyB(df.format(rs.getDouble(3)/countMap.get("hourlyB")));
+				}else if(rs.getString("perf_grade").equalsIgnoreCase("C")){
+					dto.setHourlyC(df.format(rs.getDouble(3)/countMap.get("hourlyC")));
+				}
+			}else if(rs.getString("type").equalsIgnoreCase("office") && rs.getString("perf_grade")!=null){
+				if(rs.getString("perf_grade").equalsIgnoreCase("A")){
+					dto.setOfficeA(df.format(rs.getDouble(3)/countMap.get("officeA")));
+				}else if(rs.getString("perf_grade").equalsIgnoreCase("B")){
+					dto.setOfficeB(df.format(rs.getDouble(3)/countMap.get("officeB")));
+				}else if(rs.getString("perf_grade").equalsIgnoreCase("C")){
+					dto.setOfficeC(df.format(rs.getDouble(3)/countMap.get("officeC")));
+				}
+			}
+		}
+		return dto;
 	}
-	private RatingsAndIncreaseDTO setPercentages(ResultSet rs, RatingsAndIncreaseDTO dto) throws SQLException{
+
+	private RatingsAndIncreaseDTO setHighLowIncrease(ResultSet rs, RatingsAndIncreaseDTO dto) throws SQLException{
 		while(rs.next()){
 			if(rs.getString("type").equalsIgnoreCase("hourly") && rs.getString("perf_grade")!=null){
 				if(rs.getString("perf_grade").equalsIgnoreCase("A"))
-					dto.setHourlyA(df.format(rs.getDouble(3)*100));
+					dto.setHourlyA(df.format(rs.getDouble(3)));
 				else if(rs.getString("perf_grade").equalsIgnoreCase("B"))
-					dto.setHourlyB(df.format(rs.getDouble(3)*100));
+					dto.setHourlyB(df.format(rs.getDouble(3)));
 				else if(rs.getString("perf_grade").equalsIgnoreCase("C"))
-					dto.setHourlyC(df.format(rs.getDouble(3)*100));
+					dto.setHourlyC(df.format(rs.getDouble(3)));
 			}else if(rs.getString("type").equalsIgnoreCase("office") && rs.getString("perf_grade")!=null){
 				if(rs.getString("perf_grade").equalsIgnoreCase("A"))
-					dto.setOfficeA(df.format(rs.getDouble(3)*100));
+					dto.setOfficeA(df.format(rs.getDouble(3)));
 				else if(rs.getString("perf_grade").equalsIgnoreCase("B"))
-					dto.setOfficeB(df.format(rs.getDouble(3)*100));
+					dto.setOfficeB(df.format(rs.getDouble(3)));
 				else if(rs.getString("perf_grade").equalsIgnoreCase("C"))
-					dto.setOfficeC(df.format(rs.getDouble(3)*100));
+					dto.setOfficeC(df.format(rs.getDouble(3)));
 			}
 		}
 		return dto;
