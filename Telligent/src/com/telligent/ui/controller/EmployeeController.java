@@ -21,6 +21,7 @@ import com.telligent.common.handlers.MessageHandler;
 import com.telligent.common.user.TelligentUser;
 import com.telligent.model.daos.IEmployeeDAO;
 import com.telligent.model.dtos.EmployeeDTO;
+import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.TeamDTO;
 import com.telligent.util.TelligentUtility;
 
@@ -86,4 +87,34 @@ public class EmployeeController {
 			return messageHandler.getMessage("label.employeeSaveError");
 	}
 	
+	@RequestMapping(value="/employee.htm", method = RequestMethod.GET)
+	public ModelAndView showEmployeeScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		logger.info("in showEmployeeScreen");
+		mav.setViewName("employee");
+		return mav;
+	}
+	@RequestMapping(value="/serachLastName.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray serachLastName(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		ArrayList<MapDTO> list = employeeDAO.searchList(null, req.getParameter("q"), null);
+		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
+		return obj;
+	}
+	@RequestMapping(value="/serachFirstName.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray serachFirstName(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		ArrayList<MapDTO> list = employeeDAO.searchList(req.getParameter("q"), null, null);
+		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
+		return obj;
+	}
+	@RequestMapping(value="/serachEmpId.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray serachEmpId(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		ArrayList<MapDTO> list = employeeDAO.searchList(null, null, req.getParameter("q"));
+		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
+		return obj;
+	}
+	@RequestMapping(value="/serachTeamEmployees.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray serachTeamEmployees(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		ArrayList<MapDTO> list = employeeDAO.searchTeamEmployees(req.getParameter("q"));
+		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
+		return obj;
+	}
 }

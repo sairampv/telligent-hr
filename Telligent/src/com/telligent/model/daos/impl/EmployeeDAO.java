@@ -11,6 +11,7 @@ import com.telligent.core.system.annotation.SpringBean;
 import com.telligent.model.daos.IEmployeeDAO;
 import com.telligent.model.db.AbstractDBManager;
 import com.telligent.model.dtos.EmployeeDTO;
+import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.TeamDTO;
 
 /**
@@ -117,6 +118,70 @@ public class EmployeeDAO extends AbstractDBManager implements IEmployeeDAO{
 			this.closeAll(conn, ps, rs);
 		}
 		return false;
+	}
+
+	@Override
+	public ArrayList<MapDTO> searchList(String firstName, String lastName,String empId) {
+		logger.info("in searchList DAO");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		StringBuffer query = new StringBuffer();
+		try {
+			conn = this.getConnection();
+			query.append("select employee_id,employee_name,last_name from employee where ");
+			if(lastName !=null && !lastName.trim().equalsIgnoreCase("")){
+				query.append("last_name like '"+lastName+"%'");
+			}else if(firstName !=null && !firstName.trim().equalsIgnoreCase("")){
+				query.append("employee_name like '"+firstName+"%'");
+			}else if(empId !=null && !empId.trim().equalsIgnoreCase("")){
+				query.append("employee_id like '"+empId+"%'");
+			}
+			ps = conn.prepareStatement(query.toString());
+			rs = ps.executeQuery();
+			while(rs.next()){
+				MapDTO dto = new MapDTO();
+				dto.setId(rs.getString("employee_id"));
+				dto.setValue(rs.getString("employee_id")+" "+rs.getString("last_name")+","+rs.getString("employee_name"));
+				list.add(dto);
+			}
+		}catch (Exception ex) {
+			//ex.printStackTrace();
+			logger.info("Excpetion in searchList "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
+
+	@Override
+	public ArrayList<MapDTO> searchTeamEmployees(String teamName) {
+		logger.info("in searchList DAO");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		StringBuffer query = new StringBuffer();
+		try {
+			conn = this.getConnection();
+			query.append("select employee_id,employee_name,last_name from employee e , team t where t.team_name like ? and t.team_id = e.team_id");
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, teamName+"%");
+			rs = ps.executeQuery();
+			while(rs.next()){
+				MapDTO dto = new MapDTO();
+				dto.setId(rs.getString("employee_id"));
+				dto.setValue(rs.getString("employee_id")+" "+rs.getString("last_name")+","+rs.getString("employee_name"));
+				list.add(dto);
+			}
+		}catch (Exception ex) {
+			//ex.printStackTrace();
+			logger.info("Excpetion in searchList "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
 	}
 
 }
