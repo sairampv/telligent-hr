@@ -34,5 +34,8 @@
 	</definition>
 	<definition name="forgotPassword" template="/WEB-INF/jsp/forgotPassword.jsp">
 	</definition>
+	<definition name="employee" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/employee.jsp"></put-attribute>
+	</definition>
 	
 </tiles-definitions>
