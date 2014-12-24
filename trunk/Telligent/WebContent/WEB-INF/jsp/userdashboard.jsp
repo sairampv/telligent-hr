@@ -8,6 +8,7 @@
 <a href="javascript:void(0);"><div class="boxes">Bonus/Payout Administration</div></a>
 <a href="javascript:void(0);"><div class="boxes">Succession</div></a>
 <a href="showTeams.htm"><div class="boxes">Show Teams</div></a>
+<a href="employee.htm"><div class="boxes">Employee</div></a>
 </div>
 </div>
 

@@ -2,8 +2,6 @@
 <title>Dashboard</title>
 <link href="view/css/style.css" rel="stylesheet" type="text/css" />
 <link href="view/css/colorbox.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="view/js/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="view/js/jquery/jquery.validate.js"></script>
 <script src="view/js/jquery/jquery.colorbox.js"></script>
 <script src="view/js/popup.js"></script>
 <link rel="stylesheet" type="text/css" href="view/css/popup.css">
