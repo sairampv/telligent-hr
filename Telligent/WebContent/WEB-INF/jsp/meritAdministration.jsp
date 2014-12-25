@@ -253,8 +253,8 @@
   </div>
   </div>
 </div> 
-<div id="tb" style="height:auto">
-	<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="updateEmployeeDetailsSelected()">Apply</a>
+<div id="tb" style="height:auto" align="right">
+	<a href="javascript:void(0)" class="easyui-linkbutton"  data-options="iconCls:'icon-save',plain:true" onclick="updateEmployeeDetailsSelected()">Save   </a>
 </div>
 <script type="text/javascript" src="view/js/app/meritAdministration.js"></script>
 <script type="text/javascript" src="view/js/docknavigation.js"></script>
