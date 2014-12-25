@@ -272,7 +272,7 @@ function sendForApproval(){
    $('#budgetTable').datagrid('loading');  // 
 	$.ajax({
 		url:"getSalaryPlanningDetails.htm?teamName="+teamName+"&teamId="+teamId,
-		type: "GET",
+		type: "post",
 		dataType: 'json',
 		error: function(obj){
 			$('#tt').datagrid('loaded');  // hide loading message
@@ -288,7 +288,7 @@ function sendForApproval(){
    function loadBudgetSummaryTeamWise(teamName,teamId){
    	$.ajax({
 		url:"anualBudgetSummary.htm?teamName="+teamName+"&teamId="+teamId,
-		type: "GET",
+		type: "post",
 		dataType: 'json',
 		error: function(obj){
 			$('#budgetTable1').datagrid('loaded');  // hide loading message
@@ -311,7 +311,7 @@ function sendForApproval(){
    function loadRatingsAndIncreaseSummaryTeamWise(teamName,teamId){
    	$.ajax({
 		url:"ratingsAndIncreaseSummary.htm?teamName="+teamName+"&teamId="+teamId,
-		type: "GET",
+		type: "post",
 		dataType: 'json',
 		error: function(obj){
 			$('#budgetTable').datagrid('loaded');  // hide loading message
