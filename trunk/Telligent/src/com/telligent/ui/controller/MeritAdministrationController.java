@@ -79,7 +79,7 @@ public class MeritAdministrationController {
 		return obj;
 	}
 	
-	@RequestMapping(value="/getSalaryPlanningDetails.htm", method = RequestMethod.GET)
+	@RequestMapping(value="/getSalaryPlanningDetails.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray getSalaryPlanningDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,
 											@RequestParam("teamName") String teamName,@RequestParam("teamId") String teamId){
 		logger.info("In getSalaryPlanningDetails");
@@ -99,7 +99,7 @@ public class MeritAdministrationController {
 			return messageHandler.getMessage("label.employeeSaveError");
 	}
     
-    @RequestMapping(value="/anualBudgetSummary.htm", method = RequestMethod.GET)
+    @RequestMapping(value="/anualBudgetSummary.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray budgetSummary(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,
 						@RequestParam("teamName") String teamName,@RequestParam("teamId") String teamId){
 		logger.info("in budgetSummary");
@@ -109,7 +109,7 @@ public class MeritAdministrationController {
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(budgetSummaryDetails);
 		return obj;
 	}
-    @RequestMapping(value="/ratingsAndIncreaseSummary.htm", method = RequestMethod.GET)
+    @RequestMapping(value="/ratingsAndIncreaseSummary.htm", method = RequestMethod.POST)
    	public @ResponseBody JSONArray ratingsAndIncreaseSummary(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,
    			@RequestParam("teamName") String teamName,@RequestParam("teamId") String teamId){
    		logger.info("in ratingsAndIncreaseSummary");
