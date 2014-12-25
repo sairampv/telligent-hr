@@ -122,7 +122,7 @@ public class MeritAdministrationDAO extends AbstractDBManager implements IMeritA
 				float lumsum = list.getJSONObject(i).getString("lumsum")!=null && !list.getJSONObject(i).getString("lumsum").equalsIgnoreCase("") ? Float.parseFloat(list.getJSONObject(i).getString("lumsum").replaceAll(",", "")):0;
 				float preUpdateNewRate ;
 				if (incrementPer > 0){
-					preUpdateNewRate = rate*incrementPer;
+					preUpdateNewRate = rate*(1+(incrementPer/100));
 					if (preUpdateNewRate <= maximum){
 						newRate = preUpdateNewRate;
 						lumsum = 0;
