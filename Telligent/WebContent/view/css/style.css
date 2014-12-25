@@ -121,7 +121,7 @@ float:left;width:23%;background:#F5F6F7;padding:8px;min-height:600px;
 text-decoration:none;color:#424242;
 }
 .innerright {
-float:right;width:74%;background:#EAEBEC;padding:8px;min-height:480px;
+float:right;width:74%;background:#EAEBEC;padding:8px;min-height:600px;
 }
 .innerright .dataTable th {
 background: #ffffff; /* Old browsers */
