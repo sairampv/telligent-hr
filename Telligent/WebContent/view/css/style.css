@@ -328,11 +328,11 @@ border-top: 0px solid #BBBBBB;
 .selecterror { border: 1px solid #FF0000 !important;}
 label.error {display: none !important;}
 
-.data-table tr:nth-child(odd) {
-    background-color:#f7f6f6;
+.data-table tbody tr:nth-child(odd) {
+    background-color:#F7F7F7;
 }
 
-.data-table tr:nth-child(even) {
+.data-table tbody tr:nth-child(even) {
     background-color:#fff;
 }
 .data-table th {
@@ -343,6 +343,59 @@ padding:7px 0;
 border-top:1px solid #eeeeee;
 border-left:1px solid #eeeeee;
 width : 100%;
+}
+
+table.data-table td:first-child {
+   width:20%;
+   font-weight : bold;
+   color:#777777;
+   font-family:Arial, Helvetica, sans-serif;font-size:12px;
+   text-align:left;
+   vertical-align:middle;
+   padding:3px 0 5px 3px;
+   border-right:1px solid #eeeeee;
+	border-bottom:1px solid #eeeeee;
+}
+table.data-table td:nth-child(2){
+   width:30%;
+   color:#777777;
+   font-family:Arial, Helvetica, sans-serif;font-size:12px;
+   text-align:left;
+   vertical-align:middle;
+   padding:3px 0 5px 3px;
+   border-right:1px solid #eeeeee;
+	border-bottom:1px solid #eeeeee;
+}
+table.data-table td:nth-child(3) {
+   width:20%;
+   text-align:left;
+   font-weight : bold;
+   color:#777777;
+   font-family:Arial, Helvetica, sans-serif;font-size:12px;
+   vertical-align:middle;
+   padding:3px 0 5px 3px;
+   border-right:1px solid #eeeeee;
+	border-bottom:1px solid #eeeeee;
+}
+table.data-table td:nth-child(4){
+   width:30%;
+   color:#777777;
+   font-family:Arial, Helvetica, sans-serif;font-size:12px;
+   text-align:left;
+   vertical-align:middle;
+   padding:3px 0 5px 3px;
+   border-right:1px solid #eeeeee;
+	border-bottom:1px solid #eeeeee;
+}
+table.data-table td:nth-child(5) {
+  text-align:left;
+   font-weight : bold;
+   color:#777777;
+   font-family:Arial, Helvetica, sans-serif;font-size:12px;
+   vertical-align:middle;
+   padding:3px 0 5px 3px;
+   border-right:1px solid #eeeeee;
+	border-bottom:1px solid #eeeeee;
 }
 
 .data-table input[type="button"] {
