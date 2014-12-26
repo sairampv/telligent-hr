@@ -6,11 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.telligent.common.handlers.MessageHandler;
 import com.telligent.common.user.TelligentUser;
-import com.telligent.model.daos.IEmployeeDAO;
+import com.telligent.model.daos.impl.EmployeeDAO;
 import com.telligent.model.dtos.EmployeeDTO;
 import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.TeamDTO;
@@ -37,10 +39,10 @@ public class EmployeeController {
 	@Autowired
 	TelligentUtility telligentUtility;
 	
-	private IEmployeeDAO employeeDAO;
+	private EmployeeDAO employeeDAO;
 	
 	@Autowired
-	public EmployeeController(IEmployeeDAO employeeDAO) {
+	public EmployeeController(EmployeeDAO employeeDAO) {
 		this.employeeDAO = employeeDAO;
 	}
 	public EmployeeController() {
@@ -90,31 +92,36 @@ public class EmployeeController {
 	@RequestMapping(value="/employee.htm", method = RequestMethod.GET)
 	public ModelAndView showEmployeeScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		logger.info("in showEmployeeScreen");
+		mav.addObject("employee", new EmployeeDTO());
 		mav.setViewName("employee");
 		return mav;
 	}
-	@RequestMapping(value="/serachLastName.htm", method = RequestMethod.POST)
-	public @ResponseBody JSONArray serachLastName(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+	@RequestMapping(value="/searchLastName.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray searchLastName(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		ArrayList<MapDTO> list = employeeDAO.searchList(null, req.getParameter("q"), null);
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
 		return obj;
 	}
-	@RequestMapping(value="/serachFirstName.htm", method = RequestMethod.POST)
-	public @ResponseBody JSONArray serachFirstName(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+	@RequestMapping(value="/searchFirstName.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray searchFirstName(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		ArrayList<MapDTO> list = employeeDAO.searchList(req.getParameter("q"), null, null);
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
 		return obj;
 	}
-	@RequestMapping(value="/serachEmpId.htm", method = RequestMethod.POST)
-	public @ResponseBody JSONArray serachEmpId(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+	@RequestMapping(value="/searchEmpId.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray searchEmpId(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		ArrayList<MapDTO> list = employeeDAO.searchList(null, null, req.getParameter("q"));
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
 		return obj;
 	}
-	@RequestMapping(value="/serachTeamEmployees.htm", method = RequestMethod.POST)
-	public @ResponseBody JSONArray serachTeamEmployees(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+	@RequestMapping(value="/searchTeamEmployees.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray searchTeamEmployees(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		ArrayList<MapDTO> list = employeeDAO.searchTeamEmployees(req.getParameter("q"));
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
 		return obj;
+	}
+	@RequestMapping(value="/getEmployeeDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		return (JSONObject) JSONSerializer.toJSON(employeeDAO.getEmployeeDetails(empId));
 	}
 }

@@ -20,8 +20,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.telligent.common.handlers.MessageHandler;
 import com.telligent.common.user.TelligentUser;
-import com.telligent.model.daos.IEmployeeDAO;
 import com.telligent.model.daos.IMeritAdministrationDAO;
+import com.telligent.model.daos.impl.EmployeeDAO;
 import com.telligent.model.dtos.BudgetSummaryDTO;
 import com.telligent.model.dtos.RatingsAndIncreaseDTO;
 import com.telligent.model.dtos.SalarPlanningDTO;
@@ -40,12 +40,12 @@ public class MeritAdministrationController {
 	@Autowired
 	TelligentUtility telligentUtility;
 	
-	private IEmployeeDAO employeeDAO;
+	private EmployeeDAO employeeDAO;
 	
 	private IMeritAdministrationDAO meritAdministrationDAO;
 	
 	@Autowired
-	public MeritAdministrationController(IMeritAdministrationDAO meritAdministrationDAO,IEmployeeDAO employeeDAO) {
+	public MeritAdministrationController(IMeritAdministrationDAO meritAdministrationDAO,EmployeeDAO employeeDAO) {
 		this.meritAdministrationDAO = meritAdministrationDAO;
 		this.employeeDAO = employeeDAO;
 	}
