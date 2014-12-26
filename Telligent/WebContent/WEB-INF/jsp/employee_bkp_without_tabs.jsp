@@ -91,14 +91,12 @@
 				</th>
 		      </tr>
 		    </table>
-		    <div class="easyui-tabs" style="padding-top:40px;width:61%;height:600px">
-		    <div title="Employee Information" style="background-color: #F5F6F7">
-		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 10px" id="employeeInformationTable" class="data-table">
-		    	<!-- <tr>
+		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 40px" id="employeeInformationTable" class="data-table">
+		    	<tr>
 		    		<th colspan="6" style="text-align: left;padding-left: 10px" class="head">
 		    			Employee Information
 		    		</th>
-		    	</tr> -->
+		    	</tr>
 		    	<tr>
 		    		<td style="width: 20%">Employee Id</td>
 		    		<td style="width: 30%"><form:input path="employeeId"/></td>
@@ -154,14 +152,13 @@
 		    		<td><form:input path="disablityDesc"/></td>
 		    	</tr>
 		    </table>
-		   </div>
-		    <div title="Personal Information" style="background-color: #F5F6F7">
-		     <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 10px" id="personalInformationTable" class="data-table">
-		    	<!-- <tr>
+		    
+		     <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 40px" id="personalInformationTable" class="data-table">
+		    	<tr>
 		    		<th colspan="6" style="text-align: left;padding-left: 10px" class="head">
 		    			Personal Information
 		    		</th>
-		    	</tr> -->
+		    	</tr>
 		    	<tr>
 		    		<td style="width: 20%">Home Phone</td>
 		    		<td style="width: 30%"><form:input path="homePhone"/></td>
@@ -193,14 +190,12 @@
 		    		<td></td>
 		    	</tr>
 		    </table>
-		    </div>
-		    <div title="Work Information" style="background-color: #F5F6F7">
-		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 10px" id="workInformationTable" class="data-table">
-		    	<!-- <tr>
+		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 40px" id="workInformationTable" class="data-table">
+		    	<tr>
 		    		<th colspan="6" style="text-align: left;padding-left: 10px" class="head">
 		    			Work Information
 		    		</th>
-		    	</tr> -->
+		    	</tr>
 		    	<tr>
 		    		<td style="width: 20%">Work Phone</td>
 		    		<td style="width: 30%"><form:input path="workPhone"/></td>
@@ -214,14 +209,12 @@
 		    		<td><form:input path="workEmail"/></td>
 		    	</tr>
 		    </table>
-		    </div>
-		    <div title="Emergency Information" style="background-color: #F5F6F7">
-		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 10px" id="emergencyInformationTable" class="data-table">
-		    	<!-- <tr>
+		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 40px" id="emergencyInformationTable" class="data-table">
+		    	<tr>
 		    		<th colspan="6" style="text-align: left;padding-left: 10px" class="head">
 		    			Emergency Information
 		    		</th>
-		    	</tr> -->
+		    	</tr>
 		    	<tr>
 		    		<td style="width: 20%">Last Name</td>
 		    		<td style="width: 30%"><form:input path="emergencyLastName"/></td>
@@ -241,13 +234,11 @@
 		    		<td><form:input path="emergencyEmail"/></td>
 		    	</tr>
 		    </table>
-		    </div>
 	  </div>
-	  		</div>
+	  </div>
   </div>
   </div>
 </div> 
-</div>
 </form:form>
 <script type="text/javascript" src="view/js/docknavigation.js"></script>
 <script type="text/javascript">
