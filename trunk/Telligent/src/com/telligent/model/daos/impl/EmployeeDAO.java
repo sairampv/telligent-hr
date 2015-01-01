@@ -117,7 +117,7 @@ public class EmployeeDAO extends AbstractDBManager{
 				query.append("Insert into employee(employee_id,employee_name,employee_no,last_name,email_id,socialSecNo,badgeNo,dateOfBirth,effectiveDate,citizenship, ");
 				query.append("maritalStatus,veteranStatus,visaType,visaExpDate,isMinor,gender, ");
 				query.append("ethinicity,disabled,disabledDesc,homePhone,cellPhone,personalemail,addressLine1,addressLine2,city,state,zipcode, ");
-				query.append("workPhone,workExt,workEmail,workCellPhone,emergencyLastName,emergencyFirstName,emergencyRelationShip,emergencyHomePhone,emergencyCellPhone,emergencyEmail,createdDate  ");
+				query.append("workPhone,workExt,workEmail,workCellPhone,emergencyLastName,emergencyFirstName,emergencyRelationShip,emergencyHomePhone,emergencyCellPhone,emergencyEmail,createdDate ) ");
 				query.append("values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate())");
 				conn = this.getConnection();
 				ps = conn.prepareStatement(query.toString());
