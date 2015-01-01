@@ -12,7 +12,7 @@ import net.sf.json.JSONSerializer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,13 +80,9 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping(value="/saveEmployeeDetails.htm", method = RequestMethod.POST)
-	public @ResponseBody String saveEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmployeeDTO employeeDTO){
+	public @ResponseBody String saveEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeDTO") EmployeeDTO employeeDTO){
 		logger.info("In saveEmployeeDetails");
-		boolean flag =  employeeDAO.saveEmployeeDetails(employeeDTO);
-		if(flag)
-			return messageHandler.getMessage("label.employeeSaveSuccess");
-		else
-			return messageHandler.getMessage("label.employeeSaveError");
+		return employeeDAO.saveEmployeeDetails(employeeDTO);
 	}
 	
 	@RequestMapping(value="/employee.htm", method = RequestMethod.GET)

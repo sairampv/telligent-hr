@@ -3,7 +3,9 @@ package com.telligent.model.daos.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
@@ -89,32 +91,89 @@ public class EmployeeDAO extends AbstractDBManager{
 		return list;
 	}
 
-	public boolean saveEmployeeDetails(EmployeeDTO employeeDTO) {
+	public boolean checkEmployeeId(Connection conn,PreparedStatement ps,ResultSet rs,String empId){
+		try{
+			ps = conn.prepareStatement("select employee_id from employee where employee_id=?");
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			if(rs.next())
+				return true;
+		}catch(Exception e){
+			return false;
+		}
+		return false;
+	}
+	@SuppressWarnings("deprecation")
+	public String saveEmployeeDetails(EmployeeDTO employeeDTO) {
 		logger.info("in saveEmployeeDetails DAO");
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String query = "Insert into employee(employee_name,last_name,email_id,team_id,salary,employee_id) values(?,?,?,?,?,?)";
+		StringBuffer query = new StringBuffer();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 		try {
-			conn = this.getConnection();
-			int maxId = GenericDAO.getInstance().getMaxId(conn, ps, rs, "SELECT ifnull(MAX(employee_id),0)+1 FROM employee", "");
-			ps = conn.prepareStatement(query);
-			ps.setString(1, employeeDTO.getEmployeeName());
-			ps.setString(2, employeeDTO.getLastName());
-			ps.setString(3, employeeDTO.getEmail());
-			ps.setString(4, employeeDTO.getTeamId());
-			ps.setString(5, employeeDTO.getSalary());
-			ps.setInt(6, maxId);
-			int i = ps.executeUpdate();
-			if(i>0)
-				return true;
+			boolean flag = checkEmployeeId(conn, ps, rs, employeeDTO.getEmployeeId());
+			if(!flag){
+				query.append("Insert into employee(employee_id,employee_name,employee_no,last_name,email_id,socialSecNo,badgeNo,dateOfBirth,effectiveDate,citizenship, ");
+				query.append("maritalStatus,veteranStatus,visaType,visaExpDate,isMinor,gender, ");
+				query.append("ethinicity,disabled,disabledDesc,homePhone,cellPhone,personalemail,addressLine1,addressLine2,city,state,zipcode, ");
+				query.append("workPhone,workExt,workEmail,workCellPhone,emergencyLastName,emergencyFirstName,emergencyRelationShip,emergencyHomePhone,emergencyCellPhone,emergencyEmail,createdDate  ");
+				query.append("values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate())");
+				conn = this.getConnection();
+				ps = conn.prepareStatement(query.toString());
+				ps.setString(1, employeeDTO.getEmployeeId());
+				ps.setString(2, employeeDTO.getEmployeeName());
+				ps.setString(3, employeeDTO.getEmployeeNo());
+				ps.setString(4, employeeDTO.getLastName());
+				ps.setString(5, employeeDTO.getEmail());
+				ps.setString(6, employeeDTO.getSocialSecNo());
+				ps.setString(7, employeeDTO.getBadgeNo());
+				ps.setDate(8, new java.sql.Date(new Date(employeeDTO.getDateOfBirth()).getTime()));
+				ps.setDate(9, new java.sql.Date(new Date(employeeDTO.getEffectiveDate()).getTime()));
+				//ps.setString(9, dateFormat.format(new Date(employeeDTO.getEffectiveDate())));
+				ps.setString(10, employeeDTO.getCitizenship());
+				ps.setString(11, employeeDTO.getMaritalStatus());
+				ps.setString(12, employeeDTO.getVeteranStatus());
+				ps.setString(13, employeeDTO.getVisaType());
+				ps.setDate(14, new java.sql.Date(new Date(employeeDTO.getVisaExpDate()).getTime()));
+				//ps.setString(14, dateFormat.format(new Date(employeeDTO.getVisaExpDate())));
+				ps.setInt(15, employeeDTO.isMinor() ? 0:1);
+				ps.setString(16, employeeDTO.getGender());
+				ps.setString(17, employeeDTO.getEthinicity());
+				ps.setString(18, employeeDTO.getDisabled());
+				ps.setString(19, employeeDTO.getDisablityDesc());
+				ps.setString(20, employeeDTO.getHomePhone());
+				ps.setString(21, employeeDTO.getCellPhone());
+				ps.setString(22, employeeDTO.getPersonalEmail());
+				ps.setString(23, employeeDTO.getAddressLine1());
+				ps.setString(24, employeeDTO.getAddressLine2());
+				ps.setString(25, employeeDTO.getCity());
+				ps.setString(26, employeeDTO.getState());
+				ps.setString(27, employeeDTO.getZipcode());
+				ps.setString(28, employeeDTO.getWorkPhone());
+				ps.setString(29, employeeDTO.getWorkExt());
+				ps.setString(30, employeeDTO.getWorkEmail());
+				ps.setString(31, employeeDTO.getWorkCellPhone());
+				ps.setString(32, employeeDTO.getEmergencyCellPhone());
+				ps.setString(33, employeeDTO.getEmergencyEmail());
+				ps.setString(34, employeeDTO.getEmergencyFirstName());
+				ps.setString(35, employeeDTO.getEmergencyLastName());
+				ps.setString(36, employeeDTO.getEmergencyHomePhone());
+				ps.setString(37, employeeDTO.getEmergencyRelationShip());
+				int i = ps.executeUpdate();
+				if(i>0)
+					return "Employee Details Saved Successfully";
+				else
+					return "Employee Details not Saved";	
+			}else
+				return "Employee Id exists";
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			logger.info("Excpetion in saveEmployeeDetails "+ex.getMessage());
+			return "Employee Details not Saved";
 		} finally {
 			this.closeAll(conn, ps, rs);
 		}
-		return false;
 	}
 
 	public ArrayList<MapDTO> searchList(String firstName, String lastName,String empId) {
@@ -241,5 +300,4 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return dto;
 	}
-
 }
