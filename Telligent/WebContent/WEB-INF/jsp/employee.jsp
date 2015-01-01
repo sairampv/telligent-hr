@@ -95,6 +95,12 @@
 		    		<td>Disabled Description</td>
 		    		<td><form:input path="disablityDesc"/></td>
 		    	</tr>
+		    	<tr>
+		    		<td>Email</td>
+		    		<td><form:input path="email"/></td>
+		    		<td></td>
+		    		<td></td>
+		    	</tr>
 		    </table>
 		   </div>
 		    <div title="Personal Information" style="background-color: #F5F6F7">
