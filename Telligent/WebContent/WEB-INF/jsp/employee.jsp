@@ -8,73 +8,11 @@
 <script type="text/javascript" src="view/js/jquery/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="view/js/app/telligentCommon.js"></script>
 <script type="text/javascript" src="view/js/popup.js"></script>
-<form:form commandName="employee">
+<form:form commandName="employee" id="employeeForm">
 <div id="contentArea">
 <div class="loader"></div>
 <div class="contentArea">
-	<div class="innerleft"  id="col1">
-    	<table class="leftAccordion" cellspacing="1" cellpadding="5" id="employeeSearchTable">
-    		<tr>
-		        <th colspan="2" class="head" height="25" align="left">Search</th>
-		    </tr>
-		    <tr>
-		    	<td>Last Name</td>
-		    	<td>
-		    		<input class="easyui-combobox" id="lastNameInputId" style="width:200px" data-options="
-						url:'searchLastName.htm',
-						method:'post',
-						mode: 'remote',
-						valueField: 'id',
-						textField: 'value',
-						selectOnNavigation:false,
-						onSelect:searchLastNameSelect
-						">
-		    	</td>
-		    </tr>
-		    <tr>
-		    	<td>First Name</td>
-		    	<td>
-		    		<input class="easyui-combobox" id="firstNameInputId" style="width:200px" data-options="
-						url:'searchFirstName.htm',
-						method:'post',
-						mode: 'remote',
-						valueField: 'id',
-						textField: 'value',
-						selectOnNavigation:false,
-						onSelect:searchFirstNameSelect
-						">
-		    	</td>
-		    </tr>
-		    <tr>
-		    	<td>Employee Id</td>
-		    	<td>
-		    		<input class="easyui-combobox" id="employeeInpuId" style="width:200px" data-options="
-						url:'searchEmpId.htm',
-						method:'post',
-						mode: 'remote',
-						valueField: 'id',
-						textField: 'value',
-						selectOnNavigation:false,
-						onSelect:searchEmpIdSelect
-						">
-		    	</td>
-		    </tr>
-		    <tr>
-		    	<td>Team Name</td>
-		    	<td>
-		    		<input class="easyui-combobox" id="teamInputId" style="width:200px" data-options="
-						url:'searchTeamEmployees.htm',
-						method:'post',
-						mode: 'remote',
-						valueField: 'id',
-						textField: 'value',
-						selectOnNavigation:false,
-						onSelect:searchTeamEmployeesSelect
-						">
-		    	</td>
-		    </tr>
-    	</table>  
-	</div>
+	<%@include file="employeeLeft.jsp" %>
  	<div class="innerright"  id="flow">
 	 	<a href="javascript:toggle()" title="Hide Nav 13" id="flowtab"></a>
 	 	<div style="margin:0px;cursor:auto;" id="tab">
@@ -91,7 +29,11 @@
 				</th>
 		      </tr>
 		    </table>
-		    <div class="easyui-tabs" style="padding-top:40px;width:61%;height:600px">
+		   	<div style="padding:5px;width:100%;">
+				<a href="#" onclick="javascript:reset()" class="easyui-linkbutton" iconCls="icon-add">Create Employee</a>
+				<a href="#" onclick="javascript:save()" class="easyui-linkbutton" iconCls="icon-save">Save</a>
+			</div>
+		    <div class="easyui-accordion" style="width:100%;height:480px">
 		    <div title="Employee Information" style="background-color: #F5F6F7">
 		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" style="padding-top: 10px" id="employeeInformationTable" class="data-table">
 		    	<!-- <tr>
@@ -119,9 +61,9 @@
 		    	</tr>
 		    	<tr>
 		    		<td>Date Of Birth</td>
-		    		<td><form:input path="dateOfBirth"/></td>
+		    		<td><form:input path="dateOfBirth" class="easyui-datebox"/></td>
 		    		<td>Effective Date</td>
-		    		<td><form:input path="effectiveDate"/></td>
+		    		<td><form:input path="effectiveDate" class="easyui-datebox"/></td>
 		    	</tr>
 		    	<tr>
 		    		<td>Citizenship</td>
@@ -145,7 +87,7 @@
 		    		<td>Visa Type</td>
 		    		<td><form:input path="visaType"/></td>
 		    		<td>Visa Expiry Date</td>
-		    		<td><form:input path="visaExpDate"/></td>
+		    		<td><form:input path="visaExpDate" class="easyui-datebox"/></td>
 		    	</tr>
 		    	<tr>
 		    		<td>Disabled</td>
@@ -299,5 +241,24 @@
    				closeloading();
    			}});
 	}
+	function reset(){
+		document.getElementById("employeeForm").reset();
+	}
+	function save(){
+		loading();
+		$.ajax({
+   			url:"saveEmployeeDetails.htm",
+   			type: "post",
+   			data : $("#employeeForm").serialize(),
+   			error: function(obj){
+   				alert(obj);
+   				closeloading();
+   			},
+   			success: function(obj){
+   				alert(obj);
+   				closeloading();
+   			}});
+	}
 </script>  
 <!-- </div> -->
+
