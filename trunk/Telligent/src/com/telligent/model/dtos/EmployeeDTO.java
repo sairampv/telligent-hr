@@ -2,6 +2,8 @@ package com.telligent.model.dtos;
 
 import java.util.ArrayList;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class EmployeeDTO {
 	
 	private String employeeId;
@@ -10,25 +12,17 @@ public class EmployeeDTO {
 	private String teamId;
 	private String teamName;
 	private String lastName;
+	private String middleName;
+	private String firstName;
 	private String salary;
 	private ArrayList<TeamDTO> teamsList = new ArrayList<TeamDTO>();
-	private String socialSecNo;
 	private String badgeNo;
 	private String dateOfBirth;
 	private String effectiveDate;
-	private String citizenship;
-	private String maritalStatus;
-	private String veteranStatus;
-	private String visaType;
-	private String visaExpDate;
 	private boolean minor;
-	private String gender;
-	private String ethinicity;
-	private String disabled;
-	private String disablityDesc;
-	
+
 	private String homePhone;
-	private String cellPhone;
+	private String mobilePhone;
 	private String email;
 	private String personalEmail;
 	private String addressLine1;
@@ -40,14 +34,17 @@ public class EmployeeDTO {
 	private String workPhone;
 	private String workExt;
 	private String workEmail;
-	private String workCellPhone;
+	private String workMobilePhone;
 	
 	private String emergencyLastName;
 	private String emergencyFirstName;
 	private String emergencyRelationShip;
 	private String emergencyHomePhone;
-	private String emergencyCellPhone;
+	private String emergencyMobilePhone;
 	private String emergencyEmail;
+	
+	private MultipartFile picture;
+	
 	/**
 	 * @return the employeeId
 	 */
@@ -120,6 +117,31 @@ public class EmployeeDTO {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	
+	/**
+	 * @return the middleName
+	 */
+	public String getMiddleName() {
+		return middleName;
+	}
+	/**
+	 * @param middleName the middleName to set
+	 */
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+	/**
+	 * @return the firstName
+	 */
+	public String getFirstName() {
+		return firstName;
+	}
+	/**
+	 * @param firstName the firstName to set
+	 */
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 	/**
 	 * @return the salary
 	 */
@@ -143,18 +165,6 @@ public class EmployeeDTO {
 	 */
 	public void setTeamsList(ArrayList<TeamDTO> teamsList) {
 		this.teamsList = teamsList;
-	}
-	/**
-	 * @return the socialSecNo
-	 */
-	public String getSocialSecNo() {
-		return socialSecNo;
-	}
-	/**
-	 * @param socialSecNo the socialSecNo to set
-	 */
-	public void setSocialSecNo(String socialSecNo) {
-		this.socialSecNo = socialSecNo;
 	}
 	/**
 	 * @return the badgeNo
@@ -193,66 +203,6 @@ public class EmployeeDTO {
 		this.dateOfBirth = dateOfBirth;
 	}
 	/**
-	 * @return the citizenship
-	 */
-	public String getCitizenship() {
-		return citizenship;
-	}
-	/**
-	 * @param citizenship the citizenship to set
-	 */
-	public void setCitizenship(String citizenship) {
-		this.citizenship = citizenship;
-	}
-	/**
-	 * @return the maritalStatus
-	 */
-	public String getMaritalStatus() {
-		return maritalStatus;
-	}
-	/**
-	 * @param maritalStatus the maritalStatus to set
-	 */
-	public void setMaritalStatus(String maritalStatus) {
-		this.maritalStatus = maritalStatus;
-	}
-	/**
-	 * @return the veteranStatus
-	 */
-	public String getVeteranStatus() {
-		return veteranStatus;
-	}
-	/**
-	 * @param veteranStatus the veteranStatus to set
-	 */
-	public void setVeteranStatus(String veteranStatus) {
-		this.veteranStatus = veteranStatus;
-	}
-	/**
-	 * @return the visaType
-	 */
-	public String getVisaType() {
-		return visaType;
-	}
-	/**
-	 * @param visaType the visaType to set
-	 */
-	public void setVisaType(String visaType) {
-		this.visaType = visaType;
-	}
-	/**
-	 * @return the visaExpDate
-	 */
-	public String getVisaExpDate() {
-		return visaExpDate;
-	}
-	/**
-	 * @param visaExpDate the visaExpDate to set
-	 */
-	public void setVisaExpDate(String visaExpDate) {
-		this.visaExpDate = visaExpDate;
-	}
-	/**
 	 * @return the isMinor
 	 */
 	public boolean isMinor() {
@@ -263,54 +213,6 @@ public class EmployeeDTO {
 	 */
 	public void setMinor(boolean minor) {
 		this.minor = minor;
-	}
-	/**
-	 * @return the gender
-	 */
-	public String getGender() {
-		return gender;
-	}
-	/**
-	 * @param gender the gender to set
-	 */
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-	/**
-	 * @return the ethinicity
-	 */
-	public String getEthinicity() {
-		return ethinicity;
-	}
-	/**
-	 * @param ethinicity the ethinicity to set
-	 */
-	public void setEthinicity(String ethinicity) {
-		this.ethinicity = ethinicity;
-	}
-	/**
-	 * @return the disabled
-	 */
-	public String getDisabled() {
-		return disabled;
-	}
-	/**
-	 * @param disabled the disabled to set
-	 */
-	public void setDisabled(String disabled) {
-		this.disabled = disabled;
-	}
-	/**
-	 * @return the disablityDesc
-	 */
-	public String getDisablityDesc() {
-		return disablityDesc;
-	}
-	/**
-	 * @param disablityDesc the disablityDesc to set
-	 */
-	public void setDisablityDesc(String disablityDesc) {
-		this.disablityDesc = disablityDesc;
 	}
 	/**
 	 * @return the homePhone
@@ -325,16 +227,16 @@ public class EmployeeDTO {
 		this.homePhone = homePhone;
 	}
 	/**
-	 * @return the cellPhone
+	 * @return the mobilePhone
 	 */
-	public String getCellPhone() {
-		return cellPhone;
+	public String getMobilePhone() {
+		return mobilePhone;
 	}
 	/**
-	 * @param cellPhone the cellPhone to set
+	 * @param mobilePhone the mobilePhone to set
 	 */
-	public void setCellPhone(String cellPhone) {
-		this.cellPhone = cellPhone;
+	public void setMobilePhone(String mobilePhone) {
+		this.mobilePhone = mobilePhone;
 	}
 	/**
 	 * @return the email
@@ -457,16 +359,16 @@ public class EmployeeDTO {
 		this.workEmail = workEmail;
 	}
 	/**
-	 * @return the workCellPhone
+	 * @return the workMobilePhone
 	 */
-	public String getWorkCellPhone() {
-		return workCellPhone;
+	public String getWorkMobilePhone() {
+		return workMobilePhone;
 	}
 	/**
-	 * @param workCellPhone the workCellPhone to set
+	 * @param workMobilePhone the workMobilePhone to set
 	 */
-	public void setWorkCellPhone(String workCellPhone) {
-		this.workCellPhone = workCellPhone;
+	public void setWorkMobilePhone(String workMobilePhone) {
+		this.workMobilePhone = workMobilePhone;
 	}
 	/**
 	 * @return the emergencyLastName
@@ -517,16 +419,16 @@ public class EmployeeDTO {
 		this.emergencyHomePhone = emergencyHomePhone;
 	}
 	/**
-	 * @return the emergencyCellPhone
+	 * @return the emergencyMobilePhone
 	 */
-	public String getEmergencyCellPhone() {
-		return emergencyCellPhone;
+	public String getEmergencyMobilePhone() {
+		return emergencyMobilePhone;
 	}
 	/**
-	 * @param emergencyCellPhone the emergencyCellPhone to set
+	 * @param emergencyMobilePhone the emergencyMobilePhone to set
 	 */
-	public void setEmergencyCellPhone(String emergencyCellPhone) {
-		this.emergencyCellPhone = emergencyCellPhone;
+	public void setEmergencyMobilePhone(String emergencyMobilePhone) {
+		this.emergencyMobilePhone = emergencyMobilePhone;
 	}
 	/**
 	 * @return the emergencyEmail
@@ -540,6 +442,17 @@ public class EmployeeDTO {
 	public void setEmergencyEmail(String emergencyEmail) {
 		this.emergencyEmail = emergencyEmail;
 	}
-
+	/**
+	 * @return the picture
+	 */
+	public MultipartFile getPicture() {
+		return picture;
+	}
+	/**
+	 * @param picture the picture to set
+	 */
+	public void setPicture(MultipartFile picture) {
+		this.picture = picture;
+	}
 	
 }
