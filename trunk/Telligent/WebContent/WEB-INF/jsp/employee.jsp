@@ -9,7 +9,9 @@
 <script type="text/javascript" src="view/js/jquery/jquery.usphone.js"></script>
 <script type="text/javascript" src="view/js/app/telligentCommon.js"></script>
 <script type="text/javascript" src="view/js/popup.js"></script>
-<form:form commandName="employee" id="employeeForm"  enctype="multipart/form-data">
+<form:form commandName="employee" id="employeeForm" modelAttribute="employee" enctype="multipart/form-data">
+<form:hidden path="successMessage"/>
+<form:hidden path="errorMessage"/>
 <div id="contentArea">
 <div class="loader"></div>
 <div class="contentArea">
@@ -48,9 +50,9 @@
 		    		<td style="width: 10%;" nowrap="nowrap">Employee No.</td>
 		    		<td style="width: 20%"><form:input path="employeeNo" title="Auto Generated Employee No" cssClass="required" disabled="true"  placeholder="Auto Generated No"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Employee Id <span style="color: red">*</span></td>
-		    		<td style="width: 20%"><form:input path="employeeId" cssClass="required" /></td>
+		    		<td style="width: 20%"><form:input path="employeeId" cssClass="required"  maxlength="14"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Badge</td>
-		    		<td style="width: 20%"><form:input path="badgeNo"/></td>
+		    		<td style="width: 20%"><form:input path="badgeNo" maxlength="6"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Effective Date <span style="color: red">*</span></td>
 		    		<td style="width: 10%">
 		    			<form:hidden path="effectiveDate"/>
@@ -59,13 +61,13 @@
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">First Name <span style="color: red">*</span></td>
-		    		<td><form:input path="firstName" cssClass="required"/></td>
+		    		<td><form:input path="firstName" cssClass="required" maxlength="25"/></td>
 		    		<td nowrap="nowrap">Middle Name <span style="color: red">*</span></td>
-		    		<td><form:input path="middleName" cssClass="required"/></td>
+		    		<td><form:input path="middleName" cssClass="required" maxlength="25"/></td>
 		    		<td nowrap="nowrap">Last Name <span style="color: red">*</span></td>
-		    		<td><form:input path="lastName" cssClass="required"/></td>
+		    		<td><form:input path="lastName" cssClass="required" maxlength="25"/></td>
 		    		<td nowrap="nowrap">Personal Email</td>
-		    		<td><form:input path="personalEmail"/></td>
+		    		<td><form:input path="personalEmail" maxlength="65"/></td>
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Home Phone</td>
@@ -73,36 +75,36 @@
 		    		<td nowrap="nowrap">Mobile Phone</td>
 		    		<td><form:input path="mobilePhone"/></td>
 		    		<td nowrap="nowrap">Address 1 <span style="color: red">*</span></td>
-		    		<td><form:input path="addressLine1" cssClass="required"/></td>
+		    		<td><form:input path="addressLine1" cssClass="required" maxlength="65"/></td>
 		    		<td nowrap="nowrap">Address 2 <span style="color: red">*</span></td>
-		    		<td><form:input path="addressLine2" cssClass="required"/></td>
+		    		<td><form:input path="addressLine2" cssClass="required" maxlength="65"/></td>
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">City <span style="color: red">*</span></td>
-		    		<td><form:input path="city" cssClass="required"/></td>
+		    		<td><form:input path="city" cssClass="required" maxlength="65"/></td>
 		    		<td nowrap="nowrap">State <span style="color: red">*</span></td>
-		    		<td><form:input path="state" cssClass="required"/></td>
+		    		<td><form:input path="state" cssClass="required" maxlength="56"/></td>
 		    		<td nowrap="nowrap">ZIP <span style="color: red">*</span></td>
-		    		<td><form:input path="zipcode" cssClass="required"/></td>
+		    		<td><form:input path="zipcode" cssClass="required" maxlength="15"/></td>
 		    		<td nowrap="nowrap">Date Of Birth <span style="color: red">*</span></td>
 		    		<td>
 		    			<form:hidden path="dateOfBirth"/>
-		    			<input id="dateOfBirthBox" class="required easyui-datebox" required="true"  width="150px"/>
+		    			<input id="dateOfBirthBox" class="required easyui-datebox" required="true" onkeypress="return false;" data-options="onSelect:dateOfBirthSelect" width="150px"/>
 		    		</td>
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Is Minor</td>
-		    		<td><form:checkbox path="minor" id="minor" disabled="true" title="Depends on Data of Birth Selection"/></td>
+		    		<td><form:checkbox path="minor" id="minor" disabled="true" onblur="alert()" title="Depends on Data of Birth Selection"/></td>
 		    		<td nowrap="nowrap">Work Phone</td>
 		    		<td><form:input path="workPhone"/></td>
 		    		<td nowrap="nowrap">Work Mobile Phone</td>
 		    		<td><form:input path="workMobilePhone"/></td>
 		    		<td nowrap="nowrap">Work Email</td>
-		    		<td><form:input path="workEmail"/></td>
+		    		<td><form:input path="workEmail" maxlength="65"/></td>
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Picture</td>
-		    		<td colspan="8"><input type="file" name="picture" id="picture"></td>
+		    		<td colspan="8"><input type="file" name="picture" id="picture"><img id="image"></td>
 		    	</tr>
 		    	<tr>
 		    		<th colspan="8" style="text-align: left;padding-left: 10px" class="head">
@@ -111,13 +113,13 @@
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Last Name</td>
-		    		<td><form:input path="emergencyLastName"/></td>
+		    		<td><form:input path="emergencyLastName" maxlength="25"/></td>
 		    		<td nowrap="nowrap">First Name</td>
-		    		<td><form:input path="emergencyFirstName"/></td>
+		    		<td><form:input path="emergencyFirstName" maxlength="25"/></td>
 		    		<td nowrap="nowrap">Relation</td>
-		    		<td><form:input path="emergencyRelationShip"/></td>
+		    		<td><form:input path="emergencyRelationShip" maxlength="25"/></td>
 		    		<td nowrap="nowrap">Email</td>
-		    		<td><form:input path="emergencyEmail"/></td>
+		    		<td><form:input path="emergencyEmail" maxlength="25"/></td>
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Home Phone</td>

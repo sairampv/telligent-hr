@@ -80,15 +80,34 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping(value="/saveEmployeeDetails.htm", method = RequestMethod.POST)
-	public @ResponseBody String saveEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeDTO") EmployeeDTO employeeDTO){
+	public ModelAndView saveEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employee") EmployeeDTO employeeDTO){
 		logger.info("In saveEmployeeDetails");
-		return employeeDAO.saveEmployeeDetails(employeeDTO,telligentUtility.getTelligentUser());
+		employeeDTO.setSuccessMessage("");
+		employeeDTO.setErrorMessage("");
+		employeeDTO = employeeDAO.saveEmployeeDetails(employeeDTO,telligentUtility.getTelligentUser());
+		if(employeeDTO.getSuccessMessage()!=null && !employeeDTO.getSuccessMessage().equalsIgnoreCase(""))
+			mav.setViewName("redirect:saveEmployeeDetails.htm?empId="+employeeDTO.getEmployeeId());
+		else{
+			mav.setViewName("employee");
+			mav.addObject("employee", employeeDTO);
+		}
+		return mav;
 	}
 	
 	@RequestMapping(value="/employee.htm", method = RequestMethod.GET)
 	public ModelAndView showEmployeeScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		logger.info("in showEmployeeScreen");
 		mav.addObject("employee", new EmployeeDTO());
+		mav.setViewName("employee");
+		return mav;
+	}
+	@RequestMapping(value="/saveEmployeeDetails.htm", method = RequestMethod.GET)
+	public ModelAndView saveEmployeeDetailsGet(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		logger.info("in showEmployeeScreen");
+		EmployeeDTO dto = new EmployeeDTO();
+		dto.setEmployeeId(req.getParameter("empId"));
+		dto.setSuccessMessage("success");
+		mav.addObject("employee",dto);
 		mav.setViewName("employee");
 		return mav;
 	}
