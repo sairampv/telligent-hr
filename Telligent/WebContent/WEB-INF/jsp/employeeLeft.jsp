@@ -1,4 +1,4 @@
-<div class="innerleft"  id="col1">
+<div class="innerleft" style="min-height: 480px" id="col1">
     	<table class="leftAccordion" cellspacing="1" cellpadding="5" id="employeeSearchTable">
     		<tr>
 		        <th colspan="2" class="head" height="25" align="left">Search</th>

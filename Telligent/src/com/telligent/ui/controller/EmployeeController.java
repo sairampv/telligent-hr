@@ -82,7 +82,7 @@ public class EmployeeController {
 	@RequestMapping(value="/saveEmployeeDetails.htm", method = RequestMethod.POST)
 	public @ResponseBody String saveEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeDTO") EmployeeDTO employeeDTO){
 		logger.info("In saveEmployeeDetails");
-		return employeeDAO.saveEmployeeDetails(employeeDTO);
+		return employeeDAO.saveEmployeeDetails(employeeDTO,telligentUtility.getTelligentUser());
 	}
 	
 	@RequestMapping(value="/employee.htm", method = RequestMethod.GET)
