@@ -2,6 +2,8 @@ package com.telligent.model.daos.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +11,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.sql.rowset.serial.SerialBlob;
+
 import org.apache.log4j.Logger;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.telligent.common.user.TelligentUser;
 import com.telligent.core.system.annotation.SpringBean;
@@ -17,6 +22,8 @@ import com.telligent.model.db.AbstractDBManager;
 import com.telligent.model.dtos.EmployeeDTO;
 import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.TeamDTO;
+import com.telligent.util.BASE64DecodedMultipartFile;
+import com.telligent.util.exceptions.SQLException;
 
 /**
  * @author spothu
@@ -107,15 +114,14 @@ public class EmployeeDAO extends AbstractDBManager{
 		return false;
 	}
 	@SuppressWarnings("deprecation")
-	public String saveEmployeeDetails(EmployeeDTO employeeDTO,TelligentUser telligentUser) {
+	public EmployeeDTO saveEmployeeDetails(EmployeeDTO employeeDTO,TelligentUser telligentUser) {
 		logger.info("in saveEmployeeDetails DAO");
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		StringBuffer query = new StringBuffer();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 		try {
-			query.append("insert into EMP_PERSONAL(EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP");
+			query.append("insert into EMP_PERSONAL(EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 			query.append("DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
 			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_UPDATED,UPDATED_BY)");
 			query.append("values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?)");
@@ -146,20 +152,29 @@ public class EmployeeDAO extends AbstractDBManager{
 			ps.setString(23, employeeDTO.getEmergencyEmail());
 			ps.setString(24, employeeDTO.getEmergencyHomePhone());
 			ps.setString(25, employeeDTO.getEmergencyMobilePhone());
-			ps.setBlob(26, employeeDTO.getPicture()!=null ? employeeDTO.getPicture().getInputStream():null);
+			if(employeeDTO.getPicture() !=null)
+				ps.setBinaryStream(26, employeeDTO.getPicture().getInputStream(),(int)employeeDTO.getPicture().getBytes().length);	
+			else
+				ps.setBinaryStream(26, null);
 			ps.setString(27, telligentUser.getEmployeeId());
 			int i = ps.executeUpdate();
-			if(i>0)
-				return "Employee Details Saved Successfully";
-			else
-				return "Employee Details not Saved";
+			if(i>0){
+				String temp = employeeDTO.getEmployeeId();
+				employeeDTO = new EmployeeDTO();
+				employeeDTO.setEmployeeId(temp);
+				temp = null;
+				employeeDTO.setSuccessMessage("Employee Details Saved Successfully");
+			}else{
+				employeeDTO.setErrorMessage("Employee Details not Saved");
+			}
 		}catch (Exception ex) {
 			ex.printStackTrace();
+			employeeDTO.setErrorMessage("Employee Details not Saved"+ex.getMessage());
 			logger.info("Excpetion in saveEmployeeDetails "+ex.getMessage());
-			return "Employee Details not Saved";
 		} finally {
 			this.closeAll(conn, ps, rs);
 		}
+		return employeeDTO;
 	}
 
 	public ArrayList<MapDTO> searchList(String firstName, String lastName,String empId) {
@@ -231,12 +246,54 @@ public class EmployeeDAO extends AbstractDBManager{
 		ResultSet rs = null;
 		StringBuffer query = new StringBuffer();
 		try{
-			
+			query.append("select EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
+			query.append("DATE_FORMAT(DATE_OF_BIRTH,'%m/%d/%Y') DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
+			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_UPDATED,UPDATED_BY from EMP_PERSONAL where EMP_ID=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				return setEmployeeDetails(rs);
+			}
 		}catch (Exception ex) {
 			logger.info("Excpetion in getEmployeeDetails "+ex.getMessage());
 		} finally {
 			this.closeAll(conn, ps, rs);
 		}
+		return dto;
+	}
+	private EmployeeDTO setEmployeeDetails(ResultSet rs) throws java.sql.SQLException{
+		EmployeeDTO dto = new EmployeeDTO();
+		dto.setEmployeeId(rs.getString("EMP_ID"));
+		dto.setEmployeeNo(rs.getString("EMP_NO"));
+		dto.setLastName(rs.getString("L_NAME"));
+		dto.setMiddleName(rs.getString("M_NAME"));
+		dto.setFirstName(rs.getString("F_NAME"));
+		dto.setPersonalEmail(rs.getString("P_EMAIL"));
+		dto.setBadgeNo(rs.getString("BADGE"));
+		dto.setDateOfBirth(rs.getString("DATE_OF_BIRTH"));
+		dto.setEffectiveDate(rs.getString("EFFECTIVE_DATE"));
+		dto.setMinor(rs.getString("IS_MINOR").equalsIgnoreCase("0")?true:false);
+		dto.setHomePhone(rs.getString("H_PHONE"));
+		dto.setMobilePhone(rs.getString("M_PHONE"));
+		dto.setAddressLine1(rs.getString("ADDRESS_L1"));
+		dto.setAddressLine2(rs.getString("ADDRESS_L2"));
+		dto.setCity(rs.getString("CITY"));
+		dto.setState(rs.getString("STATE"));
+		dto.setZipcode(rs.getString("ZIP"));
+		dto.setWorkPhone(rs.getString("WORK_PHONE"));
+		dto.setWorkEmail(rs.getString("WORK_EMAIL"));
+		dto.setWorkMobilePhone(rs.getString("WORK_MOBILE_PHONE"));
+		dto.setEmergencyMobilePhone(rs.getString("EMC_M_PHONE"));
+		dto.setEmergencyEmail(rs.getString("EMC_EMAIL"));
+		dto.setEmergencyFirstName(rs.getString("EMC_F_NAME"));
+		dto.setEmergencyLastName(rs.getString("EMC_L_NAME"));
+		dto.setEmergencyHomePhone(rs.getString("EMC_H_PHONE"));
+		dto.setEmergencyRelationShip(rs.getString("EMC_REL"));
+		Blob blob = rs.getBlob("PICTURE");
+		BASE64DecodedMultipartFile file = new BASE64DecodedMultipartFile(rs.getBlob("PICTURE").getBytes(1, (int)blob.length()));
+		dto.setPicture(file);
 		return dto;
 	}
 }

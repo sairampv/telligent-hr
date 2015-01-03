@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class EmployeeDTO {
+public class EmployeeDTO extends CommonDTO{
 	
 	private String employeeId;
 	private String employeeNo;
