@@ -1,6 +1,5 @@
 package com.telligent.model.dtos;
 
-import java.sql.Blob;
 import java.util.ArrayList;
 
 import org.springframework.web.multipart.MultipartFile;
