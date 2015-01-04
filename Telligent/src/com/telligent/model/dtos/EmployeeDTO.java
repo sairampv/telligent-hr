@@ -1,5 +1,6 @@
 package com.telligent.model.dtos;
 
+import java.sql.Blob;
 import java.util.ArrayList;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +45,8 @@ public class EmployeeDTO extends CommonDTO{
 	private String emergencyEmail;
 	
 	private MultipartFile picture;
+	
+	private String pictureBase64;
 	
 	/**
 	 * @return the employeeId
@@ -454,5 +457,16 @@ public class EmployeeDTO extends CommonDTO{
 	public void setPicture(MultipartFile picture) {
 		this.picture = picture;
 	}
-	
+	/**
+	 * @return the pictureBase64
+	 */
+	public String getPictureBase64() {
+		return pictureBase64;
+	}
+	/**
+	 * @param pictureBase64 the pictureBase64 to set
+	 */
+	public void setPictureBase64(String pictureBase64) {
+		this.pictureBase64 = pictureBase64;
+	}
 }

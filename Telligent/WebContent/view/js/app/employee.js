@@ -21,7 +21,11 @@ $(function(){
 $(document).ready(function(){
 	if(document.getElementById("successMessage").value == 'success'){
 		alert("Employee Details Saved Successfully");
-		getEmployeeDetailsAjax(document.getElementById("employeeId").value);
+		if(confirm("Do you want to update Compensation details")){
+			alert("Yet to be implemented");
+		}else{
+			getEmployeeDetailsAjax(document.getElementById("employeeId").value);
+		}
 	}else if(document.getElementById("errorMessage").value !=''){
 		$('#effectiveDateBox').datebox('setValue', document.getElementById("effectiveDate").value);
 		$('#dateOfBirthBox').datebox('setValue', document.getElementById("dateOfBirth").value);
@@ -71,9 +75,10 @@ function getEmployeeDetailsAjax(id){
 			document.getElementById('employeeId').title='Disabled on Edit';
 			document.getElementById('operation').value='edit';
 			$.each(obj, function(i, item){
-			  		if(i=='picture'){
-			  			//var imageVal = 'data:image/jpg;base64,'+item.bytes;
-			  			//document.getElementById('image').src = imageVal;
+					if(i=='picture'){
+						//document.getElementById('picture').value = item;
+		  			}else if(i=='pictureBase64'){
+		  			  document.getElementById('image').src= 'data:image/bmp;base64,'+item;
 			  		}else if(i=='effectiveDate'){
 			  			document.getElementById(i).value=effectiveDate;
 			  			$('#effectiveDateBox').datebox('setValue', item);
@@ -148,4 +153,12 @@ function calculateAge(birthMonth, birthDay, birthYear)
     age--;
   }
   return age;
+}
+function PreviewImage() {
+    var oFReader = new FileReader();
+    oFReader.readAsDataURL(document.getElementById("picture").files[0]);
+
+    oFReader.onload = function (oFREvent) {
+        document.getElementById("image").src = oFREvent.target.result;
+    };
 }
