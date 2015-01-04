@@ -12,6 +12,7 @@
 <form:form commandName="employee" id="employeeForm" modelAttribute="employee" enctype="multipart/form-data">
 <form:hidden path="successMessage"/>
 <form:hidden path="errorMessage"/>
+<form:hidden path="operation"/>
 <div id="contentArea">
 <div class="loader"></div>
 <div class="contentArea">
@@ -48,7 +49,7 @@
 		    	</tr>
 		    	<tr>
 		    		<td style="width: 10%;" nowrap="nowrap">Employee No.</td>
-		    		<td style="width: 20%"><form:input path="employeeNo" title="Auto Generated Employee No" cssClass="required" disabled="true"  placeholder="Auto Generated No"/></td>
+		    		<td style="width: 20%"><form:input path="employeeNo" title="Auto Generated Employee No" readonly="true"  placeholder="Auto Generated No"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Employee Id <span style="color: red">*</span></td>
 		    		<td style="width: 20%"><form:input path="employeeId" cssClass="required"  maxlength="14"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Badge</td>
@@ -94,7 +95,7 @@
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Is Minor</td>
-		    		<td><form:checkbox path="minor" id="minor" disabled="true" onblur="alert()" title="Depends on Data of Birth Selection"/></td>
+		    		<td><form:checkbox path="minor" id="minor"  onclick="return false" title="Depends on Data of Birth Selection"/></td>
 		    		<td nowrap="nowrap">Work Phone</td>
 		    		<td><form:input path="workPhone"/></td>
 		    		<td nowrap="nowrap">Work Mobile Phone</td>

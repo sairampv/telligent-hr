@@ -21,8 +21,10 @@ $(function(){
 $(document).ready(function(){
 	if(document.getElementById("successMessage").value == 'success'){
 		alert("Employee Details Saved Successfully");
-		getEmployeeDetailsAjax(document.getElementById("empId").value);
+		getEmployeeDetailsAjax(document.getElementById("employeeId").value);
 	}else if(document.getElementById("errorMessage").value !=''){
+		$('#effectiveDateBox').datebox('setValue', document.getElementById("effectiveDate").value);
+		$('#dateOfBirthBox').datebox('setValue', document.getElementById("dateOfBirth").value);
 		alert(document.getElementById("errorMessage").value);
 	}
 });
@@ -52,10 +54,10 @@ function searchTeamEmployeesSelect(rec){
 	getEmployeeDetails(rec);
 }
 function getEmployeeDetails(rec){
-	loading();
 	getEmployeeDetailsAjax(rec.id);
 }
 function getEmployeeDetailsAjax(id){
+	loading();
 	$.ajax({
 		url:"getEmployeeDetails.htm?empId="+id,
 		type: "post",
@@ -65,8 +67,9 @@ function getEmployeeDetailsAjax(id){
 			alert(obj);
 		},
 		success: function(obj){
-			document.getElementById('employeeId').disabled='true';
+			document.getElementById('employeeId').readOnly='true';
 			document.getElementById('employeeId').title='Disabled on Edit';
+			document.getElementById('operation').value='edit';
 			$.each(obj, function(i, item){
 			  		if(i=='picture'){
 			  			//var imageVal = 'data:image/jpg;base64,'+item.bytes;
@@ -90,7 +93,10 @@ function getEmployeeDetailsAjax(id){
 		}});
 }
 function reset(){
-	document.getElementById("employeeForm").reset();
+	//document.getElementById("employeeForm").reset();
+	document.forms[0].action="employee.htm";
+	document.forms[0].method = "post";
+	document.forms[0].submit();
 }
 function save(){
 	var effectiveDate = $('#effectiveDateBox').datebox('getValue');
@@ -121,9 +127,9 @@ function save(){
 function dateOfBirthSelect(date){
 	var age = calculateAge(date.getMonth()+1,date.getDate(),date.getFullYear());
 	if(age >= 18){
-		document.getElementById('minor').checked = true;
-	}else{
 		document.getElementById('minor').checked = false;
+	}else{
+		document.getElementById('minor').checked = true;
 	}
 }
 function calculateAge(birthMonth, birthDay, birthYear)
