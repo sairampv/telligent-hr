@@ -2,6 +2,7 @@ package com.telligent.model.daos.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Connection;
@@ -103,7 +104,7 @@ public class EmployeeDAO extends AbstractDBManager{
 
 	public boolean checkEmployeeId(Connection conn,PreparedStatement ps,ResultSet rs,String empId){
 		try{
-			ps = conn.prepareStatement("select employee_id from employee where employee_id=?");
+			ps = conn.prepareStatement("select emp_id from EMP_PERSONAL where emp_id=?");
 			ps.setString(1, empId);
 			rs = ps.executeQuery();
 			if(rs.next())
@@ -121,62 +122,90 @@ public class EmployeeDAO extends AbstractDBManager{
 		ResultSet rs = null;
 		StringBuffer query = new StringBuffer();
 		try {
-			query.append("insert into EMP_PERSONAL(EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
-			query.append("DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
-			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_UPDATED,UPDATED_BY)");
-			query.append("values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?)");
 			conn = this.getConnection();
-			ps = conn.prepareStatement(query.toString());
-			ps.setString(1, employeeDTO.getEmployeeId());
-			ps.setString(2, employeeDTO.getBadgeNo());
-			ps.setDate(3, new java.sql.Date(new Date(employeeDTO.getEffectiveDate()).getTime()));
-			ps.setString(4, employeeDTO.getFirstName());
-			ps.setString(5, employeeDTO.getMiddleName());
-			ps.setString(6, employeeDTO.getLastName());
-			ps.setString(7, employeeDTO.getPersonalEmail());
-			ps.setString(8, employeeDTO.getHomePhone());
-			ps.setString(9, employeeDTO.getMobilePhone());
-			ps.setString(10, employeeDTO.getAddressLine1());
-			ps.setString(11, employeeDTO.getAddressLine2());
-			ps.setString(12, employeeDTO.getCity());
-			ps.setString(13, employeeDTO.getState());
-			ps.setString(14, employeeDTO.getZipcode());
-			ps.setDate(15,new java.sql.Date(new Date(employeeDTO.getDateOfBirth()).getTime()));
-			ps.setInt(16,  employeeDTO.isMinor() ? 0:1);
-			ps.setString(17, employeeDTO.getWorkPhone());
-			ps.setString(18, employeeDTO.getWorkMobilePhone());
-			ps.setString(19, employeeDTO.getWorkEmail());
-			ps.setString(20, employeeDTO.getEmergencyLastName());
-			ps.setString(21, employeeDTO.getEmergencyFirstName());
-			ps.setString(22, employeeDTO.getEmergencyRelationShip());
-			ps.setString(23, employeeDTO.getEmergencyEmail());
-			ps.setString(24, employeeDTO.getEmergencyHomePhone());
-			ps.setString(25, employeeDTO.getEmergencyMobilePhone());
-			if(employeeDTO.getPicture() !=null)
-				ps.setBinaryStream(26, employeeDTO.getPicture().getInputStream(),(int)employeeDTO.getPicture().getBytes().length);	
-			else
-				ps.setBinaryStream(26, null);
-			ps.setString(27, telligentUser.getEmployeeId());
-			int i = ps.executeUpdate();
-			if(i>0){
-				String temp = employeeDTO.getEmployeeId();
-				employeeDTO = new EmployeeDTO();
-				employeeDTO.setEmployeeId(temp);
-				temp = null;
-				employeeDTO.setSuccessMessage("Employee Details Saved Successfully");
+			if(employeeDTO.getOperation().equalsIgnoreCase("edit")){
+				query.append("update EMP_PERSONAL set BADGE=?,EFFECTIVE_DATE=?,F_NAME=?,M_NAME=?,L_NAME=?,P_EMAIL=?,H_PHONE=?,M_PHONE=?,ADDRESS_L1=?,ADDRESS_L2=?,CITY=?,STATE=?,ZIP=?,");
+				query.append("DATE_OF_BIRTH=?,IS_MINOR=?,WORK_PHONE=?,WORK_MOBILE_PHONE=?,WORK_EMAIL=?,EMC_L_NAME=?,EMC_F_NAME=?,EMC_REL=?,EMC_EMAIL=?,");
+				query.append("EMC_H_PHONE=?,EMC_M_PHONE=?,PICTURE=?,DATE_UPDATED=sysdate(),UPDATED_BY=? where EMP_ID='"+employeeDTO.getEmployeeId()+"'");
+				ps = conn.prepareStatement(query.toString());
+				setPreparedStatementsForSave(ps, employeeDTO, telligentUser);
+				int i = ps.executeUpdate();
+				if(i>0){
+					String temp = employeeDTO.getEmployeeId();
+					employeeDTO = new EmployeeDTO();
+					employeeDTO.setEmployeeId(temp);
+					temp = null;
+					employeeDTO.setSuccessMessage("Employee Details Saved Successfully");
+				}else{
+					employeeDTO.setErrorMessage("Employee Details not Saved");
+				}
 			}else{
-				employeeDTO.setErrorMessage("Employee Details not Saved");
+				boolean flag = checkEmployeeId(conn, ps, rs, employeeDTO.getEmployeeId());
+				if(flag){
+					employeeDTO.setErrorMessage("Employee ID already Exists");
+					return employeeDTO;
+				}else{
+					query.append("insert into EMP_PERSONAL(EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
+					query.append("DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
+					query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_UPDATED,UPDATED_BY)");
+					query.append("values ('"+employeeDTO.getEmployeeId()+"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?)");
+					ps = conn.prepareStatement(query.toString());
+					setPreparedStatementsForSave(ps, employeeDTO, telligentUser);
+					int i = ps.executeUpdate();
+					if(i>0){
+						String temp = employeeDTO.getEmployeeId();
+						employeeDTO = new EmployeeDTO();
+						employeeDTO.setEmployeeId(temp);
+						temp = null;
+						employeeDTO.setSuccessMessage("Employee Details Saved Successfully");
+					}else{
+						employeeDTO.setErrorMessage("Employee Details not Saved");
+					}
+				}
 			}
+			
 		}catch (Exception ex) {
 			ex.printStackTrace();
-			employeeDTO.setErrorMessage("Employee Details not Saved"+ex.getMessage());
-			logger.info("Excpetion in saveEmployeeDetails "+ex.getMessage());
+			employeeDTO.setErrorMessage("Employee Details not Saved :: "+ex.getMessage());
+			logger.info("Excpetion in saveEmployeeDetails :: "+ex.getMessage());
 		} finally {
 			this.closeAll(conn, ps, rs);
 		}
 		return employeeDTO;
 	}
 
+	@SuppressWarnings("deprecation")
+	private void setPreparedStatementsForSave(PreparedStatement ps,EmployeeDTO employeeDTO,TelligentUser telligentUser) throws java.sql.SQLException,IOException{
+		ps.setString(1, employeeDTO.getBadgeNo());
+		ps.setDate(2, new java.sql.Date(new Date(employeeDTO.getEffectiveDate()).getTime()));
+		ps.setString(3, employeeDTO.getFirstName());
+		ps.setString(4, employeeDTO.getMiddleName());
+		ps.setString(5, employeeDTO.getLastName());
+		ps.setString(6, employeeDTO.getPersonalEmail());
+		ps.setString(7, employeeDTO.getHomePhone());
+		ps.setString(8, employeeDTO.getMobilePhone());
+		ps.setString(9, employeeDTO.getAddressLine1());
+		ps.setString(10, employeeDTO.getAddressLine2());
+		ps.setString(11, employeeDTO.getCity());
+		ps.setString(12, employeeDTO.getState());
+		ps.setString(13, employeeDTO.getZipcode());
+		ps.setDate(14,new java.sql.Date(new Date(employeeDTO.getDateOfBirth()).getTime()));
+		ps.setInt(15,  employeeDTO.isMinor() ? 0:1);
+		ps.setString(16, employeeDTO.getWorkPhone());
+		ps.setString(17, employeeDTO.getWorkMobilePhone());
+		ps.setString(18, employeeDTO.getWorkEmail());
+		ps.setString(19, employeeDTO.getEmergencyLastName());
+		ps.setString(20, employeeDTO.getEmergencyFirstName());
+		ps.setString(21, employeeDTO.getEmergencyRelationShip());
+		ps.setString(22, employeeDTO.getEmergencyEmail());
+		ps.setString(23, employeeDTO.getEmergencyHomePhone());
+		ps.setString(24, employeeDTO.getEmergencyMobilePhone());
+		if(employeeDTO.getPicture() !=null)
+			ps.setBinaryStream(25, employeeDTO.getPicture().getInputStream(),(int)employeeDTO.getPicture().getBytes().length);	
+		else
+			ps.setBinaryStream(25, null);
+		ps.setString(26, telligentUser.getEmployeeId());
+	}
 	public ArrayList<MapDTO> searchList(String firstName, String lastName,String empId) {
 		logger.info("in searchList DAO");
 		Connection conn = null;

@@ -101,6 +101,13 @@ public class EmployeeController {
 		mav.setViewName("employee");
 		return mav;
 	}
+	@RequestMapping(value="/employee.htm", method = RequestMethod.POST)
+	public ModelAndView showEmployeeScreenPost(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		logger.info("in showEmployeeScreen");
+		mav.addObject("employee", new EmployeeDTO());
+		mav.setViewName("employee");
+		return mav;
+	}
 	@RequestMapping(value="/saveEmployeeDetails.htm", method = RequestMethod.GET)
 	public ModelAndView saveEmployeeDetailsGet(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		logger.info("in showEmployeeScreen");
@@ -137,6 +144,8 @@ public class EmployeeController {
 	}
 	@RequestMapping(value="/getEmployeeDetails.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONObject getEmployeeDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
-		return (JSONObject) JSONSerializer.toJSON(employeeDAO.getEmployeeDetails(empId));
+		EmployeeDTO dto = employeeDAO.getEmployeeDetails(empId);
+		dto.setOperation("edit");
+		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
 }

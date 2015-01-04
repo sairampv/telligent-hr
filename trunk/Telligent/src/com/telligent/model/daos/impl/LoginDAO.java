@@ -47,7 +47,8 @@ public class LoginDAO extends AbstractDBManager implements ILoginDAO{
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String query = "SELECT user_name,password,a.employee_id employee_id,role_name,email_id,isChangePassword FROM users a,role_master b,employee c WHERE user_name=? and a.role_id=b.role_id and a.employee_id=c.employee_id";
+//		String query = "SELECT user_name,password,a.employee_id employee_id,role_name,email_id,isChangePassword FROM users a,role_master b,employee c WHERE user_name=? and a.role_id=b.role_id and a.employee_id=c.employee_id";
+		String query = "SELECT user_name,password,a.employee_id employee_id,role_name,work_email,isChangePassword FROM users a,role_master b,EMP_PERSONAL c WHERE user_name=? and a.role_id=b.role_id and a.employee_id=c.emp_id";
 		User user = new User();
 		try {
 			conn = this.getConnection();
@@ -59,7 +60,7 @@ public class LoginDAO extends AbstractDBManager implements ILoginDAO{
 				user.setPassword(rs.getString("password"));
 				user.setEmployeeId(rs.getString("employee_id"));
 				user.setRole(rs.getString("role_name"));
-				user.setEmailId(rs.getString("email_id"));;
+				user.setEmailId(rs.getString("work_email"));;
 				user.setChangePassword(rs.getBoolean("isChangePassword"));
 			}
 		}catch (Exception ex) {
