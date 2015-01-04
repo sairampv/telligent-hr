@@ -49,15 +49,15 @@
 		    	</tr>
 		    	<tr>
 		    		<td style="width: 10%;" nowrap="nowrap">Employee No.</td>
-		    		<td style="width: 20%"><form:input path="employeeNo" title="Auto Generated Employee No" readonly="true"  placeholder="Auto Generated No"/></td>
+		    		<td style="width: 15%"><form:input path="employeeNo" title="Auto Generated Employee No" readonly="true"  placeholder="Auto Generated No"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Employee Id <span style="color: red">*</span></td>
-		    		<td style="width: 20%"><form:input path="employeeId" cssClass="required"  maxlength="14"/></td>
+		    		<td style="width: 15%"><form:input path="employeeId" cssClass="required"  maxlength="14"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Badge</td>
-		    		<td style="width: 20%"><form:input path="badgeNo" maxlength="6"/></td>
-		    		<td style="width: 10%" nowrap="nowrap">Effective Date <span style="color: red">*</span></td>
-		    		<td style="width: 10%">
-		    			<form:hidden path="effectiveDate"/>
-		    			<input id="effectiveDateBox" class="required easyui-datebox" required="true" width="150px"/>
+		    		<td style="width: 15%"><form:input path="badgeNo" maxlength="6"/></td>
+		    		<td style="width: 15%" rowspan="3" nowrap="nowrap">Picture</td>
+		    		<td rowspan="3">
+		    			<img id="image" src="view/images/no_image.jpg" height="100" width="150"/><br />
+						<input id="picture" type="file" name="picture" onchange="PreviewImage();" />
 		    		</td>
 		    	</tr>
 		    	<tr>
@@ -67,8 +67,7 @@
 		    		<td><form:input path="middleName" cssClass="required" maxlength="25"/></td>
 		    		<td nowrap="nowrap">Last Name <span style="color: red">*</span></td>
 		    		<td><form:input path="lastName" cssClass="required" maxlength="25"/></td>
-		    		<td nowrap="nowrap">Personal Email</td>
-		    		<td><form:input path="personalEmail" maxlength="65"/></td>
+		    		
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Home Phone</td>
@@ -77,35 +76,40 @@
 		    		<td><form:input path="mobilePhone"/></td>
 		    		<td nowrap="nowrap">Address 1 <span style="color: red">*</span></td>
 		    		<td><form:input path="addressLine1" cssClass="required" maxlength="65"/></td>
-		    		<td nowrap="nowrap">Address 2 <span style="color: red">*</span></td>
-		    		<td><form:input path="addressLine2" cssClass="required" maxlength="65"/></td>
 		    	</tr>
 		    	<tr>
+		    		<td nowrap="nowrap">Address 2 <span style="color: red">*</span></td>
+		    		<td><form:input path="addressLine2" cssClass="required" maxlength="65"/></td>
 		    		<td nowrap="nowrap">City <span style="color: red">*</span></td>
 		    		<td><form:input path="city" cssClass="required" maxlength="65"/></td>
 		    		<td nowrap="nowrap">State <span style="color: red">*</span></td>
 		    		<td><form:input path="state" cssClass="required" maxlength="56"/></td>
 		    		<td nowrap="nowrap">ZIP <span style="color: red">*</span></td>
 		    		<td><form:input path="zipcode" cssClass="required" maxlength="15"/></td>
+		    	</tr>
+		    	<tr>
+		    		<td nowrap="nowrap">Personal Email</td>
+		    		<td><form:input path="personalEmail" maxlength="65"/></td>
+		    		<td style="width: 10%" nowrap="nowrap">Effective Date <span style="color: red">*</span></td>
+		    		<td style="width: 10%">
+		    			<form:hidden path="effectiveDate"/>
+		    			<input id="effectiveDateBox" class="required easyui-datebox" required="true" width="150px"/>
+		    		</td>
 		    		<td nowrap="nowrap">Date Of Birth <span style="color: red">*</span></td>
 		    		<td>
 		    			<form:hidden path="dateOfBirth"/>
 		    			<input id="dateOfBirthBox" class="required easyui-datebox" required="true" onkeypress="return false;" data-options="onSelect:dateOfBirthSelect" width="150px"/>
 		    		</td>
-		    	</tr>
-		    	<tr>
 		    		<td nowrap="nowrap">Is Minor</td>
 		    		<td><form:checkbox path="minor" id="minor"  onclick="return false" title="Depends on Data of Birth Selection"/></td>
+		    	</tr>
+		    	<tr>
 		    		<td nowrap="nowrap">Work Phone</td>
 		    		<td><form:input path="workPhone"/></td>
 		    		<td nowrap="nowrap">Work Mobile Phone</td>
 		    		<td><form:input path="workMobilePhone"/></td>
 		    		<td nowrap="nowrap">Work Email</td>
-		    		<td><form:input path="workEmail" maxlength="65"/></td>
-		    	</tr>
-		    	<tr>
-		    		<td nowrap="nowrap">Picture</td>
-		    		<td colspan="8"><input type="file" name="picture" id="picture"><img id="image"></td>
+		    		<td colspan="4"><form:input path="workEmail" maxlength="65"/></td>
 		    	</tr>
 		    	<tr>
 		    		<th colspan="8" style="text-align: left;padding-left: 10px" class="head">
