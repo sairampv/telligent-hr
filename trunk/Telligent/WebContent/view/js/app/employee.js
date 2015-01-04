@@ -94,7 +94,23 @@ function getEmployeeDetailsAjax(id){
 				  		$("#"+i).val(item);   				  		
 				  	}			  		
 			});
+			empHistory(id);
 			closeloading();
+		}});
+}
+function empHistory(empId){
+	$('#employeePersonalHistoryTable').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
+	$('#employeePersonalHistoryTable').datagrid('loading');  // 
+	$.ajax({
+		url:"getEmployeeDetailsHistory.htm?empId="+empId,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			$('#employeePersonalHistoryTable').datagrid('loaded');  // hide loading message
+		},
+		success: function(obj){
+			$('#employeePersonalHistoryTable').datagrid('loadData',obj); 
+			$('#employeePersonalHistoryTable').datagrid('loaded');  // hide loading message
 		}});
 }
 function reset(){

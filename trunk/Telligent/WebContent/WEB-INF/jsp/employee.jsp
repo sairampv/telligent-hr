@@ -142,7 +142,36 @@
 										,method: 'post'
 										,pagination:false
 										,emptyMsg: 'No records found'
-										,collapsed:true " >
+										,collapsed:false " >
+						<thead data-options="frozen:true">
+							<tr>
+								<th data-options="field:'employeeId',width:100" >Emp No</th>
+								<th data-options="field:'employeeNo',width:100" >Emp Id</th>
+							</tr>
+						</thead>
+						<thead>
+							<tr>
+								<th data-options="field:'badgeNo',width:100">Badge</th>
+								<th data-options="field:'firstName',width:100">First Name</th>
+								<th data-options="field:'middleName',width:100">Middle Name</th>
+								<th data-options="field:'lastName',width:100">Last Name</th>
+								<th data-options="field:'homePhone',width:100">Home Phone</th>
+								<th data-options="field:'mobilePhone',width:100">Mobile Phone</th>
+								<th data-options="field:'addressLine1',width:100">Address 1</th>
+								<th data-options="field:'addressLine2',width:100">Address 2</th>
+								<th data-options="field:'city',width:100">City</th>
+								<th data-options="field:'state',width:100">State</th>
+								<th data-options="field:'zipcode',width:100">ZIP</th>
+								<th data-options="field:'personalEmail',width:100">Perosonal Email</th>
+								<th data-options="field:'effectiveDate',width:100">Eff Date</th>
+								<th data-options="field:'dateOfBirth',width:100">DOB</th>
+								<th data-options="field:'minor',width:100">Minor</th>
+								<th data-options="field:'workPhone',width:100">Work Phone</th>
+								<th data-options="field:'workMobilePhone',width:100">Work Mobile Phone</th>
+								<th data-options="field:'workEmail',width:100">Work Email</th>
+							</tr>
+						</thead>
+						
 			</table>   
 		</div>
 		</div>

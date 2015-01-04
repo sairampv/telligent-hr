@@ -148,4 +148,8 @@ public class EmployeeController {
 		dto.setOperation("edit");
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
+	@RequestMapping(value="/getEmployeeDetailsHistory.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getEmployeeDetailsHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployeeDetailsHistory(empId));
+	}
 }
