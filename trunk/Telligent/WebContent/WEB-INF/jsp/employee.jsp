@@ -13,6 +13,7 @@
 <form:hidden path="successMessage"/>
 <form:hidden path="errorMessage"/>
 <form:hidden path="operation"/>
+<input type="hidden" id="updateble">
 <div id="contentArea">
 <div class="loader"></div>
 <div class="contentArea">
@@ -29,9 +30,7 @@
 					<a href="dashboard.htm">Dashboard</a> &nbsp;&gt;&nbsp; 
 					<a href="javascript:void(0);">Employee</a> &nbsp;&gt;&nbsp; 
 					<a href="javascript:void(0);" class="select">Employee Personal Details</a>
-					
-					
-					<span style="float: right">  <a href="dashboard.htm">Back</a></span>
+					<span style="float: right"><a href="dashboard.htm">Back</a></span>
 				</div>
 				</th>
 		      </tr>
@@ -84,9 +83,21 @@
 		    		<td nowrap="nowrap">Address 2 <span style="color: red">*</span></td>
 		    		<td><form:input path="addressLine2" cssClass="required" maxlength="65"/></td>
 		    		<td nowrap="nowrap">City <span style="color: red">*</span></td>
-		    		<td><form:input path="city" cssClass="required" maxlength="65"/></td>
+		    		<td>
+		    			<form:select path="city" cssClass="required" onchange="getStateList(this.value,'')">
+		    				<form:option value="">Select</form:option>
+		    				<form:options items="${cityList}" itemValue="id" itemLabel="city"/>
+		    			</form:select>
+		    		<%-- <form:input path="city" cssClass="required" maxlength="65"/> --%>
+		    		</td>
 		    		<td nowrap="nowrap">State <span style="color: red">*</span></td>
-		    		<td><form:input path="state" cssClass="required" maxlength="56"/></td>
+		    		<td>
+		    			<form:select path="state" id="state" cssClass="required">
+		    				<form:option value="">Select</form:option>
+		    				<form:options id="stateList" items="${stateList}" itemValue="id" itemLabel="stateName"/>
+		    			</form:select>
+		    			<%-- <form:input path="state" cssClass="required" maxlength="56"/> --%>
+		    		</td>
 		    		<td nowrap="nowrap">ZIP <span style="color: red">*</span></td>
 		    		<td><form:input path="zipcode" cssClass="required" maxlength="15"/></td>
 		    	</tr>
@@ -148,8 +159,9 @@
 										,collapsed:false " >
 						<thead data-options="frozen:true">
 							<tr>
-								<th data-options="field:'employeeId',width:100" >Emp No</th>
-								<th data-options="field:'employeeNo',width:100" >Emp Id</th>
+								<th data-options="field:'employeeId',width:100" formatter="formatDetail">Emp Id</th>
+								<th data-options="field:'employeeNo',width:100" >Emp No</th>
+								<th data-options="field:'seqNo',width:100" hidden="true">seq no</th>
 							</tr>
 						</thead>
 						<thead>
@@ -172,6 +184,8 @@
 								<th data-options="field:'workPhone',width:100">Work Phone</th>
 								<th data-options="field:'workMobilePhone',width:100">Work Mobile Phone</th>
 								<th data-options="field:'workEmail',width:100">Work Email</th>
+								<th data-options="field:'updatedDate',width:100">Updated Date</th>
+								<th data-options="field:'updatedBy',width:100">Updated By</th>
 							</tr>
 						</thead>
 						

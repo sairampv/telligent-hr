@@ -71,33 +71,43 @@ function getEmployeeDetailsAjax(id){
 			alert(obj);
 		},
 		success: function(obj){
-			document.getElementById('employeeId').readOnly='true';
-			document.getElementById('employeeId').title='Disabled on Edit';
-			document.getElementById('operation').value='edit';
-			$.each(obj, function(i, item){
-					if(i=='picture'){
-						//document.getElementById('picture').value = item;
-		  			}else if(i=='pictureBase64'){
-		  			  document.getElementById('image').src= 'data:image/bmp;base64,'+item;
-			  		}else if(i=='effectiveDate'){
-			  			document.getElementById(i).value=effectiveDate;
-			  			$('#effectiveDateBox').datebox('setValue', item);
-			  		}else if(i=='dateOfBirth'){
-			  			document.getElementById(i).value=dateOfBirth;
-			  			$('#dateOfBirthBox').datebox('setValue', item);
-			  		}else if(i=='minor'){
-				  		if(item)
-				  			document.getElementById(i).checked = true;
-				  		else
-				  			document.getElementById(i).checked = false;
-				  	}else{
-				  		$("#"+i).val(item);   				  		
-				  	}			  		
-			});
-			document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +$('#effectiveDateBox').datebox('getValue');
-			empHistory(id);
-			closeloading();
+			document.getElementById("updateble").value="yes";
+			setEmployeeDetails(obj,id);
 		}});
+}
+function setEmployeeDetails(obj,id){
+	var state = null;
+	getCityList();
+	document.getElementById('employeeId').readOnly='true';
+	document.getElementById('employeeId').title='Disabled on Edit';
+	document.getElementById('operation').value='edit';
+	$.each(obj, function(i, item){
+			if(i=='picture'){
+				//document.getElementById('picture').value = item;
+  			}else if(i=='pictureBase64'){
+  			  document.getElementById('image').src= 'data:image/bmp;base64,'+item;
+	  		}else if(i=='effectiveDate'){
+	  			document.getElementById(i).value=effectiveDate;
+	  			$('#effectiveDateBox').datebox('setValue', item);
+	  		}else if(i=='dateOfBirth'){
+	  			document.getElementById(i).value=dateOfBirth;
+	  			$('#dateOfBirthBox').datebox('setValue', item);
+	  		}else if(i=='minor'){
+		  		if(item)
+		  			document.getElementById(i).checked = true;
+		  		else
+		  			document.getElementById(i).checked = false;
+		  	}else if(i=='state'){
+		  		state = item;
+		  	}else{
+		  		$("#"+i).val(item);   				  		
+		  	}			  		
+	});
+	document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +$('#effectiveDateBox').datebox('getValue');
+	getStateList(document.getElementById('city').value,state);
+	if(id!=null)
+		empHistory(id);
+	closeloading();
 }
 function empHistory(empId){
 	$('#employeePersonalHistoryTable').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
@@ -115,12 +125,17 @@ function empHistory(empId){
 		}});
 }
 function reset(){
+	document.getElementById("updateble").value="yes";
 	//document.getElementById("employeeForm").reset();
 	document.forms[0].action="employee.htm";
 	document.forms[0].method = "post";
 	document.forms[0].submit();
 }
 function save(){
+	if(document.getElementById("updateble").value == "no"){
+		alert("You cannot update the History record.");
+		return false;
+	}
 	var effectiveDate = $('#effectiveDateBox').datebox('getValue');
 	var dateOfBirth = $('#dateOfBirthBox').datebox('getValue');
 	if($('#employeeForm').valid() && dateOfBirth!='' && effectiveDate!=''){
@@ -178,4 +193,62 @@ function PreviewImage() {
     oFReader.onload = function (oFREvent) {
         document.getElementById("image").src = oFREvent.target.result;
     };
+}
+function getCityList(){
+	$.ajax({
+		url:"getCityListAjax.htm",
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+		},
+		success: function(data){
+			var len = data.length;
+			var html = "";
+            for(var i=0; i<len; i++){
+                 html += '<option value="' + data[i].id + '">' + data[i].city + '</option>';
+             }
+            $('#city').append(html);
+            closeloading();
+		}});
+}
+function getStateList(val,state){
+	$('#state').empty();
+	$('#state').append('<option value="">Select</option>');
+	loading();
+	$.ajax({
+		url:"getStateDetails.htm?cityId="+val,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+		},
+		success: function(data){
+			var len = data.length;
+			var html = "";
+            for(var i=0; i<len; i++){
+                 html += '<option value="' + data[i].id + '">' + data[i].stateName + '</option>';
+             }
+            $('#state').append(html);
+            $("#state").val(state); 
+            closeloading();
+		}});
+}
+function formatDetail(value,row,index){
+	return '<a href="#" onclick="javascript:getEmployeeDetailsFromHistoryAjax('+row.seqNo+')">'+value+'</a>';
+}
+function getEmployeeDetailsFromHistoryAjax(id){
+	loading();
+	$.ajax({
+		url:"getEmployeeDetailsFromHistoryAjax.htm?seqNo="+id,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+			alert(obj);
+		},
+		success: function(obj){
+			document.getElementById("updateble").value="no";
+			setEmployeeDetails(obj,null);
+		}});
 }
