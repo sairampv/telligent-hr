@@ -16,8 +16,10 @@ import org.bouncycastle.util.encoders.Base64;
 import com.telligent.common.user.TelligentUser;
 import com.telligent.core.system.annotation.SpringBean;
 import com.telligent.model.db.AbstractDBManager;
+import com.telligent.model.dtos.CityDTO;
 import com.telligent.model.dtos.EmployeeDTO;
 import com.telligent.model.dtos.MapDTO;
+import com.telligent.model.dtos.StateDTO;
 import com.telligent.model.dtos.TeamDTO;
 import com.telligent.util.BASE64DecodedMultipartFile;
 
@@ -318,9 +320,9 @@ public class EmployeeDAO extends AbstractDBManager{
 		ResultSet rs = null;
 		StringBuffer query = new StringBuffer();
 		try{
-			query.append("select EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
+			query.append("select SEQ_NO,EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 			query.append("DATE_FORMAT(DATE_OF_BIRTH,'%m/%d/%Y') DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
-			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_UPDATED,UPDATED_BY from EMP_PERSONAL where EMP_ID=?");
+			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y  %H:%i:%S') DATE_UPDATED,UPDATED_BY from EMP_PERSONAL where EMP_ID=?");
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
 			ps.setString(1, empId);
@@ -343,9 +345,9 @@ public class EmployeeDAO extends AbstractDBManager{
 		StringBuffer query = new StringBuffer();
 		ArrayList<EmployeeDTO> list = new ArrayList<EmployeeDTO>();
 		try{
-			query.append("select EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
+			query.append("select SEQ_NO,EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 			query.append("DATE_FORMAT(DATE_OF_BIRTH,'%m/%d/%Y') DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
-			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_UPDATED,UPDATED_BY from EMP_PERSONAL_HIS where EMP_ID=? order by seq_no desc");
+			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y %H:%i:%S') DATE_UPDATED,UPDATED_BY from EMP_PERSONAL_HIS where EMP_ID=? order by seq_no desc");
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
 			ps.setString(1, empId);
@@ -354,14 +356,41 @@ public class EmployeeDAO extends AbstractDBManager{
 				list.add(setEmployeeDetails(rs));
 			}
 		}catch (Exception ex) {
-			logger.info("Excpetion in getEmployeeDetails "+ex.getMessage());
+			logger.info("Excpetion in getEmployeeDetailsHistory "+ex.getMessage());
 		} finally {
 			this.closeAll(conn, ps, rs);
 		}
 		return list;
 	}
+	
+	public EmployeeDTO getEmployeeDetailsFromHistory(String seqNo){
+		logger.info("in getEmployeeDetailsFromHistory");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select SEQ_NO,EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
+			query.append("DATE_FORMAT(DATE_OF_BIRTH,'%m/%d/%Y') DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
+			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y %H:%i:%S') DATE_UPDATED,UPDATED_BY from EMP_PERSONAL_HIS where SEQ_NO=? ");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, seqNo);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				return setEmployeeDetails(rs);
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeeDetailsFromHistory "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return null;
+	}
+	
 	private EmployeeDTO setEmployeeDetails(ResultSet rs) throws java.sql.SQLException{
 		EmployeeDTO dto = new EmployeeDTO();
+		dto.setSeqNo(rs.getString("SEQ_NO"));
 		dto.setEmployeeId(rs.getString("EMP_ID"));
 		dto.setEmployeeNo(rs.getString("EMP_NO"));
 		dto.setLastName(rs.getString("L_NAME"));
@@ -394,6 +423,61 @@ public class EmployeeDAO extends AbstractDBManager{
 			dto.setPicture(file);
 			dto.setPictureBase64(Base64.toBase64String(blob.getBytes(1, (int)blob.length())));
 		} catch (Exception e) {}
+		dto.setUpdatedDate(rs.getString("DATE_UPDATED"));
+		dto.setUpdatedBy(rs.getString("UPDATED_BY"));
 		return dto;
+	}
+	
+	public ArrayList<CityDTO> getCityDetails(){
+		logger.info("in getStateDetails");
+		ArrayList<CityDTO> list = new ArrayList<CityDTO>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select id,Name from CITY");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			rs = ps.executeQuery();
+			while(rs.next()){
+				CityDTO dto = new CityDTO();
+				dto.setId(rs.getString("id"));
+				dto.setCity(rs.getString("Name"));
+				list.add(dto);
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getStateDetails "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
+	
+	public ArrayList<StateDTO> getStateDetails(String cityId){
+		logger.info("in getStateDetails");
+		ArrayList<StateDTO> list = new ArrayList<StateDTO>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select id,Name from STATE where city_id=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, cityId);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				StateDTO dto = new StateDTO();
+				dto.setId(rs.getString("id"));
+				dto.setStateName(rs.getString("Name"));
+				list.add(dto);
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getStateDetails "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
 	}
 }

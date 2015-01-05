@@ -98,6 +98,7 @@ public class EmployeeController {
 	public ModelAndView showEmployeeScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		logger.info("in showEmployeeScreen");
 		mav.addObject("employee", new EmployeeDTO());
+		mav.addObject("cityList",employeeDAO.getCityDetails());
 		mav.setViewName("employee");
 		return mav;
 	}
@@ -105,6 +106,7 @@ public class EmployeeController {
 	public ModelAndView showEmployeeScreenPost(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		logger.info("in showEmployeeScreen");
 		mav.addObject("employee", new EmployeeDTO());
+		mav.addObject("cityList",employeeDAO.getCityDetails());
 		mav.setViewName("employee");
 		return mav;
 	}
@@ -151,5 +153,18 @@ public class EmployeeController {
 	@RequestMapping(value="/getEmployeeDetailsHistory.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray getEmployeeDetailsHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
 		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployeeDetailsHistory(empId));
+	}
+	@RequestMapping(value="/getEmployeeDetailsFromHistoryAjax.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployeeDetailsFromHistoryAjax(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("seqNo") String seqNo){
+		EmployeeDTO dto = employeeDAO.getEmployeeDetailsFromHistory(seqNo);
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
+	@RequestMapping(value="/getCityListAjax.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getCityList(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getCityDetails());
+	}
+	@RequestMapping(value="/getStateDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getStateDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("cityId") String cityId){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getStateDetails(cityId));
 	}
 }

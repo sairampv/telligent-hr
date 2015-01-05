@@ -3,12 +3,25 @@ package com.telligent.model.dtos;
 
 public class CommonDTO {
 	
+	private String seqNo;
 	private String successMessage;
 	private String errorMessage;
 	private String operation;
 	private String updatedDate;
 	private String updatedBy;
 	
+	/**
+	 * @return the seqNo
+	 */
+	public String getSeqNo() {
+		return seqNo;
+	}
+	/**
+	 * @param seqNo the seqNo to set
+	 */
+	public void setSeqNo(String seqNo) {
+		this.seqNo = seqNo;
+	}
 	/**
 	 * @return the successMessage
 	 */
