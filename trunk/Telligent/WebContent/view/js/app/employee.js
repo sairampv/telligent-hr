@@ -94,6 +94,7 @@ function getEmployeeDetailsAjax(id){
 				  		$("#"+i).val(item);   				  		
 				  	}			  		
 			});
+			document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +$('#effectiveDateBox').datebox('getValue');
 			empHistory(id);
 			closeloading();
 		}});
