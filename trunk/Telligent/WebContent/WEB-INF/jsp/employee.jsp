@@ -29,7 +29,9 @@
 					<a href="dashboard.htm">Dashboard</a> &nbsp;&gt;&nbsp; 
 					<a href="javascript:void(0);">Employee</a> &nbsp;&gt;&nbsp; 
 					<a href="javascript:void(0);" class="select">Employee Personal Details</a>
-					<span style="float: right"><a href="dashboard.htm">Back</a></span>
+					
+					
+					<span style="float: right">  <a href="dashboard.htm">Back</a></span>
 				</div>
 				</th>
 		      </tr>
@@ -45,6 +47,7 @@
 		    		<td colspan="8">
 		    			<a href="#" onclick="javascript:reset()" class="easyui-linkbutton" iconCls="icon-add">Create Employee</a>
 		    			<a href="#" onclick="javascript:save()" class="easyui-linkbutton" iconCls="icon-save">Save</a>
+		    			<span id="empEffectiveDt" style="float: right; color: orange; padding-right: 20px"> </span>
 		    		</td>
 		    	</tr>
 		    	<tr>
