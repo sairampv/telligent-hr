@@ -5,5 +5,6 @@
    		<td style="width: 40px"><input type="button" class="button" value="Employement"></td>
    		<td style="width: 40px"><input type="button" class="button" value="Position"></td>
    		<td><input type="button" class="button" value="Other Data"></td>
+   		<td><span style="float: right"><a href="dashboard.htm" style="text-decoration: none;"><b>Back</b></a></span></td>
    	</tr>
 </table>

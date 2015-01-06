@@ -116,8 +116,8 @@ public class EmployeeDAO extends AbstractDBManager{
 			StringBuffer query = new StringBuffer();
 			query.append("insert into EMP_PERSONAL_HIS(EMP_NO,EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 			query.append("DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
-			query.append("EMC_H_PHONE,EMC_M_PHONE,DATE_UPDATED,UPDATED_BY,PICTURE)");// Always keep PICTURE column as last one
-			query.append("select EMP_NO,EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,EMC_H_PHONE,EMC_M_PHONE,DATE_UPDATED,UPDATED_BY,PICTURE from EMP_PERSONAL where EMP_ID='"+empId+"'");
+			query.append("EMC_H_PHONE,EMC_M_PHONE,DATE_UPDATED,UPDATED_BY,PICTURE,SOCIAL_SEC_NO,END_EFFECTIVE_DATE)");// Always keep PICTURE column as last one
+			query.append("select EMP_NO,EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,EMC_H_PHONE,EMC_M_PHONE,DATE_UPDATED,UPDATED_BY,PICTURE,SOCIAL_SEC_NO,END_EFFECTIVE_DATE from EMP_PERSONAL where EMP_ID='"+empId+"'");
 			ps = conn.prepareStatement(query.toString());
 			int i = ps.executeUpdate();
 			ps.close();
@@ -127,6 +127,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return 0;
 	}
+	@SuppressWarnings("deprecation")
 	public EmployeeDTO saveEmployeeDetails(EmployeeDTO employeeDTO,TelligentUser telligentUser) {
 		logger.info("in saveEmployeeDetails DAO");
 		Connection conn = null;
@@ -146,11 +147,11 @@ public class EmployeeDAO extends AbstractDBManager{
 					if(!employeeDTO.getPicture().getOriginalFilename().equalsIgnoreCase("")){
 						query.append("update EMP_PERSONAL set BADGE=?,EFFECTIVE_DATE=?,F_NAME=?,M_NAME=?,L_NAME=?,P_EMAIL=?,H_PHONE=?,M_PHONE=?,ADDRESS_L1=?,ADDRESS_L2=?,CITY=?,STATE=?,ZIP=?,");
 						query.append("DATE_OF_BIRTH=?,IS_MINOR=?,WORK_PHONE=?,WORK_MOBILE_PHONE=?,WORK_EMAIL=?,EMC_L_NAME=?,EMC_F_NAME=?,EMC_REL=?,EMC_EMAIL=?,");
-						query.append("EMC_H_PHONE=?,EMC_M_PHONE=?,DATE_UPDATED=sysdate(),UPDATED_BY=?,PICTURE=? where EMP_ID='"+empId+"'");					
+						query.append("EMC_H_PHONE=?,EMC_M_PHONE=?,DATE_UPDATED=sysdate(),UPDATED_BY=?,SOCIAL_SEC_NO=?,END_EFFECTIVE_DATE='"+new java.sql.Date(new Date(employeeDTO.getEffectiveDate()).getTime()-1)+"',PICTURE=? where EMP_ID='"+empId+"'");					
 					}else{
 						query.append("update EMP_PERSONAL set BADGE=?,EFFECTIVE_DATE=?,F_NAME=?,M_NAME=?,L_NAME=?,P_EMAIL=?,H_PHONE=?,M_PHONE=?,ADDRESS_L1=?,ADDRESS_L2=?,CITY=?,STATE=?,ZIP=?,");
 						query.append("DATE_OF_BIRTH=?,IS_MINOR=?,WORK_PHONE=?,WORK_MOBILE_PHONE=?,WORK_EMAIL=?,EMC_L_NAME=?,EMC_F_NAME=?,EMC_REL=?,EMC_EMAIL=?,");
-						query.append("EMC_H_PHONE=?,EMC_M_PHONE=?,DATE_UPDATED=sysdate(),UPDATED_BY=? where EMP_ID='"+empId+"'");					
+						query.append("EMC_H_PHONE=?,EMC_M_PHONE=?,DATE_UPDATED=sysdate(),UPDATED_BY=?,END_EFFECTIVE_DATE='"+new java.sql.Date(new Date(employeeDTO.getEffectiveDate()).getTime()-1)+"',SOCIAL_SEC_NO=? where EMP_ID='"+empId+"'");					
 					}
 					ps = conn.prepareStatement(query.toString());
 					setPreparedStatementsForSave(ps, employeeDTO, telligentUser,"edit");
@@ -180,8 +181,8 @@ public class EmployeeDAO extends AbstractDBManager{
 					conn.setAutoCommit(false);
 					query.append("insert into EMP_PERSONAL(EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 					query.append("DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
-					query.append("EMC_H_PHONE,EMC_M_PHONE,DATE_UPDATED,UPDATED_BY,PICTURE)");// Always keep PICTURE column as last one
-					query.append("values ('"+empId+"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?,?)");
+					query.append("EMC_H_PHONE,EMC_M_PHONE,DATE_UPDATED,UPDATED_BY,SOCIAL_SEC_NO,END_EFFECTIVE_DATE,PICTURE)");// Always keep PICTURE column as last one
+					query.append("values ('"+empId+"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?,?,'"+new java.sql.Date(new Date("12/31/3000").getTime())+"',?)");
 					ps = conn.prepareStatement(query.toString());
 					setPreparedStatementsForSave(ps, employeeDTO, telligentUser,"save");
 					int i = ps.executeUpdate();
@@ -239,15 +240,16 @@ public class EmployeeDAO extends AbstractDBManager{
 		ps.setString(23, employeeDTO.getEmergencyHomePhone());
 		ps.setString(24, employeeDTO.getEmergencyMobilePhone());
 		ps.setString(25, telligentUser.getEmployeeId());
+		ps.setString(26, employeeDTO.getSocialSecNo());
 		// Always keep Picture column as last one
 		if(operation.equalsIgnoreCase("save")){
 			if(employeeDTO.getPicture() !=null)
-				ps.setBinaryStream(26, employeeDTO.getPicture().getInputStream(),(int)employeeDTO.getPicture().getBytes().length);	
+				ps.setBinaryStream(27, employeeDTO.getPicture().getInputStream(),(int)employeeDTO.getPicture().getBytes().length);	
 			else
-				ps.setBinaryStream(26, null);
+				ps.setBinaryStream(27, null);
 		}else{
 			if(!employeeDTO.getPicture().getOriginalFilename().equalsIgnoreCase(""))
-				ps.setBinaryStream(26, employeeDTO.getPicture().getInputStream(),(int)employeeDTO.getPicture().getBytes().length);	
+				ps.setBinaryStream(27, employeeDTO.getPicture().getInputStream(),(int)employeeDTO.getPicture().getBytes().length);	
 		}
 		
 	}
@@ -322,7 +324,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		try{
 			query.append("select SEQ_NO,EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 			query.append("DATE_FORMAT(DATE_OF_BIRTH,'%m/%d/%Y') DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
-			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y  %H:%i:%S') DATE_UPDATED,UPDATED_BY from EMP_PERSONAL where EMP_ID=?");
+			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y  %H:%i:%S') DATE_UPDATED,UPDATED_BY,SOCIAL_SEC_NO from EMP_PERSONAL where EMP_ID=?");
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
 			ps.setString(1, empId);
@@ -347,7 +349,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		try{
 			query.append("select SEQ_NO,EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 			query.append("DATE_FORMAT(DATE_OF_BIRTH,'%m/%d/%Y') DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
-			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y %H:%i:%S') DATE_UPDATED,UPDATED_BY from EMP_PERSONAL_HIS where EMP_ID=? order by seq_no desc");
+			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y %H:%i:%S') DATE_UPDATED,UPDATED_BY,SOCIAL_SEC_NO from EMP_PERSONAL_HIS where EMP_ID=? order by seq_no desc");
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
 			ps.setString(1, empId);
@@ -372,7 +374,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		try{
 			query.append("select SEQ_NO,EMP_NO,EMP_ID,BADGE,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 			query.append("DATE_FORMAT(DATE_OF_BIRTH,'%m/%d/%Y') DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
-			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y %H:%i:%S') DATE_UPDATED,UPDATED_BY from EMP_PERSONAL_HIS where SEQ_NO=? ");
+			query.append("EMC_H_PHONE,EMC_M_PHONE,PICTURE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y %H:%i:%S') DATE_UPDATED,UPDATED_BY,SOCIAL_SEC_NO from EMP_PERSONAL_HIS where SEQ_NO=? ");
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
 			ps.setString(1, seqNo);
@@ -417,6 +419,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		dto.setEmergencyLastName(rs.getString("EMC_L_NAME"));
 		dto.setEmergencyHomePhone(rs.getString("EMC_H_PHONE"));
 		dto.setEmergencyRelationShip(rs.getString("EMC_REL"));
+		dto.setSocialSecNo(rs.getString("SOCIAL_SEC_NO"));
 		try {
 			Blob blob = rs.getBlob("PICTURE");
 			BASE64DecodedMultipartFile file = new BASE64DecodedMultipartFile(rs.getBlob("PICTURE").getBytes(1, (int)blob.length()));
@@ -428,7 +431,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		return dto;
 	}
 	
-	public ArrayList<CityDTO> getCityDetails(){
+	public ArrayList<CityDTO> getCityDetails(String stateId){
 		logger.info("in getStateDetails");
 		ArrayList<CityDTO> list = new ArrayList<CityDTO>();
 		Connection conn = null;
@@ -436,9 +439,10 @@ public class EmployeeDAO extends AbstractDBManager{
 		ResultSet rs = null;
 		StringBuffer query = new StringBuffer();
 		try{
-			query.append("select id,Name from CITY");
+			query.append("select id,Name from City where state_id=?");
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, stateId);
 			rs = ps.executeQuery();
 			while(rs.next()){
 				CityDTO dto = new CityDTO();
@@ -454,7 +458,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		return list;
 	}
 	
-	public ArrayList<StateDTO> getStateDetails(String cityId){
+	public ArrayList<StateDTO> getStateDetails(){
 		logger.info("in getStateDetails");
 		ArrayList<StateDTO> list = new ArrayList<StateDTO>();
 		Connection conn = null;
@@ -462,10 +466,9 @@ public class EmployeeDAO extends AbstractDBManager{
 		ResultSet rs = null;
 		StringBuffer query = new StringBuffer();
 		try{
-			query.append("select id,Name from STATE where city_id=?");
+			query.append("select id,Name from State");
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
-			ps.setString(1, cityId);
 			rs = ps.executeQuery();
 			while(rs.next()){
 				StateDTO dto = new StateDTO();
