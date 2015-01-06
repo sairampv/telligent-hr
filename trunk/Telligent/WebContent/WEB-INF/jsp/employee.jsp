@@ -23,7 +23,7 @@
 	 	<div style="margin:0px;cursor:auto;" id="tab">
 	    <div class="wrap">
 	    	<%@include file="employeeButtons.jsp" %>  
-		    <table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="E3E3E3" align="right">
+		   <!--  <table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="E3E3E3" align="right">
 		      <tr>
 		        <th class="head1" height="25" align="left">
 		        <div class="innerpage-breadcrum">
@@ -34,8 +34,8 @@
 				</div>
 				</th>
 		      </tr>
-		    </table>
-		    <div style="padding-top:40px;background-color: #F5F6F7">
+		    </table> -->
+		    <div style="background-color: #F5F6F7">
 		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" id="employeeInformationTable" class="data-table">
 		    	<!-- <tr>
 		    		<th colspan="6" style="text-align: left;padding-left: 10px" class="head">
@@ -50,10 +50,10 @@
 		    		</td>
 		    	</tr>
 		    	<tr>
-		    		<td style="width: 10%;" nowrap="nowrap">Employee No.</td>
-		    		<td style="width: 15%"><form:input path="employeeNo" title="Auto Generated Employee No" readonly="true"  placeholder="Auto Generated No"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Employee Id <span style="color: red">*</span></td>
 		    		<td style="width: 15%"><form:input path="employeeId" cssClass="required"  maxlength="14"/></td>
+		    		<td style="width: 10%" nowrap="nowrap">Social Sec # </td>
+		    		<td style="width: 15%"><form:input path="socialSecNo" onKeyPress="return numbersonly(event, true,this.value)" maxlength="14"/></td>
 		    		<td style="width: 10%" nowrap="nowrap">Badge</td>
 		    		<td style="width: 15%"><form:input path="badgeNo" maxlength="6"/></td>
 		    		<td style="width: 15%" rowspan="3" nowrap="nowrap">Picture</td>
@@ -63,13 +63,12 @@
 		    		</td>
 		    	</tr>
 		    	<tr>
+		    		<td nowrap="nowrap">Last Name <span style="color: red">*</span></td>
+		    		<td><form:input path="lastName" cssClass="required" maxlength="25"/></td>
 		    		<td nowrap="nowrap">First Name <span style="color: red">*</span></td>
 		    		<td><form:input path="firstName" cssClass="required" maxlength="25"/></td>
 		    		<td nowrap="nowrap">Middle Name <span style="color: red">*</span></td>
 		    		<td><form:input path="middleName" cssClass="required" maxlength="25"/></td>
-		    		<td nowrap="nowrap">Last Name <span style="color: red">*</span></td>
-		    		<td><form:input path="lastName" cssClass="required" maxlength="25"/></td>
-		    		
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Home Phone</td>
@@ -82,21 +81,21 @@
 		    	<tr>
 		    		<td nowrap="nowrap">Address 2 <span style="color: red">*</span></td>
 		    		<td><form:input path="addressLine2" cssClass="required" maxlength="65"/></td>
-		    		<td nowrap="nowrap">City <span style="color: red">*</span></td>
-		    		<td>
-		    			<form:select path="city" cssClass="required" onchange="getStateList(this.value,'')">
-		    				<form:option value="">Select</form:option>
-		    				<form:options items="${cityList}" itemValue="id" itemLabel="city"/>
-		    			</form:select>
-		    		<%-- <form:input path="city" cssClass="required" maxlength="65"/> --%>
-		    		</td>
 		    		<td nowrap="nowrap">State <span style="color: red">*</span></td>
 		    		<td>
-		    			<form:select path="state" id="state" cssClass="required">
+		    			<form:select path="state" id="state" cssClass="required"  onchange="getCityList(this.value,'')">
 		    				<form:option value="">Select</form:option>
 		    				<form:options id="stateList" items="${stateList}" itemValue="id" itemLabel="stateName"/>
 		    			</form:select>
 		    			<%-- <form:input path="state" cssClass="required" maxlength="56"/> --%>
+		    		</td>
+		    		<td nowrap="nowrap">City <span style="color: red">*</span></td>
+		    		<td>
+		    			<form:select path="city" cssClass="required">
+		    				<form:option value="">Select</form:option>
+		    				<form:options items="${cityList}" itemValue="id" itemLabel="city"/>
+		    			</form:select>
+		    		<%-- <form:input path="city" cssClass="required" maxlength="65"/> --%>
 		    		</td>
 		    		<td nowrap="nowrap">ZIP <span style="color: red">*</span></td>
 		    		<td><form:input path="zipcode" cssClass="required" maxlength="15"/></td>
@@ -125,31 +124,6 @@
 		    		<td nowrap="nowrap">Work Email</td>
 		    		<td colspan="4"><form:input path="workEmail" maxlength="65"/></td>
 		    	</tr>
-		    	<tr>
-		    		<th colspan="8" style="text-align: left;padding-left: 10px" class="head">
-		    			Emergency Information
-		    		</th>
-		    	</tr>
-		    	<tr>
-		    		<td nowrap="nowrap">Last Name</td>
-		    		<td><form:input path="emergencyLastName" maxlength="25"/></td>
-		    		<td nowrap="nowrap">First Name</td>
-		    		<td><form:input path="emergencyFirstName" maxlength="25"/></td>
-		    		<td nowrap="nowrap">Relation</td>
-		    		<td><form:input path="emergencyRelationShip" maxlength="25"/></td>
-		    		<td nowrap="nowrap">Email</td>
-		    		<td><form:input path="emergencyEmail" maxlength="25"/></td>
-		    	</tr>
-		    	<tr>
-		    		<td nowrap="nowrap">Home Phone</td>
-		    		<td><form:input path="emergencyHomePhone"/></td>
-		    		<td nowrap="nowrap">Mobile Phone</td>
-		    		<td><form:input path="emergencyMobilePhone"/></td>
-		    		<td nowrap="nowrap">&nbsp;</td>
-		    		<td>&nbsp;</td>
-		    		<td nowrap="nowrap">&nbsp;</td>
-		    		<td>&nbsp;</td>
-		    	</tr>
 		    </table>
 			<table id="employeePersonalHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
 						data-options="collapsible:true
@@ -159,14 +133,15 @@
 										,collapsed:false " >
 						<thead data-options="frozen:true">
 							<tr>
-								<th data-options="field:'employeeId',width:100" formatter="formatDetail">Emp Id</th>
-								<th data-options="field:'employeeNo',width:100" >Emp No</th>
+								<th data-options="field:'effectiveDate',width:100"  formatter="formatDetail">Eff Date</th>
+								<th data-options="field:'employeeId',width:100">Emp Id</th>
 								<th data-options="field:'seqNo',width:100" hidden="true">seq no</th>
 							</tr>
 						</thead>
 						<thead>
 							<tr>
 								<th data-options="field:'badgeNo',width:100">Badge</th>
+								<th data-options="field:'socialSecNo',width:100">Social Sec No</th>
 								<th data-options="field:'firstName',width:100">First Name</th>
 								<th data-options="field:'middleName',width:100">Middle Name</th>
 								<th data-options="field:'lastName',width:100">Last Name</th>
@@ -178,7 +153,6 @@
 								<th data-options="field:'state',width:100">State</th>
 								<th data-options="field:'zipcode',width:100">ZIP</th>
 								<th data-options="field:'personalEmail',width:100">Perosonal Email</th>
-								<th data-options="field:'effectiveDate',width:100">Eff Date</th>
 								<th data-options="field:'dateOfBirth',width:100">DOB</th>
 								<th data-options="field:'minor',width:100">Minor</th>
 								<th data-options="field:'workPhone',width:100">Work Phone</th>

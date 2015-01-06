@@ -98,7 +98,7 @@ public class EmployeeController {
 	public ModelAndView showEmployeeScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		logger.info("in showEmployeeScreen");
 		mav.addObject("employee", new EmployeeDTO());
-		mav.addObject("cityList",employeeDAO.getCityDetails());
+		mav.addObject("stateList",employeeDAO.getStateDetails());
 		mav.setViewName("employee");
 		return mav;
 	}
@@ -106,7 +106,7 @@ public class EmployeeController {
 	public ModelAndView showEmployeeScreenPost(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
 		logger.info("in showEmployeeScreen");
 		mav.addObject("employee", new EmployeeDTO());
-		mav.addObject("cityList",employeeDAO.getCityDetails());
+		mav.addObject("stateList",employeeDAO.getStateDetails());
 		mav.setViewName("employee");
 		return mav;
 	}
@@ -159,12 +159,12 @@ public class EmployeeController {
 		EmployeeDTO dto = employeeDAO.getEmployeeDetailsFromHistory(seqNo);
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
-	@RequestMapping(value="/getCityListAjax.htm", method = RequestMethod.POST)
-	public @ResponseBody JSONArray getCityList(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
-		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getCityDetails());
+	@RequestMapping(value="/getStateListAjax.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getStateListAjax(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getStateDetails());
 	}
-	@RequestMapping(value="/getStateDetails.htm", method = RequestMethod.POST)
-	public @ResponseBody JSONArray getStateDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("cityId") String cityId){
-		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getStateDetails(cityId));
+	@RequestMapping(value="/getCityDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getCityDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("stateId") String stateId){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getCityDetails(stateId));
 	}
 }

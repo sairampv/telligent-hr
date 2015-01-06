@@ -16,6 +16,9 @@ $(function(){
 	$('#dateOfBirthBox').datebox('textbox').bind('keypress',function(e){
 		return false;
 	});
+	$('#effectiveDateBox').datebox('textbox').bind('keypress',function(e){
+		return false;
+	});
 });
 
 $(document).ready(function(){
@@ -76,8 +79,8 @@ function getEmployeeDetailsAjax(id){
 		}});
 }
 function setEmployeeDetails(obj,id){
-	var state = null;
-	getCityList();
+	var city = null;
+	getStateList();
 	document.getElementById('employeeId').readOnly='true';
 	document.getElementById('employeeId').title='Disabled on Edit';
 	document.getElementById('operation').value='edit';
@@ -87,24 +90,26 @@ function setEmployeeDetails(obj,id){
   			}else if(i=='pictureBase64'){
   			  document.getElementById('image').src= 'data:image/bmp;base64,'+item;
 	  		}else if(i=='effectiveDate'){
-	  			document.getElementById(i).value=effectiveDate;
+	  			//document.getElementById(i).value=effectiveDate;
 	  			$('#effectiveDateBox').datebox('setValue', item);
 	  		}else if(i=='dateOfBirth'){
-	  			document.getElementById(i).value=dateOfBirth;
+	  			//document.getElementById(i).value=dateOfBirth;
 	  			$('#dateOfBirthBox').datebox('setValue', item);
 	  		}else if(i=='minor'){
 		  		if(item)
 		  			document.getElementById(i).checked = true;
 		  		else
 		  			document.getElementById(i).checked = false;
-		  	}else if(i=='state'){
-		  		state = item;
+		  	}else if(i=='city'){
+		  		city = item;
 		  	}else{
 		  		$("#"+i).val(item);   				  		
 		  	}			  		
 	});
-	document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +$('#effectiveDateBox').datebox('getValue');
-	getStateList(document.getElementById('city').value,state);
+	var effDate = $('#effectiveDateBox').datebox('getValue');
+	document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +effDate;
+	$('#effectiveDateBox').datebox('setValue', '');
+	getCityList(document.getElementById('state').value,city);
 	if(id!=null)
 		empHistory(id);
 	closeloading();
@@ -194,30 +199,9 @@ function PreviewImage() {
         document.getElementById("image").src = oFREvent.target.result;
     };
 }
-function getCityList(){
+function getStateList(){
 	$.ajax({
-		url:"getCityListAjax.htm",
-		type: "post",
-		dataType: 'json',
-		error: function(obj){
-			closeloading();
-		},
-		success: function(data){
-			var len = data.length;
-			var html = "";
-            for(var i=0; i<len; i++){
-                 html += '<option value="' + data[i].id + '">' + data[i].city + '</option>';
-             }
-            $('#city').append(html);
-            closeloading();
-		}});
-}
-function getStateList(val,state){
-	$('#state').empty();
-	$('#state').append('<option value="">Select</option>');
-	loading();
-	$.ajax({
-		url:"getStateDetails.htm?cityId="+val,
+		url:"getStateListAjax.htm",
 		type: "post",
 		dataType: 'json',
 		error: function(obj){
@@ -230,7 +214,28 @@ function getStateList(val,state){
                  html += '<option value="' + data[i].id + '">' + data[i].stateName + '</option>';
              }
             $('#state').append(html);
-            $("#state").val(state); 
+            closeloading();
+		}});
+}
+function getCityList(val,city){
+	$('#city').empty();
+	$('#city').append('<option value="">Select</option>');
+	loading();
+	$.ajax({
+		url:"getCityDetails.htm?stateId="+val,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+		},
+		success: function(data){
+			var len = data.length;
+			var html = "";
+            for(var i=0; i<len; i++){
+                 html += '<option value="' + data[i].id + '">' + data[i].city + '</option>';
+             }
+            $('#city').append(html);
+            $("#city").val(city); 
             closeloading();
 		}});
 }

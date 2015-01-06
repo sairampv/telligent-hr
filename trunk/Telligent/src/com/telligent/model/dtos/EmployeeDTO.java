@@ -17,6 +17,7 @@ public class EmployeeDTO extends CommonDTO{
 	private String salary;
 	private ArrayList<TeamDTO> teamsList = new ArrayList<TeamDTO>();
 	private String badgeNo;
+	private String socialSecNo;
 	private String dateOfBirth;
 	private String effectiveDate;
 	private boolean minor;
@@ -179,6 +180,18 @@ public class EmployeeDTO extends CommonDTO{
 	 */
 	public void setBadgeNo(String badgeNo) {
 		this.badgeNo = badgeNo;
+	}
+	/**
+	 * @return the socialSecNo
+	 */
+	public String getSocialSecNo() {
+		return socialSecNo;
+	}
+	/**
+	 * @param socialSecNo the socialSecNo to set
+	 */
+	public void setSocialSecNo(String socialSecNo) {
+		this.socialSecNo = socialSecNo;
 	}
 	/**
 	 * @return the effectiveDate
