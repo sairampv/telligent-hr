@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
@@ -480,6 +481,53 @@ public class EmployeeDAO extends AbstractDBManager{
 			logger.info("Excpetion in getStateDetails "+ex.getMessage());
 		} finally {
 			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
+	/**
+	 *  Generic method to get id and value of lookup tables
+	 * @return HashMap
+	 */
+	public HashMap<String, ArrayList<MapDTO>> getEmpCompensationLookup(){
+		logger.info("in getEmpCompensationLookup");
+		HashMap<String, ArrayList<MapDTO>> map = new HashMap<String, ArrayList<MapDTO>>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try{
+			conn = this.getConnection();
+			map.put("Base_Rate_Frequency", getEmpCompensationLookup(conn, ps, rs, "Base_Rate_Frequency"));
+			map.put("Bonus_Plan", getEmpCompensationLookup(conn, ps, rs, "Bonus_Plan"));
+			map.put("Compensation_Action", getEmpCompensationLookup(conn, ps, rs, "Compensation_Action"));
+			map.put("Compensation_Action_Reason", getEmpCompensationLookup(conn, ps, rs, "Compensation_Action_Reason"));
+			map.put("Default_Earning_Code", getEmpCompensationLookup(conn, ps, rs, "Default_Earning_Code"));
+			map.put("Default_Hours_Frequency", getEmpCompensationLookup(conn, ps, rs, "Default_Hours_Frequency"));
+			map.put("Grade", getEmpCompensationLookup(conn, ps, rs, "Grade"));
+			map.put("Job_Group", getEmpCompensationLookup(conn, ps, rs, "Job_Group"));
+			map.put("pay_entity", getEmpCompensationLookup(conn, ps, rs, "pay_entity"));
+			map.put("pay_frequency", getEmpCompensationLookup(conn, ps, rs, "pay_frequency"));
+			map.put("pay_group", getEmpCompensationLookup(conn, ps, rs, "pay_group"));
+			map.put("Performance_Plan", getEmpCompensationLookup(conn, ps, rs, "Performance_Plan"));
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmpCompensationLookup "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return map;
+	}
+	public ArrayList<MapDTO> getEmpCompensationLookup(Connection conn,PreparedStatement ps,ResultSet rs,String tableName){
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		try{
+			ps = conn.prepareStatement("select id,value from "+tableName);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				MapDTO dto = new MapDTO();
+				dto.setId(rs.getString("id"));
+				dto.setValue(rs.getString("value"));
+				list.add(dto);
+			}
+		}catch(Exception e){
+			logger.error("Exception in getEmpCompensationLookup "+e.getMessage());
 		}
 		return list;
 	}
