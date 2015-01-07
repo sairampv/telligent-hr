@@ -14,6 +14,7 @@
 <form:hidden path="errorMessage"/>
 <form:hidden path="operation"/>
 <input type="hidden" id="updateble">
+<input type="hidden" id="screenName" value="personal">
 <div id="contentArea">
 <div class="loader"></div>
 <div class="contentArea">
@@ -36,7 +37,7 @@
 		      </tr>
 		    </table> -->
 		    <div style="background-color: #F5F6F7">
-		    <table  width="100%" border="0" cellspacing="1" cellpadding="5" id="employeeInformationTable" class="data-table">
+		    <table  width="100%" border="0" cellspacing="1" cellpadding="2" id="employeeInformationTable" class="empPageTable">
 		    	<!-- <tr>
 		    		<th colspan="6" style="text-align: left;padding-left: 10px" class="head">
 		    			Employee Information
@@ -65,10 +66,10 @@
 		    	<tr>
 		    		<td nowrap="nowrap">Last Name <span style="color: red">*</span></td>
 		    		<td><form:input path="lastName" cssClass="required" maxlength="25"/></td>
-		    		<td nowrap="nowrap">First Name <span style="color: red">*</span></td>
-		    		<td><form:input path="firstName" cssClass="required" maxlength="25"/></td>
 		    		<td nowrap="nowrap">Middle Name <span style="color: red">*</span></td>
 		    		<td><form:input path="middleName" cssClass="required" maxlength="25"/></td>
+		    		<td nowrap="nowrap">First Name <span style="color: red">*</span></td>
+		    		<td><form:input path="firstName" cssClass="required" maxlength="25"/></td>
 		    	</tr>
 		    	<tr>
 		    		<td nowrap="nowrap">Home Phone</td>
@@ -125,7 +126,7 @@
 		    		<td colspan="4"><form:input path="workEmail" maxlength="65"/></td>
 		    	</tr>
 		    </table>
-			<table id="employeePersonalHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
+			<table id="employeePersonalHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:200px;table-layout: fixed;"
 						data-options="collapsible:true
 										,method: 'post'
 										,pagination:false

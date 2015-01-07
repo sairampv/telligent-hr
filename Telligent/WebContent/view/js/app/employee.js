@@ -22,6 +22,8 @@ $(function(){
 });
 
 $(document).ready(function(){
+	highLightTab();
+	$("#personal").attr('class', 'buttonSelect');
 	if(document.getElementById("successMessage").value == 'success'){
 		alert("Employee Details Saved Successfully");
 		if(confirm("Do you want to update Compensation details")){
@@ -34,8 +36,8 @@ $(document).ready(function(){
 		$('#dateOfBirthBox').datebox('setValue', document.getElementById("dateOfBirth").value);
 		alert(document.getElementById("errorMessage").value);
 	}
+	empHistory(document.getElementById("employeeId").value);
 });
-
 function searchLastNameSelect(rec){
 	$('#firstNameInputId').combobox('clear');
 	$('#employeeInpuId').combobox('clear');
