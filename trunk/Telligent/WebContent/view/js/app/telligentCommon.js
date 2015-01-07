@@ -49,3 +49,11 @@ function isNumber(evt) {
 //End Number Validation		
 
 
+
+function highLightTab(){
+	$("#personal").attr('class', 'button');
+	$("#compensation").attr('class', 'button');
+	$("#employement").attr('class', 'button');
+	$("#position").attr('class', 'button');
+	$("#otherData").attr('class', 'button');
+}

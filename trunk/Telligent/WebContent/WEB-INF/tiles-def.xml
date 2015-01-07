@@ -37,5 +37,8 @@
 	<definition name="employee" extends="base.definition" >
 		<put-attribute name="body" value="/WEB-INF/jsp/employee.jsp"></put-attribute>
 	</definition>
+	<definition name="employeeCompensation" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/employeeCompensation.jsp"></put-attribute>
+	</definition>
 	
 </tiles-definitions>

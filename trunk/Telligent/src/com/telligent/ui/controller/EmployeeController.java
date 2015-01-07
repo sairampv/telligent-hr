@@ -1,6 +1,7 @@
 package com.telligent.ui.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.telligent.common.handlers.MessageHandler;
 import com.telligent.common.user.TelligentUser;
 import com.telligent.model.daos.impl.EmployeeDAO;
+import com.telligent.model.dtos.EmployeeCompensationDTO;
 import com.telligent.model.dtos.EmployeeDTO;
 import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.TeamDTO;
@@ -150,6 +152,14 @@ public class EmployeeController {
 		dto.setOperation("edit");
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
+	@RequestMapping(value="/showEmployeeDetails.htm", method = RequestMethod.POST)
+	public ModelAndView getEmployeeDetails1(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		EmployeeDTO dto = employeeDAO.getEmployeeDetails(req.getParameter("empId"));
+		mav.addObject("employee", dto);
+		mav.addObject("stateList",employeeDAO.getStateDetails());
+		mav.setViewName("employee");
+		return mav;
+	}
 	@RequestMapping(value="/getEmployeeDetailsHistory.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray getEmployeeDetailsHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
 		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployeeDetailsHistory(empId));
@@ -167,4 +177,40 @@ public class EmployeeController {
 	public @ResponseBody JSONArray getCityDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("stateId") String stateId){
 		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getCityDetails(stateId));
 	}
+	@RequestMapping(value="/empCompensationPage.htm", method = RequestMethod.POST)
+	public ModelAndView showEmpCompensationScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		logger.info("in showEmpCompensationScreen");
+		EmployeeCompensationDTO dto = new EmployeeCompensationDTO();
+		dto.setEmployeeId(req.getParameter("empId"));
+		EmployeeDTO dto2 = new EmployeeDTO();
+		if(req.getParameter("empId")!=null && ! req.getParameter("empId").equalsIgnoreCase("")){
+			dto2 = employeeDAO.getEmployeeDetails(req.getParameter("empId"));
+			dto.setLastName(dto2.getLastName());
+			dto.setFirstName(dto2.getFirstName());
+			dto.setMiddleName(dto2.getMiddleName());
+		}
+		mav.addObject("employeeComp", dto);
+		HashMap<String, ArrayList<MapDTO>> map = employeeDAO.getEmpCompensationLookup();
+		mav.addObject("baseRateFreqList",map.get("Base_Rate_Frequency"));
+		mav.addObject("bonusPlanList",map.get("Bonus_Plan"));
+		mav.addObject("compActionList",map.get("Compensation_Action"));
+		mav.addObject("compActionReasonList",map.get("Compensation_Action_Reason"));
+		mav.addObject("defaultEarningCodeList",map.get("Default_Earning_Code"));
+		mav.addObject("defaultHoursFreqList",map.get("Default_Hours_Frequency"));
+		mav.addObject("gradeList",map.get("Grade"));
+		mav.addObject("jobGroupList",map.get("Job_Group"));
+		mav.addObject("payEntityList",map.get("pay_entity"));
+		mav.addObject("payFreqList",map.get("pay_frequency"));
+		mav.addObject("payGroupList",map.get("pay_group"));
+		mav.addObject("perfPlanList",map.get("Performance_Plan"));
+		mav.setViewName("employeeCompensation");
+		return mav;
+	}
+	
+	@RequestMapping(value="/saveEmployeeCompDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody String saveEmployeeCompDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeComp") EmployeeCompensationDTO employeeCompensationDTO){
+		logger.info("In saveEmployeeCompDetails");
+		return "success";
+	}
+	
 }
