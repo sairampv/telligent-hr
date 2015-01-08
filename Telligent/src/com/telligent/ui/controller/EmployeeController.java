@@ -25,6 +25,7 @@ import com.telligent.common.user.TelligentUser;
 import com.telligent.model.daos.impl.EmployeeDAO;
 import com.telligent.model.dtos.EmployeeCompensationDTO;
 import com.telligent.model.dtos.EmployeeDTO;
+import com.telligent.model.dtos.EmploymentDTO;
 import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.TeamDTO;
 import com.telligent.util.TelligentUtility;
@@ -212,5 +213,31 @@ public class EmployeeController {
 		logger.info("In saveEmployeeCompDetails");
 		return "success";
 	}
-	
+
+	@RequestMapping(value="/empEmployementPage.htm", method = RequestMethod.POST)
+	public ModelAndView showEmpEmployementScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+		logger.info("in showEmpEmployementScreen");
+		EmploymentDTO dto = new EmploymentDTO();
+		dto.setEmployeeId(req.getParameter("empId"));
+		EmployeeDTO dto2 = new EmployeeDTO();
+		if(req.getParameter("empId")!=null && ! req.getParameter("empId").equalsIgnoreCase("")){
+			dto2 = employeeDAO.getEmployeeDetails(req.getParameter("empId"));
+			dto.setLastName(dto2.getLastName());
+			dto.setFirstName(dto2.getFirstName());
+			dto.setMiddleName(dto2.getMiddleName());
+		}
+		mav.addObject("employment", dto);
+		HashMap<String, ArrayList<MapDTO>> map = employeeDAO.getEmpEmployementLookup();
+		mav.addObject("statusCodeList",map.get("Status_Code"));
+		mav.addObject("statusReasonList",map.get("Status_Reason"));
+		mav.addObject("statusList",map.get("Status"));
+		mav.addObject("FLSACategoryList",map.get("FLSA_Category"));
+		mav.addObject("classificationList",map.get("Classification"));
+		mav.addObject("employementCategoryList",map.get("Employement_Category"));
+		mav.addObject("fullTimeEquivalencyList",map.get("Full_Time_Equivalency"));
+		mav.addObject("leaveStatusCodeList",map.get("Leave_Status_code"));
+		mav.addObject("leaveStatusReasonList",map.get("Leave_Status_Reason"));
+		mav.setViewName("employement");
+		return mav;
+	}
 }

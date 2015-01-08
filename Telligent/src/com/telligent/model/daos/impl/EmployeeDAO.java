@@ -14,6 +14,8 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
 
+import antlr.collections.Stack;
+
 import com.telligent.common.user.TelligentUser;
 import com.telligent.core.system.annotation.SpringBean;
 import com.telligent.model.db.AbstractDBManager;
@@ -496,18 +498,18 @@ public class EmployeeDAO extends AbstractDBManager{
 		ResultSet rs = null;
 		try{
 			conn = this.getConnection();
-			map.put("Base_Rate_Frequency", getEmpCompensationLookup(conn, ps, rs, "Base_Rate_Frequency"));
-			map.put("Bonus_Plan", getEmpCompensationLookup(conn, ps, rs, "Bonus_Plan"));
-			map.put("Compensation_Action", getEmpCompensationLookup(conn, ps, rs, "Compensation_Action"));
-			map.put("Compensation_Action_Reason", getEmpCompensationLookup(conn, ps, rs, "Compensation_Action_Reason"));
-			map.put("Default_Earning_Code", getEmpCompensationLookup(conn, ps, rs, "Default_Earning_Code"));
-			map.put("Default_Hours_Frequency", getEmpCompensationLookup(conn, ps, rs, "Default_Hours_Frequency"));
-			map.put("Grade", getEmpCompensationLookup(conn, ps, rs, "Grade"));
-			map.put("Job_Group", getEmpCompensationLookup(conn, ps, rs, "Job_Group"));
-			map.put("pay_entity", getEmpCompensationLookup(conn, ps, rs, "pay_entity"));
-			map.put("pay_frequency", getEmpCompensationLookup(conn, ps, rs, "pay_frequency"));
-			map.put("pay_group", getEmpCompensationLookup(conn, ps, rs, "pay_group"));
-			map.put("Performance_Plan", getEmpCompensationLookup(conn, ps, rs, "Performance_Plan"));
+			map.put("Base_Rate_Frequency", getLookup(conn, ps, rs, "Base_Rate_Frequency"));
+			map.put("Bonus_Plan", getLookup(conn, ps, rs, "Bonus_Plan"));
+			map.put("Compensation_Action", getLookup(conn, ps, rs, "Compensation_Action"));
+			map.put("Compensation_Action_Reason", getLookup(conn, ps, rs, "Compensation_Action_Reason"));
+			map.put("Default_Earning_Code", getLookup(conn, ps, rs, "Default_Earning_Code"));
+			map.put("Default_Hours_Frequency", getLookup(conn, ps, rs, "Default_Hours_Frequency"));
+			map.put("Grade", getLookup(conn, ps, rs, "Grade"));
+			map.put("Job_Group", getLookup(conn, ps, rs, "Job_Group"));
+			map.put("pay_entity", getLookup(conn, ps, rs, "pay_entity"));
+			map.put("pay_frequency", getLookup(conn, ps, rs, "pay_frequency"));
+			map.put("pay_group", getLookup(conn, ps, rs, "pay_group"));
+			map.put("Performance_Plan", getLookup(conn, ps, rs, "Performance_Plan"));
 		}catch (Exception ex) {
 			logger.info("Excpetion in getEmpCompensationLookup "+ex.getMessage());
 		} finally {
@@ -515,7 +517,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return map;
 	}
-	public ArrayList<MapDTO> getEmpCompensationLookup(Connection conn,PreparedStatement ps,ResultSet rs,String tableName){
+	public ArrayList<MapDTO> getLookup(Connection conn,PreparedStatement ps,ResultSet rs,String tableName){
 		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
 		try{
 			ps = conn.prepareStatement("select id,value from "+tableName);
@@ -527,8 +529,37 @@ public class EmployeeDAO extends AbstractDBManager{
 				list.add(dto);
 			}
 		}catch(Exception e){
-			logger.error("Exception in getEmpCompensationLookup "+e.getMessage());
+			logger.error("Exception in getLookup "+e.getMessage());
 		}
 		return list;
+	}
+	
+	/**
+	 *  Generic method to get id and value of lookup tables for Employment
+	 * @return HashMap
+	 */
+	public HashMap<String, ArrayList<MapDTO>> getEmpEmployementLookup(){
+		logger.info("in getEmpEmployementLookup");
+		HashMap<String, ArrayList<MapDTO>> map = new HashMap<String, ArrayList<MapDTO>>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try{
+			conn = this.getConnection();
+			map.put("Status_Code", getLookup(conn, ps, rs, "Status_Code"));
+			map.put("Status_Reason", getLookup(conn, ps, rs, "Status_Reason"));
+			map.put("Status", getLookup(conn, ps, rs, "Status"));
+			map.put("FLSA_Category", getLookup(conn, ps, rs, "FLSA_Category"));
+			map.put("Classification", getLookup(conn, ps, rs, "Classification"));
+			map.put("Employement_Category", getLookup(conn, ps, rs, "Employement_Category"));
+			map.put("Full_Time_Equivalency", getLookup(conn, ps, rs, "Full_Time_Equivalency"));
+			map.put("Leave_Status_code", getLookup(conn, ps, rs, "Leave_Status_code"));
+			map.put("Leave_Status_Reason", getLookup(conn, ps, rs, "Leave_Status_Reason"));
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmpEmployementLookup "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return map;
 	}
 }
