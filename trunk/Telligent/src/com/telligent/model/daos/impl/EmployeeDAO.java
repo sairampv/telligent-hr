@@ -562,4 +562,43 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return map;
 	}
+	public HashMap<String, ArrayList<MapDTO>> getEmpPositionLookup(){
+		logger.info("in getEmpPositionLookup");
+		HashMap<String, ArrayList<MapDTO>> map = new HashMap<String, ArrayList<MapDTO>>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try{
+			conn = this.getConnection();
+			map.put("Status_Code", getLookup(conn, ps, rs, "Status_Code"));
+			map.put("Status_Reason", getLookup(conn, ps, rs, "Status_Reason"));
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmpPositionLookup "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return map;
+	}
+	public HashMap<String, ArrayList<MapDTO>> getEmpOtherLookup(){
+		logger.info("in getEmpOtherLookup");
+		HashMap<String, ArrayList<MapDTO>> map = new HashMap<String, ArrayList<MapDTO>>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try{
+			conn = this.getConnection();
+			map.put("Ethinicity", getLookup(conn, ps, rs, "Ethinicity"));
+			map.put("Marital_Status", getLookup(conn, ps, rs, "Marital_Status"));
+			map.put("Citizenship_Status", getLookup(conn, ps, rs, "Citizenship_Status"));
+			map.put("VISA_Type", getLookup(conn, ps, rs, "VISA_Type"));
+			map.put("Military_Status", getLookup(conn, ps, rs, "Military_Status"));
+			map.put("Veteran_Status", getLookup(conn, ps, rs, "Veteran_Status"));
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmpOtherLookup "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return map;
+	}
+	
 }

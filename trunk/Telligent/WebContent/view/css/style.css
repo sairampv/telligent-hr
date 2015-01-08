@@ -586,6 +586,9 @@ font-weight:bold;
 cursor:pointer;
 margin: 0 5px 0 0;
 }
+.empPageTable{
+	padding-left: 1px;
+}
 .empPageTable input[type="text"] {
 border:1px solid #c9c9c9;
 height:20px;

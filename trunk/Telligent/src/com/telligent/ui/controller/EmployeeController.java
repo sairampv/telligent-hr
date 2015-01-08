@@ -25,6 +25,8 @@ import com.telligent.common.user.TelligentUser;
 import com.telligent.model.daos.impl.EmployeeDAO;
 import com.telligent.model.dtos.EmployeeCompensationDTO;
 import com.telligent.model.dtos.EmployeeDTO;
+import com.telligent.model.dtos.EmployeeOtherDTO;
+import com.telligent.model.dtos.EmployeePositionDTO;
 import com.telligent.model.dtos.EmploymentDTO;
 import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.TeamDTO;
@@ -154,8 +156,8 @@ public class EmployeeController {
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
 	@RequestMapping(value="/showEmployeeDetails.htm", method = RequestMethod.POST)
-	public ModelAndView getEmployeeDetails1(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
-		EmployeeDTO dto = employeeDAO.getEmployeeDetails(req.getParameter("empId"));
+	public ModelAndView getEmployeeDetails1(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmployeeDTO dto){
+		dto = employeeDAO.getEmployeeDetails(dto.getEmployeeId());
 		mav.addObject("employee", dto);
 		mav.addObject("stateList",employeeDAO.getStateDetails());
 		mav.setViewName("employee");
@@ -179,13 +181,11 @@ public class EmployeeController {
 		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getCityDetails(stateId));
 	}
 	@RequestMapping(value="/empCompensationPage.htm", method = RequestMethod.POST)
-	public ModelAndView showEmpCompensationScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+	public ModelAndView showEmpCompensationScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmployeeCompensationDTO dto){
 		logger.info("in showEmpCompensationScreen");
-		EmployeeCompensationDTO dto = new EmployeeCompensationDTO();
-		dto.setEmployeeId(req.getParameter("empId"));
 		EmployeeDTO dto2 = new EmployeeDTO();
-		if(req.getParameter("empId")!=null && ! req.getParameter("empId").equalsIgnoreCase("")){
-			dto2 = employeeDAO.getEmployeeDetails(req.getParameter("empId"));
+		if(dto.getEmployeeId()!=null && ! dto.getEmployeeId().equalsIgnoreCase("")){
+			dto2 = employeeDAO.getEmployeeDetails(dto.getEmployeeId());
 			dto.setLastName(dto2.getLastName());
 			dto.setFirstName(dto2.getFirstName());
 			dto.setMiddleName(dto2.getMiddleName());
@@ -215,13 +215,11 @@ public class EmployeeController {
 	}
 
 	@RequestMapping(value="/empEmployementPage.htm", method = RequestMethod.POST)
-	public ModelAndView showEmpEmployementScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
+	public ModelAndView showEmpEmployementScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmploymentDTO dto){
 		logger.info("in showEmpEmployementScreen");
-		EmploymentDTO dto = new EmploymentDTO();
-		dto.setEmployeeId(req.getParameter("empId"));
 		EmployeeDTO dto2 = new EmployeeDTO();
-		if(req.getParameter("empId")!=null && ! req.getParameter("empId").equalsIgnoreCase("")){
-			dto2 = employeeDAO.getEmployeeDetails(req.getParameter("empId"));
+		if(dto.getEmployeeId()!=null && ! dto.getEmployeeId().equalsIgnoreCase("")){
+			dto2 = employeeDAO.getEmployeeDetails(dto.getEmployeeId());
 			dto.setLastName(dto2.getLastName());
 			dto.setFirstName(dto2.getFirstName());
 			dto.setMiddleName(dto2.getMiddleName());
@@ -240,4 +238,55 @@ public class EmployeeController {
 		mav.setViewName("employement");
 		return mav;
 	}
+	@RequestMapping(value="/saveEmployeeEmployement.htm", method = RequestMethod.POST)
+	public @ResponseBody String saveEmployeeEmployement(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employement") EmploymentDTO employmentDTO){
+		logger.info("In saveEmployeeEmployement");
+		return "success";
+	}
+	@RequestMapping(value="/empPosition.htm", method = RequestMethod.POST)
+	public ModelAndView showEmpPositionScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmployeePositionDTO dto){
+		logger.info("in showEmpPositionScreen");
+		EmployeeDTO dto2 = new EmployeeDTO();
+		if(dto.getEmployeeId()!=null && ! dto.getEmployeeId().equalsIgnoreCase("")){
+			dto2 = employeeDAO.getEmployeeDetails(dto.getEmployeeId());
+			dto.setLastName(dto2.getLastName());
+			dto.setFirstName(dto2.getFirstName());
+			dto.setMiddleName(dto2.getMiddleName());
+		}
+		HashMap<String, ArrayList<MapDTO>> map = employeeDAO.getEmpPositionLookup();
+		mav.addObject("statusCodeList",map.get("Status_Code"));
+		mav.addObject("statusReasonList",map.get("Status_Reason"));
+		mav.addObject("employeePosition", dto);
+		mav.setViewName("employeePosition");
+		return mav;
+	}
+	@RequestMapping(value="/saveEmployeePosition.htm", method = RequestMethod.POST)
+	public @ResponseBody String saveEmployeePosition(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeePosition") EmployeePositionDTO employeePositionDTO){
+		logger.info("In saveEmployeePosition");
+		return "success";
+	}
+	
+	@RequestMapping(value="/empOtherData.htm", method = RequestMethod.POST)
+	public ModelAndView showEmpOtherDataScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmployeeOtherDTO dto){
+		logger.info("in showEmpOtherDataScreen");
+		//dto.setEmployeeId(dto.getEmployeeId());
+		EmployeeDTO dto2 = new EmployeeDTO();
+		if(dto.getEmployeeId()!=null && ! dto.getEmployeeId().equalsIgnoreCase("")){
+			dto2 = employeeDAO.getEmployeeDetails(dto.getEmployeeId());
+			dto.setLastName(dto2.getLastName());
+			dto.setFirstName(dto2.getFirstName());
+			dto.setMiddleName(dto2.getMiddleName());
+		}
+		HashMap<String, ArrayList<MapDTO>> map = employeeDAO.getEmpOtherLookup();
+		mav.addObject("ethinicityList",map.get("Ethinicity"));
+		mav.addObject("maritalList",map.get("Marital_Status"));
+		mav.addObject("citizenshipList",map.get("Citizenship_Status"));
+		mav.addObject("visaTypeList",map.get("VISA_Type"));
+		mav.addObject("militaryList",map.get("Military_Status"));
+		mav.addObject("veteranList",map.get("Veteran_Status"));
+		mav.addObject("employeeOther", dto);
+		mav.setViewName("employeeOther");
+		return mav;
+	}
+	
 }
