@@ -38,10 +38,10 @@
 	    	</tr>
 			<tr>
 				<td><label>Employee</label></td>
-				<td><form:input path="employeeId" readonly="true"/></td>
-				<td><form:input path="lastName" readonly="true"/></td>
-				<td><form:input path="middleName" readonly="true"/></td>
-				<td><form:input path="firstName" readonly="true"/></td>
+				<td><form:input path="employeeId" readonly="true" cssClass="required" placeholder="Employee Id"/></td>
+				<td><form:input path="lastName" readonly="true" placeholder="Last Name"/></td>
+				<td><form:input path="middleName" readonly="true" placeholder="Middle Name"/></td>
+				<td><form:input path="firstName" readonly="true" placeholder="First Name"/></td>
 				<td><label>Effective Date</label></td>
 				<td>
 					<form:hidden path="effectiveDate"/>
@@ -79,40 +79,46 @@
 			<tr>
 				<td style="width: 15%"><label>Supervisor</label></td>
 				<td style="width: 15%">
-					<form:select path="supervisor">
+	    			<form:select path="supervisor">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${supervisorList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
 				<td style="width: 15%"><label>Org1</label> </td>
 				<td style="width: 21%">
-					<form:select path="org1">
+	    			<form:select path="org1">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org1List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 		    	<td style="width: 15%"><label>Org6</label></td>
 				<td>	
-					<form:select path="org6">
+	    			<form:select path="org6">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org6List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 			</tr>
 			<tr>
 				<td style="width: 15%"><label>Team</label></td>
 				<td style="width: 15%">
-					<form:select path="team">
+	    			<form:select path="team">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${teamList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
 				<td style="width: 15%"><label>Org2</label> </td>
 				<td style="width: 21%">
-					<form:select path="org2">
+	    			<form:select path="Org2">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org2List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 		    	<td style="width: 15%"><label>Org7</label></td>
 				<td>	
-					<form:select path="org7">
+	    			<form:select path="org7">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org7List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 			</tr>
@@ -120,20 +126,23 @@
 			<tr>
 				<td style="width: 15%"><label>Position</label></td>
 				<td style="width: 15%">
-					<form:select path="position">
+	    			<form:select path="position">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${positionList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
 				<td style="width: 15%"><label>Org3</label> </td>
 				<td style="width: 21%">
-					<form:select path="org3">
+	    			<form:select path="org3">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org3List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 		    	<td style="width: 15%"><label>Org8</label></td>
 				<td>	
-					<form:select path="org8">
+	    			<form:select path="org8">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org8List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 			</tr>
@@ -141,20 +150,23 @@
 			<tr>
 				<td style="width: 15%"><label>Position Level</label></td>
 				<td style="width: 15%">
-					<form:select path="positionLevel">
+	    			<form:select path="positionLevel">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${positionLevelList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
 				<td style="width: 15%"><label>Org4</label> </td>
 				<td style="width: 21%">
-					<form:select path="org4">
+	    			<form:select path="org4">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org4List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 		    	<td style="width: 15%"><label>Org9</label></td>
 				<td>	
-					<form:select path="org9">	
+	    			<form:select path="org9">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org9List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 			</tr>
@@ -162,20 +174,23 @@
 			<tr>
 				<td style="width: 15%"><label>Primary Job</label></td>
 				<td style="width: 15%">
-					<form:select path="primaryJob">
+	    			<form:select path="primaryJob">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${primaryJobList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
 				<td style="width: 15%"><label>Org5</label> </td>
 				<td style="width: 21%">
-					<form:select path="org5">
+	    			<form:select path="org5">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org5List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 		    	<td style="width: 15%"><label>Org10</label></td>
 				<td>	
-					<form:select path="org10">
+	    			<form:select path="org10">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${org10List}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 		    	</td>
 			</tr>
@@ -183,16 +198,18 @@
 			<tr>
 				<td style="width: 15%"><label>Primary Job Leave</label></td>
 				<td style="width: 15%" colspan="6">
-					<form:select path="primaryJobLeave">
+	    			<form:select path="primaryJobLeave">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${primaryJobLeaveList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
 			</tr>
 			<tr>
 				<td style="width: 15%"><label>Union Code</label></td>
 				<td style="width: 15%" colspan="6">
-					<form:select path="unionCode">
+	    			<form:select path="unionCode">
 	    				<form:option value="">Select</form:option>
+	    				<form:options items="${unionCodeList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
 			</tr>
@@ -202,7 +219,7 @@
 		    	</th>
 			</tr>
 		</table>
-		<!-- <table id="employeePersonalHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
+		<table id="employeePositionHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
 						data-options="collapsible:true
 										,method: 'post'
 										,pagination:false
@@ -211,35 +228,25 @@
 						<thead data-options="frozen:true">
 							<tr>
 								<th data-options="field:'effectiveDate',width:100"  formatter="formatDetail">Eff Date</th>
-								<th data-options="field:'employeeId',width:100">Emp Id</th>
 								<th data-options="field:'seqNo',width:100" hidden="true">seq no</th>
 							</tr>
 						</thead>
 						<thead>
 							<tr>
-								<th data-options="field:'badgeNo',width:100">Badge</th>
-								<th data-options="field:'socialSecNo',width:100">Social Sec No</th>
-								<th data-options="field:'firstName',width:100">First Name</th>
-								<th data-options="field:'middleName',width:100">Middle Name</th>
-								<th data-options="field:'lastName',width:100">Last Name</th>
-								<th data-options="field:'homePhone',width:100">Home Phone</th>
-								<th data-options="field:'mobilePhone',width:100">Mobile Phone</th>
-								<th data-options="field:'addressLine1',width:100">Address 1</th>
-								<th data-options="field:'addressLine2',width:100">Address 2</th>
-								<th data-options="field:'city',width:100">City</th>
-								<th data-options="field:'state',width:100">State</th>
-								<th data-options="field:'zipcode',width:100">ZIP</th>
-								<th data-options="field:'personalEmail',width:100">Perosonal Email</th>
-								<th data-options="field:'dateOfBirth',width:100">DOB</th>
-								<th data-options="field:'minor',width:100">Minor</th>
-								<th data-options="field:'workPhone',width:100">Work Phone</th>
-								<th data-options="field:'workMobilePhone',width:100">Work Mobile Phone</th>
-								<th data-options="field:'workEmail',width:100">Work Email</th>
+								<th data-options="field:'statusCode',width:100">Status Code</th>
+								<th data-options="field:'statusReason',width:100">StatusReason</th>
+								<th data-options="field:'supervisor',width:100">Supervisor</th>
+								<th data-options="field:'team',width:100">Team</th>
+								<th data-options="field:'position',width:100">Position</th>
+								<th data-options="field:'positionLevel',width:100">Position Level</th>
+								<th data-options="field:'primaryJob',width:100">Primary Job</th>
+								<th data-options="field:'primaryJobLevel',width:100">Primary Job Level</th>
+								<th data-options="field:'unionCode',width:100">Union Code</th>
 								<th data-options="field:'updatedDate',width:100">Updated Date</th>
 								<th data-options="field:'updatedBy',width:100">Updated By</th>
 							</tr>
 						</thead>
-			</table> -->   
+			</table> 
 		</div>
 		</div>
 	</div>
@@ -251,7 +258,10 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	highLightTab();
-	$("#position").attr('class', 'buttonSelect');
+	$("#positionButton").attr('class', 'buttonSelect');
+	var empId = document.getElementById("employeeId").value;
+	if(empId!=null && empId !="")
+		getEmployeePositionDetails(empId);
 });
 function searchLastNameSelect(rec){
 	$('#firstNameInputId').combobox('clear');
@@ -295,8 +305,74 @@ function getEmployeeDetails(rec){
 			  		$("#"+i).val(item);   				  		
 			  	}			  		
 			});
+			getEmployeePositionDetails(rec.id);
 			closeloading();
 		}});
+}
+function getEmployeePositionDetails(rec){
+	loading();
+	// need to change from ajax to submit
+	$.ajax({
+		url:"getEmployeePositionDetails.htm?empId="+rec,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+			alert(obj);
+		},
+		success: function(obj){
+			document.getElementById("updateble").value="yes";
+			setEmpPositionDetails(obj);
+			if(rec!=null)
+				empHistory(rec);
+			closeloading();
+		}});
+}
+function empHistory(empId){
+	$('#employeePositionHistoryTable').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to Position message
+	$('#employeePositionHistoryTable').datagrid('loading');  // 
+	$.ajax({
+		url:"getEmployeePositionDetailsHistory.htm?empId="+empId,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			$('#employeePositionHistoryTable').datagrid('loaded');  // hide loading message
+		},
+		success: function(obj){
+			$('#employeePositionHistoryTable').datagrid('loadData',obj); 
+			$('#employeePositionHistoryTable').datagrid('loaded');  // hide loading message
+		}});
+}
+function formatDetail(value,row,index){
+	return '<a href="#" onclick="javascript:getEmployeePositionDetailsFromHistoryAjax('+row.seqNo+')">'+value+'</a>';
+}
+function getEmployeePositionDetailsFromHistoryAjax(id){
+	loading();
+	$.ajax({
+		url:"getEmployeePositionDetailsFromHistoryAjax.htm?seqNo="+id,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+			alert(obj);
+		},
+		success: function(obj){
+			document.getElementById("updateble").value="no";
+			setEmpPositionDetails(obj);
+			closeloading();
+		}});
+}
+function setEmpPositionDetails(obj){
+	$.each(obj, function(i, item){
+	  	if(i=='effectiveDate'){
+  			//document.getElementById(i).value=effectiveDate;
+  			$('#effectiveDateBox').datebox('setValue', item);
+  		}else if($("#"+i) != undefined)
+			$("#"+i).val(item);  
+	});
+	var effDate = $('#effectiveDateBox').datebox('getValue');
+	document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +effDate;
+	$('#effectiveDateBox').datebox('setValue', '');
 }
 function save(){
 	if(document.getElementById("updateble").value == "no"){
@@ -308,7 +384,7 @@ function save(){
 		document.getElementById("effectiveDate").value=effectiveDate;
 		loading();
 		$.ajax({
-			url:"saveEmployeeCompDetails.htm",
+			url:"saveEmployeePosition.htm",
 			type: "post",
 			data : $("#employeePosition").serialize(),
 			error: function(obj){
@@ -316,7 +392,13 @@ function save(){
 				closeloading();
 			},
 			success: function(obj){
-				alert(obj);
+				if(obj == "success"){
+					alert("Details saved successfully");
+					empHistory(document.getElementById("employeeId").value);
+				}else{
+					var str = obj.split(":;");
+					alert(str[1]);
+				}
 				closeloading();
 			}});
 	}
