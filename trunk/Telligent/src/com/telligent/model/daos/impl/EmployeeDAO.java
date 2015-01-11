@@ -621,6 +621,8 @@ public class EmployeeDAO extends AbstractDBManager{
 	    dto.setUseJobRate(rs.getString("USE_JOB_RATE"));
 	    dto.setPerformacePlan(rs.getString("PERFORMACE_PLAN"));
 	    dto.setBonusPlan(rs.getString("BONUS_PLAN"));
+	    EmployeeDTO dto1 = dummyBlob(new EmployeeDTO());
+		dto.setPicture(dto1.getPicture());
 	  	return dto;
 	}
 	
