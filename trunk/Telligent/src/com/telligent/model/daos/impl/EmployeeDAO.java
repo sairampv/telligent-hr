@@ -23,6 +23,7 @@ import com.telligent.common.user.TelligentUser;
 import com.telligent.core.system.annotation.SpringBean;
 import com.telligent.model.db.AbstractDBManager;
 import com.telligent.model.dtos.CityDTO;
+import com.telligent.model.dtos.EmployeeCompensationDTO;
 import com.telligent.model.dtos.EmployeeDTO;
 import com.telligent.model.dtos.EmployeeOtherDTO;
 import com.telligent.model.dtos.MapDTO;
@@ -149,8 +150,8 @@ public class EmployeeDAO extends AbstractDBManager{
 			//String.format(format, args)
 			if(employeeDTO.getOperation().equalsIgnoreCase("edit")){
 				conn.setAutoCommit(false);
-				int i = employeeHistoryUpdate(conn, ps, empId);
-				if(i>0){
+				//int i = employeeHistoryUpdate(conn, ps, empId); //Trigger created to insert data in History table
+				//if(i>0){
 					query = new StringBuffer();
 					if(!employeeDTO.getPicture().getOriginalFilename().equalsIgnoreCase("")){
 						query.append("update EMP_PERSONAL set BADGE=?,EFFECTIVE_DATE=?,F_NAME=?,M_NAME=?,L_NAME=?,P_EMAIL=?,H_PHONE=?,M_PHONE=?,ADDRESS_L1=?,ADDRESS_L2=?,CITY=?,STATE=?,ZIP=?,");
@@ -163,7 +164,7 @@ public class EmployeeDAO extends AbstractDBManager{
 					}
 					ps = conn.prepareStatement(query.toString());
 					setPreparedStatementsForSave(ps, employeeDTO, telligentUser,"edit");
-					i = ps.executeUpdate();
+					int i  = ps.executeUpdate();
 					if(i>0){
 						String temp = employeeDTO.getEmployeeId();
 						employeeDTO = new EmployeeDTO();
@@ -175,10 +176,10 @@ public class EmployeeDAO extends AbstractDBManager{
 						employeeDTO.setErrorMessage("Employee Details not Saved");
 						conn.rollback();
 					}
-				}else{
+				/*}else{
 					employeeDTO.setErrorMessage("Employee Details not Saved");
 					conn.rollback();
-				}
+				}*/
 				
 			}else{
 				boolean flag = checkEmployeeId(conn, ps, rs, empId);
@@ -219,6 +220,134 @@ public class EmployeeDAO extends AbstractDBManager{
 			this.closeAll(conn, ps, rs);
 		}
 		return employeeDTO;
+	}
+	
+	
+	@SuppressWarnings("deprecation")
+	public EmployeeCompensationDTO saveEmployeeCompensation( EmployeeCompensationDTO compDTO,TelligentUser telligentUser) {
+ 		logger.info("in saveEmployeeCompensation DAO");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		DecimalFormat decimalFormat = new DecimalFormat("000000000");
+		try {
+			conn = this.getConnection();
+			String empId = decimalFormat.format(Integer.parseInt(compDTO.getEmployeeId()));
+			//String.format(format, args)
+			//compDTO.setOperation("");
+			if(compDTO.getOperation().equalsIgnoreCase("edit")){
+				conn.setAutoCommit(false);
+				//int i = compensationHistoryUpdate(conn, ps, empId);
+				//if(i>0){
+					query = new StringBuffer();
+						query.append("update EMP_COMPENSATION set EFFECTIVE_DATE=?,COMP_ACTION_TYPE=?,COMP_REASON=?,PAY_ENTITY=?,PAY_GROUP=?,PAY_FREQ=?,LAST_EVALUATION_DATE=?,GRADE=?,NEXT_EVAL_DUE_DATE=?,SCHEDULED_HOURS=?,HOURS_FREQUENCY=?");
+						query.append(",PAY_PERIOD_HRS=?,WEEKLY_HOURS=?,BASE_RATE=?,BASE_RATE_FREQ=?,PERIOD_RATE=?,HOURLY_RATE=?,DEFAULT_EARNING_CODE=?,JOB_GROUP=?,USE_JOB_RATE=?,PERFORMACE_PLAN=?");
+						query.append(",BONUS_PLAN=? WHERE EMP_ID='"+empId+"'");
+					ps = conn.prepareStatement(query.toString());
+					setPreparedStatementsForCompensation(ps, compDTO, telligentUser);
+					int i = ps.executeUpdate();
+					if(i>0){
+						String temp = compDTO.getEmployeeId();
+						compDTO = new EmployeeCompensationDTO();
+						compDTO.setEmployeeId(temp);
+						temp = null;
+						compDTO.setSuccessMessage("Employee Compensation Details Saved Successfully");
+						conn.commit();
+					}else{
+						compDTO.setErrorMessage("Employee Compensation Details not Saved");
+						conn.rollback();
+					}
+				/*}else{
+					compDTO.setErrorMessage("Employee Compensation Details not Saved");
+					conn.rollback();
+				}*/
+				
+			}else{
+				//boolean flag = checkEmployeeId(conn, ps, rs, empId);
+				//if(flag){
+				//	compDTO.setErrorMessage("Employee ID already Exists");
+				//	return compDTO;
+				//}else{
+					conn.setAutoCommit(false);
+					query.append("INSERT INTO EMP_COMPENSATION(EMP_ID,EFFECTIVE_DATE,COMP_ACTION_TYPE,COMP_REASON,PAY_ENTITY,PAY_GROUP,PAY_FREQ,LAST_EVALUATION_DATE,GRADE,NEXT_EVAL_DUE_DATE,");
+					query.append("SCHEDULED_HOURS,HOURS_FREQUENCY,PAY_PERIOD_HRS,WEEKLY_HOURS,BASE_RATE,BASE_RATE_FREQ,PERIOD_RATE,HOURLY_RATE,DEFAULT_EARNING_CODE,");
+					query.append("JOB_GROUP,USE_JOB_RATE,PERFORMACE_PLAN,BONUS_PLAN )");
+					query.append("VALUES ('"+empId+"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+					ps = conn.prepareStatement(query.toString());
+					setPreparedStatementsForCompensation(ps, compDTO, telligentUser);
+					int i = ps.executeUpdate();
+					ps.close();
+					if(i>0){
+						conn.commit();
+						String temp = compDTO.getEmployeeId();
+						compDTO = new EmployeeCompensationDTO();
+						compDTO.setEmployeeId(temp);
+						temp = null;
+					}else{
+						conn.rollback();
+						compDTO.setErrorMessage("Employee Details not Saved");
+					}
+				//}
+			}
+			
+		}catch (Exception ex) {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {}
+			ex.printStackTrace();
+			compDTO.setErrorMessage("Employee Details not Saved :: "+ex.getMessage());
+			logger.info("Excpetion in saveEmployeeDetails :: "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return compDTO;
+	}
+	
+	private int compensationHistoryUpdate(Connection conn,PreparedStatement ps,String empId){
+		try{
+			StringBuffer query = new StringBuffer();
+			query.append("INSERT INTO EMP_COMPENSATION_HIS(EMP_ID,EFFECTIVE_DATE,COMP_ACTION_TYPE,COMP_REASON,PAY_ENTITY,PAY_GROUP,PAY_FREQ,LAST_EVALUATION_DATE,GRADE,NEXT_EVAL_DUE_DATE,SCHEDULED_HOURS,HOURS_FREQUENCY");
+			query.append(",PAY_PERIOD_HRS,WEEKLY_HOURS,BASE_RATE,BASE_RATE_FREQ,PERIOD_RATE,HOURLY_RATE,DEFAULT_EARNING_CODE,JOB_GROUP,USE_JOB_RATE,PERFORMACE_PLAN,BONUS_PLAN)");
+			query.append("SELECT EMP_ID,EFFECTIVE_DATE,COMP_ACTION_TYPE,COMP_REASON,PAY_ENTITY,PAY_GROUP,PAY_FREQ,LAST_EVALUATION_DATE,GRADE,NEXT_EVAL_DUE_DATE,SCHEDULED_HOURS,HOURS_FREQUENCY");
+			query.append(",PAY_PERIOD_HRS,WEEKLY_HOURS,BASE_RATE,BASE_RATE_FREQ,PERIOD_RATE,HOURLY_RATE,DEFAULT_EARNING_CODE,JOB_GROUP,USE_JOB_RATE,PERFORMACE_PLAN,BONUS_PLAN");
+			query.append("  FROM EMP_COMPENSATION where EMP_ID='"+empId+"'");
+			ps = conn.prepareStatement(query.toString());
+			int i = ps.executeUpdate();
+			ps.close();
+			return i;
+		}catch(Exception e){
+			
+		}
+		return 0;
+	}
+	
+	
+	@SuppressWarnings("deprecation")
+	private void setPreparedStatementsForCompensation(PreparedStatement ps,EmployeeCompensationDTO compDTO,TelligentUser telligentUser) throws java.sql.SQLException,IOException{
+		ps.setDate(1, new java.sql.Date(new Date(compDTO.getEffectiveDate()).getTime()));
+		ps.setString(2, compDTO.getCompActionType());
+		ps.setString(3, compDTO.getCompActionReason());
+		ps.setString(4, compDTO.getPayEntity());
+		ps.setString(5, compDTO.getPayGroup());
+		ps.setString(6, compDTO.getPayFrequency());
+		ps.setDate(7, new java.sql.Date(new Date(compDTO.getLastperfEvaluationDate()).getTime()));
+		ps.setString(8, compDTO.getGrade());
+		ps.setDate(9, new java.sql.Date(new Date(compDTO.getNextEvalDueDate()).getTime()));
+		ps.setString(10, compDTO.getScheduledHours());
+		ps.setString(11, compDTO.getHoursFrequency());
+		ps.setString(12, compDTO.getPayPeriodHours());
+		ps.setString(13, compDTO.getWeeklyHours());
+		ps.setString(14,compDTO.getBaseRate());
+		ps.setString(15,  compDTO.getBaseRateFrequency());
+		ps.setString(16, compDTO.getPeriodRate());
+		ps.setString(17, compDTO.getHourlyRate());
+		ps.setString(18, compDTO.getDefaultEarningCode());
+		ps.setString(19, compDTO.getEligibleJobGroup());
+		ps.setString(20, compDTO.getUseJobRate());
+		ps.setString(21, compDTO.getPerformacePlan());
+		ps.setString(22, compDTO.getBonusPlan());
+				
 	}
 
 	@SuppressWarnings("deprecation")
@@ -347,6 +476,34 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return dto;
 	}
+	
+	public ArrayList<EmployeeCompensationDTO> getEmployeeCompensationHistory(String empId){
+		logger.info("in getEmployeeCompensationHistory");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		ArrayList<EmployeeCompensationDTO> list = new ArrayList<EmployeeCompensationDTO>();
+		try{
+			query.append("SELECT SEQ_NO,EMP_ID,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,COMP_ACTION_TYPE,COMP_REASON,PAY_ENTITY,PAY_GROUP,PAY_FREQ,DATE_FORMAT(LAST_EVALUATION_DATE,'%m/%d/%Y') LAST_EVALUATION_DATE,GRADE,DATE_FORMAT(NEXT_EVAL_DUE_DATE,'%m/%d/%Y') NEXT_EVAL_DUE_DATE,");
+			query.append("SCHEDULED_HOURS,HOURS_FREQUENCY,PAY_PERIOD_HRS,WEEKLY_HOURS,BASE_RATE,BASE_RATE_FREQ,PERIOD_RATE,HOURLY_RATE,DEFAULT_EARNING_CODE,");
+			query.append("JOB_GROUP,USE_JOB_RATE,PERFORMACE_PLAN,BONUS_PLAN FROM EMP_COMPENSATION_HIS WHERE EMP_ID=? ORDER BY SEQ_NO DESC ");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				list.add(setEmployeeCompensationDetails(rs));
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeeCompensationHistory "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
+	
+	
 	public ArrayList<EmployeeDTO> getEmployeeDetailsHistory(String empId){
 		logger.info("in getEmployeeDetailsHistory");
 		Connection conn = null;
@@ -437,6 +594,34 @@ public class EmployeeDAO extends AbstractDBManager{
 		dto.setUpdatedDate(rs.getString("DATE_UPDATED"));
 		dto.setUpdatedBy(rs.getString("UPDATED_BY"));
 		return dto;
+	}
+	
+	private EmployeeCompensationDTO setEmployeeCompensationDetails(ResultSet rs) throws java.sql.SQLException{
+		EmployeeCompensationDTO dto = new EmployeeCompensationDTO();
+		dto.setSeqNo(rs.getString("SEQ_NO"));
+		dto.setEmployeeId(rs.getString("EMP_ID"));
+		dto.setEffectiveDate(rs.getString("EFFECTIVE_DATE"));
+		dto.setCompActionType(rs.getString("COMP_REASON"));
+		dto.setPayEntity(rs.getString("PAY_ENTITY"));
+		dto.setPayGroup(rs.getString("PAY_GROUP"));
+		dto.setPayFrequency(rs.getString("PAY_FREQ"));
+		dto.setLastperfEvaluationDate(rs.getString("LAST_EVALUATION_DATE"));
+		dto.setGrade(rs.getString("GRADE"));
+		dto.setNextEvalDueDate(rs.getString("NEXT_EVAL_DUE_DATE"));
+		dto.setScheduledHours(rs.getString("SCHEDULED_HOURS"));
+		dto.setHoursFrequency(rs.getString("HOURS_FREQUENCY"));
+		dto.setPayPeriodHours(rs.getString("PAY_PERIOD_HRS"));
+		dto.setWeeklyHours(rs.getString("WEEKLY_HOURS"));
+	    dto.setBaseRate(rs.getString("BASE_RATE"));
+	    dto.setBaseRateFrequency(rs.getString("BASE_RATE_FREQ"));
+	    dto.setPeriodRate(rs.getString("PERIOD_RATE"));
+	    dto.setHourlyRate(rs.getString("HOURLY_RATE"));
+	    dto.setDefaultEarningCode(rs.getString("DEFAULT_EARNING_CODE"));
+	    dto.setJobGroup(rs.getString("JOB_GROUP"));
+	    dto.setUseJobRate(rs.getString("USE_JOB_RATE"));
+	    dto.setPerformacePlan(rs.getString("PERFORMACE_PLAN"));
+	    dto.setBonusPlan(rs.getString("BONUS_PLAN"));
+	  	return dto;
 	}
 	
 	public ArrayList<CityDTO> getCityDetails(String stateId){
@@ -844,4 +1029,30 @@ public class EmployeeDAO extends AbstractDBManager{
 		else
 			return"";
 	}
+	public EmployeeCompensationDTO getEmployeeCompensationDetails(String empId){
+		logger.info("in getEmployeeCompensationDetails");
+		EmployeeCompensationDTO dto = null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("SELECT SEQ_NO,EMP_ID,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,COMP_ACTION_TYPE,COMP_REASON,PAY_ENTITY,PAY_GROUP,PAY_FREQ,DATE_FORMAT(LAST_EVALUATION_DATE,'%m/%d/%Y') LAST_EVALUATION_DATE,GRADE,DATE_FORMAT(NEXT_EVAL_DUE_DATE,'%m/%d/%Y') NEXT_EVAL_DUE_DATE,");
+			query.append("SCHEDULED_HOURS,HOURS_FREQUENCY,PAY_PERIOD_HRS,WEEKLY_HOURS,BASE_RATE,BASE_RATE_FREQ,PERIOD_RATE,HOURLY_RATE,DEFAULT_EARNING_CODE,");
+			query.append("JOB_GROUP,USE_JOB_RATE,PERFORMACE_PLAN,BONUS_PLAN FROM EMP_COMPENSATION where EMP_ID=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				return setEmployeeCompensationDetails(rs);
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeeDetails "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return dto;
+	}
+	
 }
