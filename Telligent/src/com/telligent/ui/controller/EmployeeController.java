@@ -282,8 +282,25 @@ public class EmployeeController {
 			dto.setMiddleName(dto2.getMiddleName());
 		}
 		HashMap<String, ArrayList<MapDTO>> map = employeeDAO.getEmpPositionLookup();
+		mav.addObject("supervisorList",map.get("supervisorList"));
+		mav.addObject("teamList",map.get("teamList"));
 		mav.addObject("statusCodeList",map.get("Status_Code"));
 		mav.addObject("statusReasonList",map.get("Status_Reason"));
+		mav.addObject("positionList",map.get("position_master"));
+		mav.addObject("positionLevelList",map.get("position_level"));
+		mav.addObject("primaryJobList",map.get("primary_job"));
+		mav.addObject("primaryJobLeaveList",map.get("primary_job_leave"));
+		mav.addObject("unionCodeList",map.get("union_code"));
+		mav.addObject("org1List", map.get("org1"));
+		mav.addObject("org2List", map.get("org2"));
+		mav.addObject("org3List", map.get("org3"));
+		mav.addObject("org4List", map.get("org4"));
+		mav.addObject("org5List", map.get("org5"));
+		mav.addObject("org6List", map.get("org6"));
+		mav.addObject("org7List", map.get("org7"));
+		mav.addObject("org8List", map.get("org8"));
+		mav.addObject("org9List", map.get("org9"));
+		mav.addObject("org10List", map.get("org10"));
 		mav.addObject("employeePosition", dto);
 		mav.setViewName("employeePosition");
 		return mav;
@@ -291,9 +308,25 @@ public class EmployeeController {
 	@RequestMapping(value="/saveEmployeePosition.htm", method = RequestMethod.POST)
 	public @ResponseBody String saveEmployeePosition(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeePosition") EmployeePositionDTO employeePositionDTO){
 		logger.info("In saveEmployeePosition");
-		return "success";
+		employeePositionDTO.setSuccessMessage("");
+		employeePositionDTO.setErrorMessage("");
+		return employeeDAO.saveEmployeePosition(employeePositionDTO,telligentUtility.getTelligentUser(),messageHandler);
 	}
-	
+	@RequestMapping(value="/getEmployeePositionDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployeePositionDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		EmployeePositionDTO dto = employeeDAO.getEmployeePositionDetails(empId);
+		dto.setOperation("edit");
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
+	@RequestMapping(value="/getEmployeePositionDetailsHistory.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getEmployeePositionDetailsHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployeePositionDetailsHistory(empId));
+	}
+	@RequestMapping(value="/getEmployeePositionDetailsFromHistoryAjax.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployeePositionDetailsFromHistoryAjax(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("seqNo") String seqNo){
+		EmployeePositionDTO dto = employeeDAO.getEmployeePositionDetailsFromHistoryAjax(seqNo);
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
 	@RequestMapping(value="/empOtherData.htm", method = RequestMethod.POST)
 	public ModelAndView showEmpOtherDataScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmployeeOtherDTO dto){
 		logger.info("in showEmpOtherDataScreen");
@@ -308,10 +341,11 @@ public class EmployeeController {
 		HashMap<String, ArrayList<MapDTO>> map = employeeDAO.getEmpOtherLookup();
 		mav.addObject("ethinicityList",map.get("Ethinicity"));
 		mav.addObject("maritalList",map.get("Marital_Status"));
-		mav.addObject("citizenshipList",map.get("Citizenship_Status"));
+		//mav.addObject("citizenshipList",map.get("Citizenship_Status"));
 		mav.addObject("visaTypeList",map.get("VISA_Type"));
-		mav.addObject("militaryList",map.get("Military_Status"));
+		//mav.addObject("militaryList",map.get("Military_Status"));
 		mav.addObject("veteranList",map.get("Veteran_Status"));
+		mav.addObject("relationshipList",map.get("Relationship"));
 		mav.addObject("cityList",employeeDAO.getCityDetailsAll());
 		mav.addObject("employeeOther", dto);
 		mav.setViewName("employeeOther");

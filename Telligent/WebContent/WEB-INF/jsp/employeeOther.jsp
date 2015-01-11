@@ -38,10 +38,10 @@
 	    	</tr>
 			<tr>
 				<td><label>Employee</label></td>
-				<td><form:input path="employeeId" readonly="true" cssClass="required"/></td>
-				<td><form:input path="lastName" readonly="true"/></td>
-				<td><form:input path="middleName" readonly="true"/></td>
-				<td><form:input path="firstName" readonly="true"/></td>
+				<td><form:input path="employeeId" readonly="true" cssClass="required" placeholder="Employee Id"/></td>
+				<td><form:input path="lastName" readonly="true" placeholder="Last Name"/></td>
+				<td><form:input path="middleName" readonly="true" placeholder="Middle Name"/></td>
+				<td><form:input path="firstName" readonly="true" placeholder="First Name"/></td>
 				<td><label>Effective Date</label></td>
 				<td>
 					<form:hidden path="effectiveDate"/>
@@ -149,7 +149,10 @@
 		    	</td>
 		    	<td style="width: 15%"><label>Relation</label></td>
 				<td>	
-					<form:input path="emergencyRelationShip" maxlength="25"/>
+					<form:select path="emergencyRelationShip">
+	    				<form:option value="">Select</form:option>
+	    				<form:options items="${relationshipList}" itemValue="id" itemLabel="value"/>
+	    			</form:select>
 		    	</td>
 			</tr>
 			<tr>
@@ -181,7 +184,6 @@
 						<thead data-options="frozen:true">
 							<tr>
 								<th data-options="field:'effectiveDate',width:100"  formatter="formatDetail">Eff Date</th>
-								<th data-options="field:'employeeId',width:100">Emp Id</th>
 								<th data-options="field:'seqNo',width:100" hidden="true">seq no</th>
 							</tr>
 						</thead>
@@ -222,6 +224,9 @@ $(document).ready(function(){
 	$("#disabilityId").toggle(false);
 	$("#disabilityDesc").toggle(false);
 	$("#city").toggle(false);
+	var empId = document.getElementById("employeeId").value;
+	if(empId!=null && empId !="")
+		getEmployeeOtherDetails(empId);
 });
 function searchLastNameSelect(rec){
 	$('#firstNameInputId').combobox('clear');
@@ -363,9 +368,10 @@ function save(){
 				closeloading();
 			},
 			success: function(obj){
-				if(obj == "success")
+				if(obj == "success"){
 					alert("Details saved successfully");
-				else{
+					empHistory(document.getElementById("employeeId").value);
+				}else{
 					var str = obj.split(":;");
 					alert(str[1]);
 				}
