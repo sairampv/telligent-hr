@@ -34,11 +34,35 @@ public class EmployeeCompensationDTO extends EmployeeDTO{
 	private String hoursFrequency;
 	private String weeklyHours;
 	private String eligibleJobGroup;
+	private String effectiveDate;
+	private String employeeId;
+	private String employeeNo;
+	
+	
+	
+	public String getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(String employeeId) {
+		this.employeeId = employeeId;
+	}
+	public String getEmployeeNo() {
+		return employeeNo;
+	}
+	public void setEmployeeNo(String employeeNo) {
+		this.employeeNo = employeeNo;
+	}
 	/**
 	 * @return the payEntity
 	 */
 	public String getPayEntity() {
 		return payEntity;
+	}
+	public String getEffectiveDate() {
+		return effectiveDate;
+	}
+	public void setEffectiveDate(String effectiveDate) {
+		this.effectiveDate = effectiveDate;
 	}
 	/**
 	 * @param payEntity the payEntity to set
