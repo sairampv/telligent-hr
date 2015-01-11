@@ -171,6 +171,12 @@ public class EmployeeController {
 		mav.setViewName("employee");
 		return mav;
 	}
+	
+	@RequestMapping(value="/getEmployeeCompensationHistory.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getEmployeeCompensationHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployeeCompensationHistory(empId));
+	}
+	
 	@RequestMapping(value="/getEmployeeDetailsHistory.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray getEmployeeDetailsHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
 		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployeeDetailsHistory(empId));
@@ -194,6 +200,7 @@ public class EmployeeController {
 		EmployeeDTO dto2 = new EmployeeDTO();
 		if(dto.getEmployeeId()!=null && ! dto.getEmployeeId().equalsIgnoreCase("")){
 			dto2 = employeeDAO.getEmployeeDetails(dto.getEmployeeId());
+			dto = employeeDAO.getEmployeeCompensationDetails(dto.getEmployeeId());
 			dto.setLastName(dto2.getLastName());
 			dto.setFirstName(dto2.getFirstName());
 			dto.setMiddleName(dto2.getMiddleName());
@@ -217,9 +224,22 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping(value="/saveEmployeeCompDetails.htm", method = RequestMethod.POST)
-	public @ResponseBody String saveEmployeeCompDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeComp") EmployeeCompensationDTO employeeCompensationDTO){
+	public @ResponseBody ModelAndView saveEmployeeCompDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeComp") EmployeeCompensationDTO employeeCompensationDTO){
 		logger.info("In saveEmployeeCompDetails");
-		return "success";
+		employeeCompensationDTO.setSuccessMessage("");
+		employeeCompensationDTO.setErrorMessage("");
+		EmployeeCompensationDTO dto = employeeDAO.getEmployeeCompensationDetails(employeeCompensationDTO.getEmployeeId());
+		if (dto != null){
+			employeeCompensationDTO.setOperation("edit");
+		}
+		employeeCompensationDTO = employeeDAO.saveEmployeeCompensation(employeeCompensationDTO, telligentUtility.getTelligentUser());
+		if(employeeCompensationDTO.getSuccessMessage()!=null && !employeeCompensationDTO.getSuccessMessage().equalsIgnoreCase(""))
+			mav.setViewName("redirect:saveEmployeeCompDetails.htm?empId="+employeeCompensationDTO.getEmployeeId());
+		else{
+			mav.setViewName("employee");
+			mav.addObject("employee", employeeCompensationDTO);
+		}
+		return mav;	
 	}
 
 	@RequestMapping(value="/empEmployementPage.htm", method = RequestMethod.POST)
