@@ -11,20 +11,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import javax.sql.rowset.serial.SerialBlob;
+
 import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
 
 import antlr.collections.Stack;
 
+import com.telligent.common.handlers.MessageHandler;
 import com.telligent.common.user.TelligentUser;
 import com.telligent.core.system.annotation.SpringBean;
 import com.telligent.model.db.AbstractDBManager;
 import com.telligent.model.dtos.CityDTO;
 import com.telligent.model.dtos.EmployeeDTO;
+import com.telligent.model.dtos.EmployeeOtherDTO;
 import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.StateDTO;
 import com.telligent.model.dtos.TeamDTO;
 import com.telligent.util.BASE64DecodedMultipartFile;
+import com.telligent.util.DateUtility;
 
 /**
  * @author spothu
@@ -131,7 +136,7 @@ public class EmployeeDAO extends AbstractDBManager{
 		return 0;
 	}
 	@SuppressWarnings("deprecation")
-	public EmployeeDTO saveEmployeeDetails(EmployeeDTO employeeDTO,TelligentUser telligentUser) {
+	public EmployeeDTO saveEmployeeDetails(EmployeeDTO employeeDTO,TelligentUser telligentUser,MessageHandler messageHandler) {
 		logger.info("in saveEmployeeDetails DAO");
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -185,7 +190,7 @@ public class EmployeeDAO extends AbstractDBManager{
 					query.append("insert into EMP_PERSONAL(EMP_ID,BADGE,EFFECTIVE_DATE,F_NAME,M_NAME,L_NAME,P_EMAIL,H_PHONE,M_PHONE,ADDRESS_L1,ADDRESS_L2,CITY,STATE,ZIP,");
 					query.append("DATE_OF_BIRTH,IS_MINOR,WORK_PHONE,WORK_MOBILE_PHONE,WORK_EMAIL,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_EMAIL,");
 					query.append("EMC_H_PHONE,EMC_M_PHONE,DATE_UPDATED,UPDATED_BY,SOCIAL_SEC_NO,END_EFFECTIVE_DATE,PICTURE)");// Always keep PICTURE column as last one
-					query.append("values ('"+empId+"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?,?,'"+new java.sql.Date(new Date("12/31/3000").getTime())+"',?)");
+					query.append("values ('"+empId+"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?,?,'"+new java.sql.Date(new Date(messageHandler.getMessage("effectiveEndDate")).getTime())+"',?)");
 					ps = conn.prepareStatement(query.toString());
 					setPreparedStatementsForSave(ps, employeeDTO, telligentUser,"save");
 					int i = ps.executeUpdate();
@@ -460,6 +465,31 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return list;
 	}
+	public ArrayList<CityDTO> getCityDetailsAll(){
+		logger.info("in getStateDetails");
+		ArrayList<CityDTO> list = new ArrayList<CityDTO>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select id,Name from City");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			rs = ps.executeQuery();
+			while(rs.next()){
+				CityDTO dto = new CityDTO();
+				dto.setId(rs.getString("id"));
+				dto.setCity(rs.getString("Name"));
+				list.add(dto);
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getStateDetails "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
 	
 	public ArrayList<StateDTO> getStateDetails(){
 		logger.info("in getStateDetails");
@@ -600,5 +630,218 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return map;
 	}
-	
+	@SuppressWarnings("deprecation")
+	public String saveEmployeeOtherDetails(EmployeeOtherDTO employeeOtherDTO,TelligentUser telligentUser,MessageHandler messageHandler) {
+		logger.info("in saveEmployeeOtherDetails DAO");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try {
+			conn = this.getConnection();
+			ps = conn.prepareStatement("select emp_id from EMP_OTHER_DATA where emp_id=?");
+			ps.setString(1, employeeOtherDTO.getEmployeeId());
+			rs = ps.executeQuery();
+			if(rs.next()){
+				String str = getEffectiveDate(conn,ps,rs,"EMP_OTHER_DATA",employeeOtherDTO.getEmployeeId());
+				boolean flag = DateUtility.compareDates(employeeOtherDTO.getEffectiveDate(), str);
+				ps.close();
+				if(flag){
+					conn.setAutoCommit(false);
+					query.append("update EMP_OTHER_DATA set GENDER=?,ETHINICITY=?,MARITAL_STAT=?,CITIZENSHIP=?,VISA_TYPE=?,I9_EXP_DATE=?,VET_STAT=?,");
+					query.append("IS_DISABLED=?,DISABILITY_DESC=?,CITY=?,EFFECTIVE_DATE=?,END_EFFECTIVE_DATE=?,EMC_L_NAME=?,EMC_F_NAME=?,EMC_REL=?,EMC_H_PHONE=?,EMC_M_PHONE=?,EMC_EMAIL=?,DATE_UPDATED=sysdate(),UPDATED_BY=? where  EMP_ID=?");
+					ps = conn.prepareStatement(query.toString());
+					setPSforEmpOther(employeeOtherDTO, ps, telligentUser, messageHandler,"update");
+				}else{
+					return "error:;Effective Date should be greater than current Effective Date";
+				}
+			}else{
+				ps.close();
+				conn.setAutoCommit(false);
+				query.append("insert into EMP_OTHER_DATA (GENDER,ETHINICITY,MARITAL_STAT,CITIZENSHIP,VISA_TYPE,I9_EXP_DATE,VET_STAT,");
+				query.append("IS_DISABLED,DISABILITY_DESC,CITY,EFFECTIVE_DATE,END_EFFECTIVE_DATE,EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY,EMP_ID) ");
+				query.append("values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?,?)");
+				ps = conn.prepareStatement(query.toString());
+				setPSforEmpOther(employeeOtherDTO, ps, telligentUser, messageHandler,"save");
+			}
+			int i = ps.executeUpdate();
+			if(i>0){
+				conn.commit();
+				return "success";
+			}else{
+				conn.rollback();
+				return "error:;Details Not Saved";
+			}
+		}catch (Exception ex) {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {}
+			ex.printStackTrace();
+			employeeOtherDTO.setErrorMessage("error ::"+ex.getMessage());
+			logger.info("Excpetion in saveEmployeeOtherDetails :: "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return null;
+	}
+	@SuppressWarnings("deprecation")
+	public void setPSforEmpOther(EmployeeOtherDTO employeeOtherDTO,PreparedStatement ps,TelligentUser telligentUser,MessageHandler messageHandler,String operation) throws SQLException{
+		ps.setString(1, employeeOtherDTO.getGender());
+		ps.setString(2, employeeOtherDTO.getEthinicity());
+		ps.setString(3, employeeOtherDTO.getMaritalStatus());
+		ps.setString(4, employeeOtherDTO.getCitizenShip());
+		ps.setString(5, employeeOtherDTO.getVisaType());
+		if(employeeOtherDTO.getI9ExpDate() !=null && !employeeOtherDTO.getI9ExpDate().equalsIgnoreCase(""))
+			ps.setDate(6, new java.sql.Date(new Date(employeeOtherDTO.getI9ExpDate()).getTime()));
+		else
+			ps.setDate(6, null);
+		ps.setString(7, employeeOtherDTO.getVeteranStatus());
+		ps.setString(8, employeeOtherDTO.getDisability());
+		ps.setString(9, employeeOtherDTO.getDisabilityDesc());
+		ps.setString(10, employeeOtherDTO.getCity()!=null && !employeeOtherDTO.getCity().equalsIgnoreCase("") ? employeeOtherDTO.getCity():null);
+		ps.setDate(11, new java.sql.Date(new Date(employeeOtherDTO.getEffectiveDate()).getTime()));
+		if(operation.equalsIgnoreCase("save"))
+			ps.setDate(12, new java.sql.Date(new Date(messageHandler.getMessage("effectiveEndDate")).getTime()));
+		else
+			ps.setDate(12, new java.sql.Date(new Date(employeeOtherDTO.getEffectiveDate()).getTime()-1));
+		ps.setString(13, employeeOtherDTO.getEmergencyLastName());
+		ps.setString(14, employeeOtherDTO.getEmergencyFirstName());
+		ps.setString(15, employeeOtherDTO.getEmergencyRelationShip());
+		ps.setString(16, employeeOtherDTO.getEmergencyHomePhone());
+		ps.setString(17, employeeOtherDTO.getEmergencyMobilePhone());
+		ps.setString(18, employeeOtherDTO.getEmergencyEmail());
+		ps.setString(19, telligentUser.getEmployeeId());
+		ps.setString(20, employeeOtherDTO.getEmployeeId());
+	}
+	public EmployeeOtherDTO getEmployeeOtherDetails(String empId){
+		logger.info("in getEmployeeOtherDetails");
+		EmployeeOtherDTO dto = new EmployeeOtherDTO();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select SEQ_NO,GENDER,ETHINICITY,MARITAL_STAT,CITIZENSHIP,VISA_TYPE,DATE_FORMAT(I9_EXP_DATE,'%m/%d/%Y') I9_EXP_DATE,VET_STAT,");
+			query.append("IS_DISABLED,DISABILITY_DESC,CITY,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE, ");
+			query.append("EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY from EMP_OTHER_DATA where EMP_ID=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				EmployeeDTO dto1 = getEmployeeDetails(empId);
+				dto = setEmployeeOtherDetails(rs);
+				dto.setEmployeeId(dto1.getEmployeeId());
+				dto.setLastName(dto1.getLastName());
+				dto.setFirstName(dto1.getFirstName());
+				dto.setMiddleName(dto1.getMiddleName());
+			}else{
+				EmployeeDTO dto1 = dummyBlob(new EmployeeDTO());
+				dto.setPicture(dto1.getPicture());
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeeOtherDetails "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return dto;
+	}
+	public EmployeeDTO dummyBlob(EmployeeDTO dto){
+		try {
+			byte[] bytes = "".getBytes();
+			BASE64DecodedMultipartFile file = new BASE64DecodedMultipartFile(bytes);
+			dto.setPicture(file);
+			dto.setPictureBase64(Base64.toBase64String(bytes));
+			return dto;
+		} catch (Exception e) {}
+		return dto;
+	}
+	public ArrayList<EmployeeOtherDTO> getEmployeeOtherDetailsHistory(String empId){
+		logger.info("in getEmployeeOtherDetailsHistory");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		ArrayList<EmployeeOtherDTO> list = new ArrayList<EmployeeOtherDTO>();
+		try{
+			query.append("select SEQ_NO,GENDER,ETHINICITY,MARITAL_STAT,CITIZENSHIP,VISA_TYPE,DATE_FORMAT(I9_EXP_DATE,'%m/%d/%Y') I9_EXP_DATE,VET_STAT,");
+			query.append("IS_DISABLED,DISABILITY_DESC,CITY,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE, ");
+			query.append("EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY from EMP_OTHER_DATA_HIS where EMP_ID=? order by seq_no desc");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				list.add(setEmployeeOtherDetails(rs));
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeeOtherDetailsHistory "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
+	public EmployeeOtherDTO getEmployeeOtherDetailsFromHistoryAjax(String seqNo){
+		logger.info("in getEmployeeOtherDetailsFromHistoryAjax");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select EMP_ID,SEQ_NO,GENDER,ETHINICITY,MARITAL_STAT,CITIZENSHIP,VISA_TYPE,DATE_FORMAT(I9_EXP_DATE,'%m/%d/%Y') I9_EXP_DATE,VET_STAT,");
+			query.append("IS_DISABLED,DISABILITY_DESC,CITY,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE, ");
+			query.append("EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY from EMP_OTHER_DATA_HIS where SEQ_NO=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, seqNo);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				EmployeeOtherDTO dto = setEmployeeOtherDetails(rs);
+				dto.setEmployeeId(rs.getString("EMP_ID"));
+				EmployeeDTO dto1 = getEmployeeDetails(rs.getString("EMP_ID"));
+				dto.setFirstName(dto1.getFirstName());
+				dto.setLastName(dto1.getLastName());
+				dto.setMiddleName(dto1.getMiddleName());
+				return dto;
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeeOtherDetailsFromHistoryAjax "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return null;
+	}
+	private EmployeeOtherDTO setEmployeeOtherDetails(ResultSet rs) throws java.sql.SQLException{
+		EmployeeOtherDTO dto = new EmployeeOtherDTO();
+		dto.setSeqNo(rs.getString("SEQ_NO"));
+		dto.setGender(rs.getString("GENDER"));
+		dto.setEthinicity(rs.getString("ETHINICITY"));
+		dto.setMaritalStatus(rs.getString("MARITAL_STAT"));
+		dto.setCitizenShip(rs.getString("CITIZENSHIP"));
+		dto.setVisaType(rs.getString("VISA_TYPE"));
+		dto.setI9ExpDate(rs.getString("I9_EXP_DATE"));
+		dto.setVeteranStatus(rs.getString("VET_STAT"));
+		dto.setDisability(rs.getString("IS_DISABLED"));
+		dto.setDisabilityDesc(rs.getString("DISABILITY_DESC"));
+		dto.setCity(rs.getString("CITY"));
+		dto.setEffectiveDate(rs.getString("EFFECTIVE_DATE"));
+		dto.setEmergencyLastName(rs.getString("EMC_L_NAME"));
+		dto.setEmergencyFirstName(rs.getString("EMC_F_NAME"));
+		dto.setEmergencyRelationShip(rs.getString("EMC_REL"));
+		dto.setEmergencyMobilePhone(rs.getString("EMC_M_PHONE"));
+		dto.setEmergencyHomePhone(rs.getString("EMC_H_PHONE"));
+		dto.setEmergencyEmail(rs.getString("EMC_EMAIL"));
+		EmployeeDTO dto1 = dummyBlob(new EmployeeDTO());
+		dto.setPicture(dto1.getPicture());
+		return dto;
+	}
+	public String getEffectiveDate(Connection conn,PreparedStatement ps,ResultSet rs,String tableName,String empId) throws SQLException{
+		ps = conn.prepareStatement("select DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE from "+tableName+" where EMP_ID=?");
+		ps.setString(1, empId);
+		rs = ps.executeQuery();
+		if(rs.next())
+			return rs.getString("EFFECTIVE_DATE");
+		else
+			return"";
+	}
 }
