@@ -11,12 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import javax.sql.rowset.serial.SerialBlob;
-
 import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
-
-import antlr.collections.Stack;
 
 import com.telligent.common.handlers.MessageHandler;
 import com.telligent.common.user.TelligentUser;
@@ -26,6 +22,7 @@ import com.telligent.model.dtos.CityDTO;
 import com.telligent.model.dtos.EmployeeCompensationDTO;
 import com.telligent.model.dtos.EmployeeDTO;
 import com.telligent.model.dtos.EmployeeOtherDTO;
+import com.telligent.model.dtos.EmployeePositionDTO;
 import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.StateDTO;
 import com.telligent.model.dtos.TeamDTO;
@@ -779,6 +776,38 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return map;
 	}
+	public ArrayList<MapDTO> getSupervisorList(Connection conn,PreparedStatement ps, ResultSet rs){
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		try{
+			ps = conn.prepareStatement("select EMP_ID,F_NAME,L_NAME from EMP_PERSONAL");
+			rs = ps.executeQuery();
+			while(rs.next()){
+				MapDTO dto = new MapDTO();
+				dto.setId(rs.getString("EMP_ID"));
+				dto.setValue(rs.getString("EMP_ID")+" "+rs.getString("L_NAME")+","+rs.getString("F_NAME"));
+				list.add(dto);
+			}
+		}catch(Exception e){
+			logger.error("Exception in getLookup "+e.getMessage());
+		}
+		return list;
+	}
+	public ArrayList<MapDTO> getTeams(Connection conn,PreparedStatement ps, ResultSet rs){
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		try{
+			ps = conn.prepareStatement("SELECT team_id,team_name FROM team t ");
+			rs = ps.executeQuery();
+			while(rs.next()){
+				MapDTO dto = new MapDTO();
+				dto.setId(rs.getString("team_id"));
+				dto.setValue(rs.getString("team_name"));
+				list.add(dto);
+			}
+		}catch(Exception e){
+			logger.error("Exception in getLookup "+e.getMessage());
+		}
+		return list;
+	}
 	public HashMap<String, ArrayList<MapDTO>> getEmpPositionLookup(){
 		logger.info("in getEmpPositionLookup");
 		HashMap<String, ArrayList<MapDTO>> map = new HashMap<String, ArrayList<MapDTO>>();
@@ -787,8 +816,25 @@ public class EmployeeDAO extends AbstractDBManager{
 		ResultSet rs = null;
 		try{
 			conn = this.getConnection();
+			map.put("supervisorList",getSupervisorList(conn, ps, rs));
+			map.put("teamList",getTeams(conn, ps, rs));
 			map.put("Status_Code", getLookup(conn, ps, rs, "Status_Code"));
 			map.put("Status_Reason", getLookup(conn, ps, rs, "Status_Reason"));
+			map.put("position_master", getLookup(conn, ps, rs, "position_master"));
+			map.put("position_level", getLookup(conn, ps, rs, "position_level"));
+			map.put("primary_job", getLookup(conn, ps, rs, "primary_job"));
+			map.put("primary_job_leave", getLookup(conn, ps, rs, "primary_job_leave"));
+			map.put("union_code", getLookup(conn, ps, rs, "union_code"));
+			map.put("org1", getLookup(conn, ps, rs, "org1"));
+			map.put("org2", getLookup(conn, ps, rs, "org2"));
+			map.put("org3", getLookup(conn, ps, rs, "org3"));
+			map.put("org4", getLookup(conn, ps, rs, "org4"));
+			map.put("org5", getLookup(conn, ps, rs, "org5"));
+			map.put("org6", getLookup(conn, ps, rs, "org6"));
+			map.put("org7", getLookup(conn, ps, rs, "org7"));
+			map.put("org8", getLookup(conn, ps, rs, "org8"));
+			map.put("org9", getLookup(conn, ps, rs, "org9"));
+			map.put("org10", getLookup(conn, ps, rs, "org10"));
 		}catch (Exception ex) {
 			logger.info("Excpetion in getEmpPositionLookup "+ex.getMessage());
 		} finally {
@@ -810,6 +856,7 @@ public class EmployeeDAO extends AbstractDBManager{
 			map.put("VISA_Type", getLookup(conn, ps, rs, "VISA_Type"));
 			map.put("Military_Status", getLookup(conn, ps, rs, "Military_Status"));
 			map.put("Veteran_Status", getLookup(conn, ps, rs, "Veteran_Status"));
+			map.put("Relationship", getLookup(conn, ps, rs, "Relationship"));
 		}catch (Exception ex) {
 			logger.info("Excpetion in getEmpOtherLookup "+ex.getMessage());
 		} finally {
@@ -951,6 +998,11 @@ public class EmployeeDAO extends AbstractDBManager{
 		StringBuffer query = new StringBuffer();
 		ArrayList<EmployeeOtherDTO> list = new ArrayList<EmployeeOtherDTO>();
 		try{
+			/*query.append("select SEQ_NO,GENDER,e.value ETHINICITY,m.value MARITAL_STAT,CITIZENSHIP,v.value VISA_TYPE,DATE_FORMAT(I9_EXP_DATE,'%m/%d/%Y') I9_EXP_DATE,ve.value VET_STAT,");
+			query.append("IS_DISABLED,DISABILITY_DESC,CITY,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE, ");
+			query.append("EMC_L_NAME,EMC_F_NAME,r.value EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY ");
+			query.append("from EMP_OTHER_DATA_HIS o,Ethinicity e,Marital_Status m,VISA_Type v,Veteran_Status ve,Relationship r ");
+			query.append("where EMP_ID=? and o.ETHINICITY = e.id and o.MARITAL_STAT = m.id and o.VISA_TYPE=v.id and o.VET_STAT=ve.id and o.EMC_REL=r.id order by seq_no desc");*/
 			query.append("select SEQ_NO,GENDER,ETHINICITY,MARITAL_STAT,CITIZENSHIP,VISA_TYPE,DATE_FORMAT(I9_EXP_DATE,'%m/%d/%Y') I9_EXP_DATE,VET_STAT,");
 			query.append("IS_DISABLED,DISABILITY_DESC,CITY,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE, ");
 			query.append("EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY from EMP_OTHER_DATA_HIS where EMP_ID=? order by seq_no desc");
@@ -1056,5 +1108,208 @@ public class EmployeeDAO extends AbstractDBManager{
 		}
 		return dto;
 	}
+
+	@SuppressWarnings("deprecation")
+	public String saveEmployeePosition(EmployeePositionDTO employeePositionDTO,TelligentUser telligentUser,MessageHandler messageHandler) {
+		logger.info("in saveEmployeePosition DAO");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try {
+			conn = this.getConnection();
+			ps = conn.prepareStatement("select emp_id from EMP_POSITION_DATA where emp_id=?");
+			ps.setString(1, employeePositionDTO.getEmployeeId());
+			rs = ps.executeQuery();
+			if(rs.next()){
+				String str = getEffectiveDate(conn,ps,rs,"EMP_POSITION_DATA",employeePositionDTO.getEmployeeId());
+				boolean flag = DateUtility.compareDates(employeePositionDTO.getEffectiveDate(), str);
+				ps.close();
+				if(flag){
+					conn.setAutoCommit(false);
+					query.append("update EMP_POSITION_DATA set STAT_CODE=?,STAT_CODE_REASON=?,SUPERVISOR=?,TEAM=?,POSITION=?,POSITION_LEVEL=?,PRIM_JOB=?,PRIM_JOB_LEVEL=?,UNION_CODE=?, ");
+					query.append("ORG_LEVEL_1=?,ORG_LEVEL_2=?,ORG_LEVEL_3=?,ORG_LEVEL_4=?,ORG_LEVEL_5=?,ORG_LEVEL_6=?,ORG_LEVEL_7=?,ORG_LEVEL_8=?,ORG_LEVEL_9=?,ORG_LEVEL_10=?, ");
+					query.append("EFFECTIVE_DATE=?,END_EFFECTIVE_DATE=?,DATE_UPDATED=sysdate(),UPDATED_BY=? where EMP_ID=?");
+					ps = conn.prepareStatement(query.toString());
+					setPSforEmpPosition(employeePositionDTO, ps, telligentUser, messageHandler,"update");
+				}else{
+					return "error:;Effective Date should be greater than current Effective Date";
+				}
+			}else{
+				ps.close();
+				conn.setAutoCommit(false);
+				query.append("insert into EMP_POSITION_DATA(STAT_CODE,STAT_CODE_REASON,SUPERVISOR,TEAM,POSITION,POSITION_LEVEL,PRIM_JOB,PRIM_JOB_LEVEL,UNION_CODE, ");
+				query.append("ORG_LEVEL_1,ORG_LEVEL_2,ORG_LEVEL_3,ORG_LEVEL_4,ORG_LEVEL_5,ORG_LEVEL_6,ORG_LEVEL_7,ORG_LEVEL_8,ORG_LEVEL_9,ORG_LEVEL_10, ");
+				query.append("EFFECTIVE_DATE,END_EFFECTIVE_DATE,DATE_UPDATED,UPDATED_BY,EMP_ID) ");
+				query.append("values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?,?)");
+				ps = conn.prepareStatement(query.toString());
+				setPSforEmpPosition(employeePositionDTO, ps, telligentUser, messageHandler,"save");
+			}
+			int i = ps.executeUpdate();
+			if(i>0){
+				conn.commit();
+				return "success";
+			}else{
+				conn.rollback();
+				return "error:;Details Not Saved";
+			}
+		}catch (Exception ex) {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {}
+			ex.printStackTrace();
+			employeePositionDTO.setErrorMessage("error ::"+ex.getMessage());
+			logger.info("Excpetion in saveEmployeePosition :: "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return null;
+	}
+	@SuppressWarnings("deprecation")
+	public void setPSforEmpPosition(EmployeePositionDTO employeePositionDTO,PreparedStatement ps,TelligentUser telligentUser,MessageHandler messageHandler,String operation) throws SQLException{
+		ps.setString(1, employeePositionDTO.getStatusCode());
+		ps.setString(2, employeePositionDTO.getStatusReason());
+		ps.setString(3, employeePositionDTO.getSupervisor());
+		ps.setString(4, employeePositionDTO.getTeam());
+		ps.setString(5, employeePositionDTO.getPosition());
+		ps.setString(6, employeePositionDTO.getPositionLevel());
+		ps.setString(7, employeePositionDTO.getPrimaryJob());
+		ps.setString(8, employeePositionDTO.getPrimaryJobLeave());
+		ps.setString(9, employeePositionDTO.getUnionCode());
+		ps.setString(10, employeePositionDTO.getOrg1());
+		ps.setString(11, employeePositionDTO.getOrg2());
+		ps.setString(12, employeePositionDTO.getOrg3());
+		ps.setString(13, employeePositionDTO.getOrg4());
+		ps.setString(14, employeePositionDTO.getOrg5());
+		ps.setString(15, employeePositionDTO.getOrg6());
+		ps.setString(16, employeePositionDTO.getOrg7());
+		ps.setString(17, employeePositionDTO.getOrg8());
+		ps.setString(18, employeePositionDTO.getOrg9());
+		ps.setString(19, employeePositionDTO.getOrg10());
+		ps.setDate(20, new java.sql.Date(new Date(employeePositionDTO.getEffectiveDate()).getTime()));
+		if(operation.equalsIgnoreCase("save"))
+			ps.setDate(21, new java.sql.Date(new Date(messageHandler.getMessage("effectiveEndDate")).getTime()));
+		else
+			ps.setDate(21, new java.sql.Date(new Date(employeePositionDTO.getEffectiveDate()).getTime()-1));
+		ps.setString(22, telligentUser.getEmployeeId());
+		ps.setString(23, employeePositionDTO.getEmployeeId());
+	}
 	
+	public EmployeePositionDTO getEmployeePositionDetails(String empId){
+		logger.info("in getEmployeePositionDetails");
+		EmployeePositionDTO dto = new EmployeePositionDTO();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select SEQ_NO,STAT_CODE,STAT_CODE_REASON,SUPERVISOR,TEAM,POSITION,POSITION_LEVEL,PRIM_JOB,PRIM_JOB_LEVEL,UNION_CODE, ");
+			query.append("ORG_LEVEL_1,ORG_LEVEL_2,ORG_LEVEL_3,ORG_LEVEL_4,ORG_LEVEL_5,ORG_LEVEL_6,ORG_LEVEL_7,ORG_LEVEL_8,ORG_LEVEL_9,ORG_LEVEL_10, ");
+			query.append("DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,UPDATED_BY from EMP_POSITION_DATA where EMP_ID=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				EmployeeDTO dto1 = getEmployeeDetails(empId);
+				dto = setEmployeePositionDetails(rs);
+				dto.setEmployeeId(dto1.getEmployeeId());
+				dto.setLastName(dto1.getLastName());
+				dto.setFirstName(dto1.getFirstName());
+				dto.setMiddleName(dto1.getMiddleName());
+			}else{
+				EmployeeDTO dto1 = dummyBlob(new EmployeeDTO());
+				dto.setPicture(dto1.getPicture());
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeePositionDetails "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return dto;
+	}
+	public ArrayList<EmployeePositionDTO> getEmployeePositionDetailsHistory(String empId){
+		logger.info("in getEmployeePositionDetailsHistory");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		ArrayList<EmployeePositionDTO> list = new ArrayList<EmployeePositionDTO>();
+		try{
+			query.append("select SEQ_NO,STAT_CODE,STAT_CODE_REASON,SUPERVISOR,TEAM,POSITION,POSITION_LEVEL,PRIM_JOB,PRIM_JOB_LEVEL,UNION_CODE, ");
+			query.append("ORG_LEVEL_1,ORG_LEVEL_2,ORG_LEVEL_3,ORG_LEVEL_4,ORG_LEVEL_5,ORG_LEVEL_6,ORG_LEVEL_7,ORG_LEVEL_8,ORG_LEVEL_9,ORG_LEVEL_10, ");
+			query.append("DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,UPDATED_BY from EMP_POSITION_DATA_HIS where EMP_ID=? order by seq_no desc");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				list.add(setEmployeePositionDetails(rs));
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeePositionDetailsHistory "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
+	public EmployeePositionDTO getEmployeePositionDetailsFromHistoryAjax(String seqNo){
+		logger.info("in getEmployeePositionDetailsFromHistoryAjax");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select SEQ_NO,STAT_CODE,STAT_CODE_REASON,SUPERVISOR,TEAM,POSITION,POSITION_LEVEL,PRIM_JOB,PRIM_JOB_LEVEL,UNION_CODE, ");
+			query.append("ORG_LEVEL_1,ORG_LEVEL_2,ORG_LEVEL_3,ORG_LEVEL_4,ORG_LEVEL_5,ORG_LEVEL_6,ORG_LEVEL_7,ORG_LEVEL_8,ORG_LEVEL_9,ORG_LEVEL_10, ");
+			query.append("DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,UPDATED_BY,EMP_ID from EMP_POSITION_DATA_HIS where SEQ_NO=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, seqNo);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				EmployeePositionDTO dto = setEmployeePositionDetails(rs);
+				dto.setEmployeeId(rs.getString("EMP_ID"));
+				EmployeeDTO dto1 = getEmployeeDetails(rs.getString("EMP_ID"));
+				dto.setFirstName(dto1.getFirstName());
+				dto.setLastName(dto1.getLastName());
+				dto.setMiddleName(dto1.getMiddleName());
+				return dto;
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeePositionDetailsFromHistoryAjax "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return null;
+	}
+	private EmployeePositionDTO setEmployeePositionDetails(ResultSet rs) throws java.sql.SQLException{
+		EmployeePositionDTO dto = new EmployeePositionDTO();
+		dto.setSeqNo(rs.getString("SEQ_NO"));
+		dto.setStatusCode(rs.getString("STAT_CODE"));
+		dto.setStatusReason(rs.getString("STAT_CODE_REASON"));
+		dto.setSupervisor(rs.getString("SUPERVISOR"));
+		dto.setTeam(rs.getString("TEAM"));
+		dto.setPosition(rs.getString("POSITION"));
+		dto.setPositionLevel(rs.getString("POSITION_LEVEL"));
+		dto.setPrimaryJob(rs.getString("PRIM_JOB"));
+		dto.setPrimaryJobLeave(rs.getString("PRIM_JOB_LEVEL"));
+		dto.setUnionCode(rs.getString("UNION_CODE"));
+		dto.setOrg1(rs.getString("ORG_LEVEL_1"));
+		dto.setOrg2(rs.getString("ORG_LEVEL_2"));
+		dto.setOrg3(rs.getString("ORG_LEVEL_3"));
+		dto.setOrg4(rs.getString("ORG_LEVEL_4"));
+		dto.setOrg5(rs.getString("ORG_LEVEL_5"));
+		dto.setOrg6(rs.getString("ORG_LEVEL_6"));
+		dto.setOrg7(rs.getString("ORG_LEVEL_7"));
+		dto.setOrg8(rs.getString("ORG_LEVEL_8"));
+		dto.setOrg9(rs.getString("ORG_LEVEL_9"));
+		dto.setOrg10(rs.getString("ORG_LEVEL_10"));
+		dto.setEffectiveDate(rs.getString("EFFECTIVE_DATE"));
+		dto.setUpdatedBy(rs.getString("UPDATED_BY"));
+		dto.setUpdatedDate(rs.getString("DATE_UPDATED"));
+		EmployeeDTO dto1 = dummyBlob(new EmployeeDTO());
+		dto.setPicture(dto1.getPicture());
+		return dto;
+	}
 }
