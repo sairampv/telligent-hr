@@ -89,7 +89,7 @@ public class EmployeeController {
 		logger.info("In saveEmployeeDetails");
 		employeeDTO.setSuccessMessage("");
 		employeeDTO.setErrorMessage("");
-		employeeDTO = employeeDAO.saveEmployeeDetails(employeeDTO,telligentUtility.getTelligentUser());
+		employeeDTO = employeeDAO.saveEmployeeDetails(employeeDTO,telligentUtility.getTelligentUser(),messageHandler);
 		if(employeeDTO.getSuccessMessage()!=null && !employeeDTO.getSuccessMessage().equalsIgnoreCase(""))
 			mav.setViewName("redirect:saveEmployeeDetails.htm?empId="+employeeDTO.getEmployeeId());
 		else{
@@ -127,25 +127,33 @@ public class EmployeeController {
 	}
 	@RequestMapping(value="/searchLastName.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray searchLastName(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
-		ArrayList<MapDTO> list = employeeDAO.searchList(null, req.getParameter("q"), null);
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		if(req.getParameter("q") !=null && !req.getParameter("q").equalsIgnoreCase(""))
+			list.addAll(employeeDAO.searchList(null, req.getParameter("q"), null));
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
 		return obj;
 	}
 	@RequestMapping(value="/searchFirstName.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray searchFirstName(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
-		ArrayList<MapDTO> list = employeeDAO.searchList(req.getParameter("q"), null, null);
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		if(req.getParameter("q") !=null && !req.getParameter("q").equalsIgnoreCase(""))
+			list.addAll(employeeDAO.searchList(req.getParameter("q"), null, null));
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
 		return obj;
 	}
 	@RequestMapping(value="/searchEmpId.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray searchEmpId(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
-		ArrayList<MapDTO> list = employeeDAO.searchList(null, null, req.getParameter("q"));
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		if(req.getParameter("q") !=null && !req.getParameter("q").equalsIgnoreCase(""))
+			list.addAll(employeeDAO.searchList(null, null, req.getParameter("q")));
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
 		return obj;
 	}
 	@RequestMapping(value="/searchTeamEmployees.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray searchTeamEmployees(HttpServletRequest req,HttpServletResponse res,ModelAndView mav){
-		ArrayList<MapDTO> list = employeeDAO.searchTeamEmployees(req.getParameter("q"));
+		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
+		if(req.getParameter("q") !=null && !req.getParameter("q").equalsIgnoreCase(""))
+			list.addAll(employeeDAO.searchTeamEmployees(req.getParameter("q")));
 		JSONArray obj = (JSONArray) JSONSerializer.toJSON(list);
 		return obj;
 	}
@@ -284,9 +292,31 @@ public class EmployeeController {
 		mav.addObject("visaTypeList",map.get("VISA_Type"));
 		mav.addObject("militaryList",map.get("Military_Status"));
 		mav.addObject("veteranList",map.get("Veteran_Status"));
+		mav.addObject("cityList",employeeDAO.getCityDetailsAll());
 		mav.addObject("employeeOther", dto);
 		mav.setViewName("employeeOther");
 		return mav;
 	}
-	
+	@RequestMapping(value="/saveEmployeeOtherDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody String saveEmployeeOtherDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeOther") EmployeeOtherDTO employeeOtherDTO){
+		logger.info("In saveEmployeeOtherDetails");
+		employeeOtherDTO.setSuccessMessage("");
+		employeeOtherDTO.setErrorMessage("");
+		return employeeDAO.saveEmployeeOtherDetails(employeeOtherDTO,telligentUtility.getTelligentUser(),messageHandler);
+	}
+	@RequestMapping(value="/getEmployeeOtherDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployeeOtherDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		EmployeeOtherDTO dto = employeeDAO.getEmployeeOtherDetails(empId);
+		dto.setOperation("edit");
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
+	@RequestMapping(value="/getEmployeeOtherDetailsHistory.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getEmployeeOtherDetailsHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployeeOtherDetailsHistory(empId));
+	}
+	@RequestMapping(value="/getEmployeeOtherDetailsFromHistoryAjax.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployeeOtherDetailsFromHistoryAjax(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("seqNo") String seqNo){
+		EmployeeOtherDTO dto = employeeDAO.getEmployeeOtherDetailsFromHistoryAjax(seqNo);
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
 }

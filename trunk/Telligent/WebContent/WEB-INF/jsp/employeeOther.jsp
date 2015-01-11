@@ -38,7 +38,7 @@
 	    	</tr>
 			<tr>
 				<td><label>Employee</label></td>
-				<td><form:input path="employeeId" readonly="true"/></td>
+				<td><form:input path="employeeId" readonly="true" cssClass="required"/></td>
 				<td><form:input path="lastName" readonly="true"/></td>
 				<td><form:input path="middleName" readonly="true"/></td>
 				<td><form:input path="firstName" readonly="true"/></td>
@@ -65,7 +65,15 @@
 				</td>
 				<td style="width: 15%"><label>CitizenShip</label> </td>
 				<td style="width: 21%">
-					<form:input path="citizenShip"/>
+					<form:select path="citizenShip" onchange="citizenChange(this.value)">
+	    				<form:option value="">Select</form:option>
+	    				<form:option value="yes">Yes</form:option>
+	    				<form:option value="no">No</form:option>
+	    			</form:select>
+	    			<form:select path="city" cssClass="required">
+	    				<form:option value="">Select City</form:option>
+	    				<form:options items="${cityList}" itemLabel="city" itemValue="id"></form:options>
+	    			</form:select>
 		    	</td>
 		    	<td style="width: 15%"><label>Veteran Status</label></td>
 				<td>	
@@ -118,7 +126,7 @@
 				</td>
 				<td style="width: 15%" id="disabilityId"><label>Disability Description</label> </td>
 				<td style="width: 21%" colspan="4">
-					<form:input path="disabilityDesc" cssClass="required" />
+					<form:input path="disabilityDesc" cssClass="required" maxlength="65"/>
 		    	</td>
 			</tr>
 		</table>
@@ -164,9 +172,7 @@
 			</tr>
 		</table>
 		
-		
-		
-		<!-- <table id="employeePersonalHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
+		<table id="employeeOtherHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
 						data-options="collapsible:true
 										,method: 'post'
 										,pagination:false
@@ -181,29 +187,26 @@
 						</thead>
 						<thead>
 							<tr>
-								<th data-options="field:'badgeNo',width:100">Badge</th>
-								<th data-options="field:'socialSecNo',width:100">Social Sec No</th>
-								<th data-options="field:'firstName',width:100">First Name</th>
-								<th data-options="field:'middleName',width:100">Middle Name</th>
-								<th data-options="field:'lastName',width:100">Last Name</th>
-								<th data-options="field:'homePhone',width:100">Home Phone</th>
-								<th data-options="field:'mobilePhone',width:100">Mobile Phone</th>
-								<th data-options="field:'addressLine1',width:100">Address 1</th>
-								<th data-options="field:'addressLine2',width:100">Address 2</th>
-								<th data-options="field:'city',width:100">City</th>
-								<th data-options="field:'state',width:100">State</th>
-								<th data-options="field:'zipcode',width:100">ZIP</th>
-								<th data-options="field:'personalEmail',width:100">Perosonal Email</th>
-								<th data-options="field:'dateOfBirth',width:100">DOB</th>
-								<th data-options="field:'minor',width:100">Minor</th>
-								<th data-options="field:'workPhone',width:100">Work Phone</th>
-								<th data-options="field:'workMobilePhone',width:100">Work Mobile Phone</th>
-								<th data-options="field:'workEmail',width:100">Work Email</th>
+								<th data-options="field:'gender',width:100">Gender</th>
+								<th data-options="field:'ethinicity',width:100">Ethinicity</th>
+								<th data-options="field:'maritalStatus',width:100">Marital Status</th>
+								<th data-options="field:'citizenShip',width:100">CitizenShip</th>
+								<th data-options="field:'visaType',width:100">Visa Type</th>
+								<th data-options="field:'i9ExpDate',width:100">i9 Exp Date</th>
+								<th data-options="field:'veteranStatus',width:100">Veteran Status</th>
+								<th data-options="field:'disability',width:100">Disability</th>
+								<th data-options="field:'disabilityDesc',width:100">Disability Description</th>
+								<th data-options="field:'emergencyLastName',width:100">Emergency Last Name</th>
+								<th data-options="field:'emergencyFirstName',width:100">Emergency First Name</th>
+								<th data-options="field:'emergencyRelationShip',width:100">Emergency RelationShip</th>
+								<th data-options="field:'emergencyHomePhone',width:100">Emergency Home Phone</th>
+								<th data-options="field:'emergencyMobilePhone',width:100">Emergency Mobile Phone</th>
+								<th data-options="field:'emergencyEmail',width:100">emergencyEmail</th>
 								<th data-options="field:'updatedDate',width:100">Updated Date</th>
 								<th data-options="field:'updatedBy',width:100">Updated By</th>
 							</tr>
 						</thead>
-			</table> -->   
+			</table> 
 		</div>
 		</div>
 	</div>
@@ -218,6 +221,7 @@ $(document).ready(function(){
 	$("#otherData").attr('class', 'buttonSelect');
 	$("#disabilityId").toggle(false);
 	$("#disabilityDesc").toggle(false);
+	$("#city").toggle(false);
 });
 function searchLastNameSelect(rec){
 	$('#firstNameInputId').combobox('clear');
@@ -257,12 +261,87 @@ function getEmployeeDetails(rec){
 		success: function(obj){
 			document.getElementById("updateble").value="yes";
 			$.each(obj, function(i, item){
-		  		if(i=='firstName' ||i=='lastName' ||i=='middleName' ||i=='employeeId'){
+				if(i=='firstName' ||i=='lastName' ||i=='middleName' ||i=='employeeId'){
 			  		$("#"+i).val(item);   				  		
 			  	}			  		
 			});
+			getEmployeeOtherDetails(rec.id);
+		}});
+}
+function getEmployeeOtherDetails(rec){
+	loading();
+	// need to change from ajax to submit
+	$.ajax({
+		url:"getEmployeeOtherDetails.htm?empId="+rec,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+			alert(obj);
+		},
+		success: function(obj){
+			document.getElementById("updateble").value="yes";
+			setEmpOtherDetails(obj);
+			if(rec!=null)
+				empHistory(rec);
 			closeloading();
 		}});
+}
+function empHistory(empId){
+	$('#employeeOtherHistoryTable').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
+	$('#employeeOtherHistoryTable').datagrid('loading');  // 
+	$.ajax({
+		url:"getEmployeeOtherDetailsHistory.htm?empId="+empId,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			$('#employeeOtherHistoryTable').datagrid('loaded');  // hide loading message
+		},
+		success: function(obj){
+			$('#employeeOtherHistoryTable').datagrid('loadData',obj); 
+			$('#employeeOtherHistoryTable').datagrid('loaded');  // hide loading message
+		}});
+}
+function formatDetail(value,row,index){
+	return '<a href="#" onclick="javascript:getEmployeeOtherDetailsFromHistoryAjax('+row.seqNo+')">'+value+'</a>';
+}
+function getEmployeeOtherDetailsFromHistoryAjax(id){
+	loading();
+	$.ajax({
+		url:"getEmployeeOtherDetailsFromHistoryAjax.htm?seqNo="+id,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+			alert(obj);
+		},
+		success: function(obj){
+			document.getElementById("updateble").value="no";
+			setEmpOtherDetails(obj);
+			closeloading();
+		}});
+}
+function setEmpOtherDetails(obj){
+	$.each(obj, function(i, item){
+	  	if(i=='i9ExpDate'){
+	  		$('#i9ExpDateBox').datebox('setValue', item);
+	  		document.getElementById("i9ExpDate").value = item;
+	  	}else if(i=='effectiveDate'){
+  			//document.getElementById(i).value=effectiveDate;
+  			$('#effectiveDateBox').datebox('setValue', item);
+  		}else if(i=='citizenShip'){
+  			$("#"+i).val(item);
+  			citizenChange(item);
+  		}else if(i=='disability'){
+  			$("#"+i).val(item);
+  			disabilityChange(item);
+  		}else if($("#"+i) != undefined)
+			$("#"+i).val(item);  
+	  	
+	});
+	var effDate = $('#effectiveDateBox').datebox('getValue');
+	document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +effDate;
+	$('#effectiveDateBox').datebox('setValue', '');
 }
 function save(){
 	if(document.getElementById("updateble").value == "no"){
@@ -284,7 +363,12 @@ function save(){
 				closeloading();
 			},
 			success: function(obj){
-				alert(obj);
+				if(obj == "success")
+					alert("Details saved successfully");
+				else{
+					var str = obj.split(":;");
+					alert(str[1]);
+				}
 				closeloading();
 			}});
 	}
@@ -296,6 +380,13 @@ function disabilityChange(val){
 	}else{
 		$("#disabilityId").toggle(false);
 		$("#disabilityDesc").toggle(false);
+	}
+}
+function citizenChange(val){
+	if(val == 'no'){
+		$("#city").toggle(true);
+	}else{
+		$("#city").toggle(false);
 	}
 }
 </script>
