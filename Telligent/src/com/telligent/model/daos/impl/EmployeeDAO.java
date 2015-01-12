@@ -852,9 +852,9 @@ public class EmployeeDAO extends AbstractDBManager{
 			conn = this.getConnection();
 			map.put("Ethinicity", getLookup(conn, ps, rs, "Ethinicity"));
 			map.put("Marital_Status", getLookup(conn, ps, rs, "Marital_Status"));
-			map.put("Citizenship_Status", getLookup(conn, ps, rs, "Citizenship_Status"));
+			//map.put("Citizenship_Status", getLookup(conn, ps, rs, "Citizenship_Status"));
+			//map.put("Military_Status", getLookup(conn, ps, rs, "Military_Status"));
 			map.put("VISA_Type", getLookup(conn, ps, rs, "VISA_Type"));
-			map.put("Military_Status", getLookup(conn, ps, rs, "Military_Status"));
 			map.put("Veteran_Status", getLookup(conn, ps, rs, "Veteran_Status"));
 			map.put("Relationship", getLookup(conn, ps, rs, "Relationship"));
 		}catch (Exception ex) {
@@ -1003,9 +1003,21 @@ public class EmployeeDAO extends AbstractDBManager{
 			query.append("EMC_L_NAME,EMC_F_NAME,r.value EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY ");
 			query.append("from EMP_OTHER_DATA_HIS o,Ethinicity e,Marital_Status m,VISA_Type v,Veteran_Status ve,Relationship r ");
 			query.append("where EMP_ID=? and o.ETHINICITY = e.id and o.MARITAL_STAT = m.id and o.VISA_TYPE=v.id and o.VET_STAT=ve.id and o.EMC_REL=r.id order by seq_no desc");*/
-			query.append("select SEQ_NO,GENDER,ETHINICITY,MARITAL_STAT,CITIZENSHIP,VISA_TYPE,DATE_FORMAT(I9_EXP_DATE,'%m/%d/%Y') I9_EXP_DATE,VET_STAT,");
-			query.append("IS_DISABLED,DISABILITY_DESC,CITY,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE, ");
-			query.append("EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY from EMP_OTHER_DATA_HIS where EMP_ID=? order by seq_no desc");
+//			query.append("select SEQ_NO,GENDER,ETHINICITY,MARITAL_STAT,CITIZENSHIP,VISA_TYPE,DATE_FORMAT(I9_EXP_DATE,'%m/%d/%Y') I9_EXP_DATE,VET_STAT,");
+//			query.append("IS_DISABLED,DISABILITY_DESC,CITY,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE, ");
+//			query.append("EMC_L_NAME,EMC_F_NAME,EMC_REL,EMC_H_PHONE,EMC_M_PHONE,EMC_EMAIL,DATE_UPDATED,UPDATED_BY from EMP_OTHER_DATA_HIS where EMP_ID=? order by seq_no desc");
+			
+			query.append("select e.SEQ_NO,GENDER,et.value ETHINICITY,m.value MARITAL_STAT,CITIZENSHIP,v.value VISA_TYPE,DATE_FORMAT(I9_EXP_DATE,'%m/%d/%Y') I9_EXP_DATE,ve.value VET_STAT,");
+			query.append("IS_DISABLED,DISABILITY_DESC,e.CITY CITY,DATE_FORMAT(e.EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE, ");
+			query.append("e.EMC_L_NAME EMC_L_NAME,e.EMC_F_NAME EMC_F_NAME,r.value EMC_REL,e.EMC_H_PHONE EMC_H_PHONE,e.EMC_M_PHONE EMC_M_PHONE,e.EMC_EMAIL EMC_EMAIL,e.DATE_UPDATED DATE_UPDATED,e.UPDATED_BY UPDATED_BY ");
+			query.append("from EMP_OTHER_DATA_HIS e ");
+			query.append("left join Ethinicity et on et.id = e.ETHINICITY ");
+			query.append("left join Marital_Status m on m.id = e.MARITAL_STAT ");
+			//query.append("left join Citizenship_Status c on c.id = e.CITIZENSHIP ");
+			query.append("left join VISA_Type v on v.id = e.VISA_TYPE ");
+			query.append("left join Veteran_Status ve on ve.id = e.VET_STAT ");
+			query.append("left join Relationship r on r.id = e.EMC_REL ");
+			query.append("where e.EMP_ID=? order by seq_no desc");
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
 			ps.setString(1, empId);
@@ -1236,9 +1248,24 @@ public class EmployeeDAO extends AbstractDBManager{
 		StringBuffer query = new StringBuffer();
 		ArrayList<EmployeePositionDTO> list = new ArrayList<EmployeePositionDTO>();
 		try{
-			query.append("select SEQ_NO,STAT_CODE,STAT_CODE_REASON,SUPERVISOR,TEAM,POSITION,POSITION_LEVEL,PRIM_JOB,PRIM_JOB_LEVEL,UNION_CODE, ");
-			query.append("ORG_LEVEL_1,ORG_LEVEL_2,ORG_LEVEL_3,ORG_LEVEL_4,ORG_LEVEL_5,ORG_LEVEL_6,ORG_LEVEL_7,ORG_LEVEL_8,ORG_LEVEL_9,ORG_LEVEL_10, ");
-			query.append("DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,UPDATED_BY from EMP_POSITION_DATA_HIS where EMP_ID=? order by seq_no desc");
+			//query.append("select SEQ_NO,STAT_CODE,STAT_CODE_REASON,SUPERVISOR,TEAM,POSITION,POSITION_LEVEL,PRIM_JOB,PRIM_JOB_LEVEL,UNION_CODE, ");
+			//query.append("ORG_LEVEL_1,ORG_LEVEL_2,ORG_LEVEL_3,ORG_LEVEL_4,ORG_LEVEL_5,ORG_LEVEL_6,ORG_LEVEL_7,ORG_LEVEL_8,ORG_LEVEL_9,ORG_LEVEL_10, ");
+			//query.append("DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,UPDATED_BY from EMP_POSITION_DATA_HIS where EMP_ID=? order by seq_no desc");
+			
+			query.append("select e.SEQ_NO SEQ_NO,sr.value STAT_CODE,sr.value STAT_CODE_REASON,CONCAT(ep.EMP_ID,',',ep.L_NAME, ',', ep.F_NAME) SUPERVISOR,t.team_name TEAM,pm.value POSITION,pl.value POSITION_LEVEL,pj.value PRIM_JOB,pjl.value PRIM_JOB_LEVEL,uc.value UNION_CODE, "); 
+			query.append("ORG_LEVEL_1,ORG_LEVEL_2,ORG_LEVEL_3,ORG_LEVEL_4,ORG_LEVEL_5,ORG_LEVEL_6,ORG_LEVEL_7,ORG_LEVEL_8,ORG_LEVEL_9,ORG_LEVEL_10,  ");
+			query.append("DATE_FORMAT(e.EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(e.DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,e.UPDATED_BY "); 
+			query.append("from EMP_POSITION_DATA_HIS e ");
+			query.append("left join Status_Code sc on sc.id = e.STAT_CODE ");
+			query.append("left join Status_Reason sr on sr.id = e.STAT_CODE_REASON ");
+			query.append("left join position_master pm on pm.id = e.POSITION ");
+			query.append("left join position_level pl on pl.id = e.POSITION_LEVEL ");
+			query.append("left join primary_job pj on pj.id = e.PRIM_JOB ");
+			query.append("left join primary_job_leave pjl on pjl.id = e.PRIM_JOB_LEVEL ");
+			query.append("left join union_code uc on uc.id = e.UNION_CODE ");
+			query.append("left join EMP_PERSONAL ep on ep.EMP_ID = e.SUPERVISOR ");
+			query.append("left join team t on t.team_id = e.team ");
+			query.append("where e.EMP_ID=? order by seq_no desc"); 
 			conn = this.getConnection();
 			ps = conn.prepareStatement(query.toString());
 			ps.setString(1, empId);
