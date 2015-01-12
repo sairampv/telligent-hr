@@ -204,8 +204,6 @@
 								<th data-options="field:'emergencyHomePhone',width:100">Emergency Home Phone</th>
 								<th data-options="field:'emergencyMobilePhone',width:100">Emergency Mobile Phone</th>
 								<th data-options="field:'emergencyEmail',width:100">emergencyEmail</th>
-								<th data-options="field:'updatedDate',width:100">Updated Date</th>
-								<th data-options="field:'updatedBy',width:100">Updated By</th>
 							</tr>
 						</thead>
 			</table> 

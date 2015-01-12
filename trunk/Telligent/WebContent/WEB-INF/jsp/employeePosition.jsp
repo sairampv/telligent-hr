@@ -126,7 +126,7 @@
 			<tr>
 				<td style="width: 15%"><label>Position</label></td>
 				<td style="width: 15%">
-	    			<form:select path="position">
+	    			<form:select path="position" id="position1">
 	    				<form:option value="">Select</form:option>
 	    				<form:options items="${positionList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
@@ -240,7 +240,7 @@
 								<th data-options="field:'position',width:100">Position</th>
 								<th data-options="field:'positionLevel',width:100">Position Level</th>
 								<th data-options="field:'primaryJob',width:100">Primary Job</th>
-								<th data-options="field:'primaryJobLevel',width:100">Primary Job Level</th>
+								<th data-options="field:'primaryJobLeave',width:100">Primary Job Level</th>
 								<th data-options="field:'unionCode',width:100">Union Code</th>
 								<th data-options="field:'updatedDate',width:100">Updated Date</th>
 								<th data-options="field:'updatedBy',width:100">Updated By</th>
@@ -306,7 +306,6 @@ function getEmployeeDetails(rec){
 			  	}			  		
 			});
 			getEmployeePositionDetails(rec.id);
-			closeloading();
 		}});
 }
 function getEmployeePositionDetails(rec){
