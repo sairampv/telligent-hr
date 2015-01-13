@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import sun.rmi.runtime.Log;
+
 import com.telligent.common.handlers.MessageHandler;
 import com.telligent.common.user.TelligentUser;
 import com.telligent.model.daos.impl.EmployeeDAO;
@@ -172,6 +174,17 @@ public class EmployeeController {
 		return mav;
 	}
 	
+	
+	@RequestMapping(value="/getEmployeeCompensation.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployeeCompensation(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		EmployeeDTO dto2 = employeeDAO.getEmployeeDetails(empId);
+		EmployeeCompensationDTO dto = employeeDAO.getEmployeeCompensationDetails(empId);
+		dto.setFirstName(dto.getFirstName());
+		dto.setLastName(dto.getLastName());
+		dto.setMiddleName(dto.getMiddleName());
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
+	
 	@RequestMapping(value="/getEmployeeCompensationHistory.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONArray getEmployeeCompensationHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
 		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployeeCompensationHistory(empId));
@@ -224,8 +237,10 @@ public class EmployeeController {
 	}
 	
 	@RequestMapping(value="/saveEmployeeCompDetails.htm", method = RequestMethod.POST)
-	public @ResponseBody ModelAndView saveEmployeeCompDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeComp") EmployeeCompensationDTO employeeCompensationDTO){
+	public @ResponseBody String saveEmployeeCompDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employeeComp") EmployeeCompensationDTO employeeCompensationDTO){
 		logger.info("In saveEmployeeCompDetails");
+		String str ="";
+		try{
 		employeeCompensationDTO.setSuccessMessage("");
 		employeeCompensationDTO.setErrorMessage("");
 		EmployeeCompensationDTO dto = employeeDAO.getEmployeeCompensationDetails(employeeCompensationDTO.getEmployeeId());
@@ -239,7 +254,12 @@ public class EmployeeController {
 			mav.setViewName("employee");
 			mav.addObject("employee", employeeCompensationDTO);
 		}
-		return mav;	
+		str = "Successfully saved";
+		}catch(Exception e){
+			e.printStackTrace();
+			str = "Error while saving data.";
+		}
+		return str;	
 	}
 
 	@RequestMapping(value="/empEmployementPage.htm", method = RequestMethod.POST)
@@ -371,6 +391,11 @@ public class EmployeeController {
 	@RequestMapping(value="/getEmployeeOtherDetailsFromHistoryAjax.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONObject getEmployeeOtherDetailsFromHistoryAjax(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("seqNo") String seqNo){
 		EmployeeOtherDTO dto = employeeDAO.getEmployeeOtherDetailsFromHistoryAjax(seqNo);
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
+	@RequestMapping(value="/getEmployeeCompDetailsFromHistoryAjax.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployeeCompDetailsFromHistoryAjax(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("seqNo") String seqNo){
+		EmployeeCompensationDTO dto = employeeDAO.getEmployeeCompDetailsFromHistoryAjax(seqNo);
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
 }
