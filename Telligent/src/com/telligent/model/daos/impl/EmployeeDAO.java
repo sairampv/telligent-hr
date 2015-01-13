@@ -594,11 +594,14 @@ public class EmployeeDAO extends AbstractDBManager{
 	}
 	
 	private EmployeeCompensationDTO setEmployeeCompensationDetails(ResultSet rs) throws java.sql.SQLException{
+		
+
 		EmployeeCompensationDTO dto = new EmployeeCompensationDTO();
 		dto.setSeqNo(rs.getString("SEQ_NO"));
 		dto.setEmployeeId(rs.getString("EMP_ID"));
 		dto.setEffectiveDate(rs.getString("EFFECTIVE_DATE"));
-		dto.setCompActionType(rs.getString("COMP_REASON"));
+		dto.setCompActionType(rs.getString("COMP_ACTION_TYPE"));
+		dto.setCompActionReason(rs.getString("COMP_REASON"));
 		dto.setPayEntity(rs.getString("PAY_ENTITY"));
 		dto.setPayGroup(rs.getString("PAY_GROUP"));
 		dto.setPayFrequency(rs.getString("PAY_FREQ"));
@@ -614,7 +617,7 @@ public class EmployeeDAO extends AbstractDBManager{
 	    dto.setPeriodRate(rs.getString("PERIOD_RATE"));
 	    dto.setHourlyRate(rs.getString("HOURLY_RATE"));
 	    dto.setDefaultEarningCode(rs.getString("DEFAULT_EARNING_CODE"));
-	    dto.setJobGroup(rs.getString("JOB_GROUP"));
+	    dto.setEligibleJobGroup(rs.getString("JOB_GROUP"));
 	    dto.setUseJobRate(rs.getString("USE_JOB_RATE"));
 	    dto.setPerformacePlan(rs.getString("PERFORMACE_PLAN"));
 	    dto.setBonusPlan(rs.getString("BONUS_PLAN"));
@@ -1338,5 +1341,36 @@ public class EmployeeDAO extends AbstractDBManager{
 		EmployeeDTO dto1 = dummyBlob(new EmployeeDTO());
 		dto.setPicture(dto1.getPicture());
 		return dto;
+	}
+	public EmployeeCompensationDTO getEmployeeCompDetailsFromHistoryAjax(String seqNo){
+		logger.info("in getEmployeeCompDetailsFromHistoryAjax");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			
+			query.append("SELECT SEQ_NO,EMP_ID,DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,COMP_ACTION_TYPE,COMP_REASON,PAY_ENTITY,PAY_GROUP,PAY_FREQ,DATE_FORMAT(LAST_EVALUATION_DATE,'%m/%d/%Y') LAST_EVALUATION_DATE,GRADE,DATE_FORMAT(NEXT_EVAL_DUE_DATE,'%m/%d/%Y') NEXT_EVAL_DUE_DATE,");
+			query.append("SCHEDULED_HOURS,HOURS_FREQUENCY,PAY_PERIOD_HRS,WEEKLY_HOURS,BASE_RATE,BASE_RATE_FREQ,PERIOD_RATE,HOURLY_RATE,DEFAULT_EARNING_CODE,");
+			query.append("JOB_GROUP,USE_JOB_RATE,PERFORMACE_PLAN,BONUS_PLAN FROM EMP_COMPENSATION_HIS WHERE SEQ_NO=? ");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, seqNo);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				EmployeeCompensationDTO dto = setEmployeeCompensationDetails(rs);
+				dto.setEmployeeId(rs.getString("EMP_ID"));
+				EmployeeDTO dto1 = getEmployeeDetails(rs.getString("EMP_ID"));
+				dto.setFirstName(dto1.getFirstName());
+				dto.setLastName(dto1.getLastName());
+				dto.setMiddleName(dto1.getMiddleName());
+				return dto;
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployeeCompDetailsFromHistoryAjax "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return null;
 	}
 }
