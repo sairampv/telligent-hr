@@ -38,10 +38,10 @@
 	    	</tr>
 			<tr>
 				<td><label>Employee</label></td>
-				<td><form:input path="employeeId" readonly="true"/></td>
-				<td><form:input path="lastName" readonly="true"/></td>
-				<td><form:input path="middleName" readonly="true"/></td>
-				<td><form:input path="firstName" readonly="true"/></td>
+				<td><form:input path="employeeId" readonly="true" cssClass="required" placeholder="Employee Id"/></td>
+				<td><form:input path="lastName" readonly="true" placeholder="Last Name"/></td>
+				<td><form:input path="middleName" readonly="true" placeholder="Middle Name"/></td>
+				<td><form:input path="firstName" readonly="true" placeholder="First Name"/></td>
 				<td><label>Effective Date</label><span style="color: red">*</span></td>
 				<td>
 					<form:hidden path="effectiveDate"/>
@@ -216,7 +216,7 @@
 		    	</th>
 			</tr>
 		</table>
-		<!-- <table id="employeePersonalHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
+		<table id="employeeCompensationHistoryTable" class="easyui-datagrid" title="History Table"  style="width:100%;height:200px;table-layout: fixed;"
 						data-options="collapsible:true
 										,method: 'post'
 										,pagination:false
@@ -224,36 +224,38 @@
 										,collapsed:false " >
 						<thead data-options="frozen:true">
 							<tr>
-								<th data-options="field:'effectiveDate',width:100"  formatter="formatDetail">Eff Date</th>
+								<th data-options="field:'effectiveDate',width:100" formatter="formatDetail">Eff Date</th>
 								<th data-options="field:'employeeId',width:100">Emp Id</th>
-								<th data-options="field:'seqNo',width:100" hidden="true">seq no</th>
 							</tr>
 						</thead>
 						<thead>
 							<tr>
-								<th data-options="field:'badgeNo',width:100">Badge</th>
-								<th data-options="field:'socialSecNo',width:100">Social Sec No</th>
-								<th data-options="field:'firstName',width:100">First Name</th>
-								<th data-options="field:'middleName',width:100">Middle Name</th>
-								<th data-options="field:'lastName',width:100">Last Name</th>
-								<th data-options="field:'homePhone',width:100">Home Phone</th>
-								<th data-options="field:'mobilePhone',width:100">Mobile Phone</th>
-								<th data-options="field:'addressLine1',width:100">Address 1</th>
-								<th data-options="field:'addressLine2',width:100">Address 2</th>
-								<th data-options="field:'city',width:100">City</th>
-								<th data-options="field:'state',width:100">State</th>
-								<th data-options="field:'zipcode',width:100">ZIP</th>
-								<th data-options="field:'personalEmail',width:100">Perosonal Email</th>
-								<th data-options="field:'dateOfBirth',width:100">DOB</th>
-								<th data-options="field:'minor',width:100">Minor</th>
-								<th data-options="field:'workPhone',width:100">Work Phone</th>
-								<th data-options="field:'workMobilePhone',width:100">Work Mobile Phone</th>
-								<th data-options="field:'workEmail',width:100">Work Email</th>
+								<th data-options="field:'compActionType',width:130">Comp Action Type</th>
+								<th data-options="field:'compActionReason',width:130">Comp Action Reason</th>
+								<th data-options="field:'payEntity',width:100">Pay Entity</th>
+								<th data-options="field:'lastperfEvaluationDate',width:140">Last Perf Evaluation Date</th>
+								<th data-options="field:'scheduledHours',width:100">Scheduled Hours</th>
+								<th data-options="field:'payGroup',width:100">Pay Group</th>
+								<th data-options="field:'grade',width:110">Performance Grade</th>
+								<th data-options="field:'hoursFrequency',width:100">Hours Frequency</th>
+								<th data-options="field:'payFrequency',width:100">Pay Frequency</th>
+								<th data-options="field:'nextEvalDueDate',width:120">Next Performance Date</th>
+								<th data-options="field:'payPeriodHours',width:100">Pay Period Hours</th>
+								<th data-options="field:'weeklyHours',width:100">Weekly Hours</th>
+								<th data-options="field:'baseRate',width:100">Base Rate</th>
+								<th data-options="field:'defaultEarningCode',width:120">Default Earning Code</th>
+								<th data-options="field:'performacePlan',width:100">Performance Plan</th>
+								<th data-options="field:'baseRateFrequency',width:120">Base Rate Frequency</th>
+								<th data-options="field:'eligibleJobGroup',width:100">Eligible Job Group</th>
+								<th data-options="field:'bonusPlan',width:100">Bonus Plan</th>
+								<th data-options="field:'periodRate',width:100">Period Rate</th>
+								<th data-options="field:'hourlyRate',width:100">Hourly Rate</th>
 								<th data-options="field:'updatedDate',width:100">Updated Date</th>
 								<th data-options="field:'updatedBy',width:100">Updated By</th>
 							</tr>
 						</thead>
-			</table> -->   
+						
+			</table>  
 		</div>
 		</div>
 	</div>
@@ -265,7 +267,10 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	highLightTab();
+	empCompHistory(document.getElementById("employeeId").value);
 	$("#compensation").attr('class', 'buttonSelect');
+	$('#nextEvalDueDateBox').datebox('setValue', document.getElementById("nextEvalDueDate").value);
+	$('#lastperfEvaluationDateBox').datebox('setValue', document.getElementById("lastperfEvaluationDate").value);
 });
 function searchLastNameSelect(rec){
 	$('#firstNameInputId').combobox('clear');
@@ -294,20 +299,31 @@ function searchTeamEmployeesSelect(rec){
 function getEmployeeDetails(rec){
 	loading();
 	// need to change from ajax to submit
+	
+	empCompHistory(rec.id);
 	$.ajax({
-		url:"getEmployeeDetails.htm?empId="+rec.id,
+		url:"getEmployeeCompensation.htm?empId="+rec.id,
 		type: "post",
 		dataType: 'json',
 		error: function(obj){
 			closeloading();
-			alert(obj);
+			alert("Error While getting Compensation Details.");
 		},
 		success: function(obj){
 			document.getElementById("updateble").value="yes";
 			$.each(obj, function(i, item){
-		  		if(i=='firstName' ||i=='lastName' ||i=='middleName' ||i=='employeeId'){
-			  		$("#"+i).val(item);   				  		
-			  	}			  		
+				if(i=='lastperfEvaluationDate'){
+			  		$('#lastperfEvaluationDateBox').datebox('setValue', item);
+			  		document.getElementById("lastperfEvaluationDate").value = item;
+			  	}else if(i=='nextEvalDueDate'){
+			  		$('#nextEvalDueDateBox').datebox('setValue', item);
+			  		document.getElementById("nextEvalDueDateBox").value = item;
+		  		}
+			  	else if(i=='effectiveDate'){
+		  			$('#effectiveDateBox').datebox('setValue', item);
+		  		}
+		  		else if($("#"+i) != undefined)
+					$("#"+i).val(item); 
 			});
 			closeloading();
 		}});
@@ -318,6 +334,8 @@ function save(){
 		return false;
 	}
 	var effectiveDate = $('#effectiveDateBox').datebox('getValue');
+	document.getElementById("lastperfEvaluationDate").value = $('#lastperfEvaluationDateBox').datebox('getValue');
+	document.getElementById("nextEvalDueDate").value = $('#nextEvalDueDateBox').datebox('getValue');
 	if($('#employeeComp').valid() && effectiveDate!=''){
 		document.getElementById("effectiveDate").value=effectiveDate;
 		loading();
@@ -335,4 +353,59 @@ function save(){
 			}});
 	}
 }
+
+function empCompHistory(empId){
+	$('#employeeCompensationHistoryTable').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
+	$('#employeeCompensationHistoryTable').datagrid('loading');  // 
+	$.ajax({
+		url:"getEmployeeCompensationHistory.htm?empId="+empId,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			$('#employeeCompensationHistoryTable').datagrid('loaded');  // hide loading message
+		},
+		success: function(obj){
+			$('#employeeCompensationHistoryTable').datagrid('loadData',obj); 
+			$('#employeeCompensationHistoryTable').datagrid('loaded');  // hide loading message
+		}});
+}
+function formatDetail(value,row,index){
+	return '<a href="#" onclick="javascript:getEmployeeCompDetailsFromHistoryAjax('+row.seqNo+')">'+value+'</a>';
+}
+
+function getEmployeeCompDetailsFromHistoryAjax(id){
+	loading();
+	$.ajax({
+		url:"getEmployeeCompDetailsFromHistoryAjax.htm?seqNo="+id,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+			alert(obj);
+		},
+		success: function(obj){
+			document.getElementById("updateble").value="no";
+			setEmpCompDetails(obj);
+			closeloading();
+		}});
+}
+
+function setEmpCompDetails(obj){
+	$.each(obj, function(i, item){
+	  	if(i=='nextEvalDueDate'){
+	  		$('#nextEvalDueDateBox').datebox('setValue', item);
+	  		document.getElementById("nextEvalDueDate").value = item;
+	  	}else if(i=='effectiveDate'){
+  			$('#effectiveDateBox').datebox('setValue', item);
+  		}else if(i=='lastperfEvaluationDate'){
+  			$('#lastperfEvaluationDateBox').datebox('setValue', item);
+  		}else if($("#"+i) != undefined)
+			$("#"+i).val(item);  
+	  	
+	});
+	var effDate = $('#effectiveDateBox').datebox('getValue');
+	document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +effDate;
+	$('#effectiveDateBox').datebox('setValue', '');
+}
+
 </script>
