@@ -391,7 +391,7 @@ function save(){
 				closeloading();
 			},
 			success: function(obj){
-				if(obj == "success"){
+				if(obj == "Details Saved Succuessfully"){
 					alert("Details saved successfully");
 					empHistory(document.getElementById("employeeId").value);
 				}else{
