@@ -23,6 +23,7 @@ import com.telligent.model.dtos.EmployeeCompensationDTO;
 import com.telligent.model.dtos.EmployeeDTO;
 import com.telligent.model.dtos.EmployeeOtherDTO;
 import com.telligent.model.dtos.EmployeePositionDTO;
+import com.telligent.model.dtos.EmploymentDTO;
 import com.telligent.model.dtos.MapDTO;
 import com.telligent.model.dtos.StateDTO;
 import com.telligent.model.dtos.TeamDTO;
@@ -1115,6 +1116,9 @@ public class EmployeeDAO extends AbstractDBManager{
 			rs = ps.executeQuery();
 			if(rs.next()){
 				return setEmployeeCompensationDetails(rs);
+			}else{
+				dto = new EmployeeCompensationDTO();
+				dto.setEmployeeId(empId);
 			}
 		}catch (Exception ex) {
 			logger.info("Excpetion in getEmployeeDetails "+ex.getMessage());
@@ -1372,5 +1376,237 @@ public class EmployeeDAO extends AbstractDBManager{
 			this.closeAll(conn, ps, rs);
 		}
 		return null;
+	}
+	@SuppressWarnings("deprecation")
+	public String saveEmployementPosition(EmploymentDTO employmentDTO,TelligentUser telligentUser,MessageHandler messageHandler) {
+		logger.info("in saveEmployementPosition DAO");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try {
+			conn = this.getConnection();
+			ps = conn.prepareStatement("select emp_id from EMP_EMPLOYEMENT where emp_id=?");
+			ps.setString(1, employmentDTO.getEmployeeId());
+			rs = ps.executeQuery();
+			if(rs.next()){
+				String str = getEffectiveDate(conn,ps,rs,"EMP_EMPLOYEMENT",employmentDTO.getEmployeeId());
+				boolean flag = DateUtility.compareDates(employmentDTO.getEffectiveDate(), str);
+				ps.close();
+				if(flag){
+					conn.setAutoCommit(false);
+					query.append("update EMP_EMPLOYEMENT set STAT_CODE=?,STAT_CODE_REASON=?=?,STATUS=?,HIRE_DATE=?,LAST_HIRE_DATE=?,SENIORITY_DATE=?,BENEFIT_DATE=?,TERM_DATE=?,FLSA_CATEGORY=?, ");
+					query.append("CLASSIFICATION=?,EMPL_CATEGORY=?,FTE=?,LEAV_STAT_CODE=?,LEAV_REASON=?,LEAV_START_DATE=?,LEAV_END_DATE=?, ");
+					query.append("EFFECTIVE_DATE=?,END_EFFECTIVE_DATE=?,DATE_UPDATED=sysdate(),UPDATED_BY=? where EMP_ID=?");
+					ps = conn.prepareStatement(query.toString());
+					setPSforEmployment(employmentDTO, ps, telligentUser, messageHandler,"update");
+				}else{
+					return "error:;Effective Date should be greater than current Effective Date";
+				}
+			}else{
+				ps.close();
+				conn.setAutoCommit(false);
+				query.append("insert into EMP_EMPLOYEMENT(STAT_CODE,STAT_CODE_REASON,STATUS,HIRE_DATE,LAST_HIRE_DATE,SENIORITY_DATE,BENEFIT_DATE,TERM_DATE,FLSA_CATEGORY, ");
+				query.append("CLASSIFICATION,EMPL_CATEGORY,FTE,LEAV_STAT_CODE,LEAV_REASON,LEAV_START_DATE,LEAV_END_DATE, ");
+				query.append("EFFECTIVE_DATE,END_EFFECTIVE_DATE,DATE_UPDATED,UPDATED_BY,EMP_ID) ");
+				query.append("values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,sysdate(),?,?)");
+				ps = conn.prepareStatement(query.toString());
+				setPSforEmployment(employmentDTO, ps, telligentUser, messageHandler,"save");
+			}
+			int i = ps.executeUpdate();
+			if(i>0){
+				conn.commit();
+				return "success";
+			}else{
+				conn.rollback();
+				return "error:;Details Not Saved";
+			}
+		}catch (Exception ex) {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {}
+			ex.printStackTrace();
+			employmentDTO.setErrorMessage("error ::"+ex.getMessage());
+			logger.info("Excpetion in saveEmployementPosition :: "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return null;
+	}
+	@SuppressWarnings("deprecation")
+	public void setPSforEmployment(EmploymentDTO dto,PreparedStatement ps,TelligentUser telligentUser,MessageHandler handler,String operation) throws java.sql.SQLException,IOException{
+		ps.setString(1, dto.getStatusCode());
+		ps.setString(2, dto.getStatusReason());
+		ps.setString(3, dto.getStatus());
+		
+		if(dto.getMostRecentHireDate() !=null && !dto.getMostRecentHireDate().equalsIgnoreCase(""))
+			ps.setDate(4, new java.sql.Date(new Date(dto.getMostRecentHireDate()).getTime()));
+		else
+			ps.setDate(4, null);
+		if(dto.getLastHireDate() !=null && !dto.getLastHireDate().equalsIgnoreCase(""))
+			ps.setDate(5, new java.sql.Date(new Date(dto.getLastHireDate()).getTime()));
+		else
+			ps.setDate(5, null);
+		if(dto.getSeniorityDate() !=null && !dto.getSeniorityDate().equalsIgnoreCase(""))
+			ps.setDate(6, new java.sql.Date(new Date(dto.getSeniorityDate()).getTime()));
+		else
+			ps.setDate(6, null);
+		if(dto.getBenefitStartDate() !=null && !dto.getBenefitStartDate().equalsIgnoreCase(""))
+			ps.setDate(7, new java.sql.Date(new Date(dto.getBenefitStartDate()).getTime()));
+		else
+			ps.setDate(7, null);
+		if(dto.getTerminationDate() !=null && !dto.getTerminationDate().equalsIgnoreCase(""))
+			ps.setDate(8, new java.sql.Date(new Date(dto.getTerminationDate()).getTime()));
+		else
+			ps.setDate(8, null);
+		ps.setString(9, dto.getFLSACategory());
+		ps.setString(10, dto.getClassification());
+		ps.setString(11, dto.getEmploymentCategory());
+		ps.setString(12, dto.getFullTimeEquivalency());
+		ps.setString(13, dto.getLeaveStatusCode());
+		ps.setString(14, dto.getLeaveReason());
+		if(dto.getLeaveStartDate() !=null && !dto.getLeaveStartDate().equalsIgnoreCase(""))
+			ps.setDate(15, new java.sql.Date(new Date(dto.getLeaveStartDate()).getTime()));
+		else
+			ps.setDate(15, null);
+		if(dto.getExpectedLeaveEndDate() !=null && !dto.getExpectedLeaveEndDate().equalsIgnoreCase(""))
+			ps.setDate(16, new java.sql.Date(new Date(dto.getExpectedLeaveEndDate()).getTime()));
+		else
+			ps.setDate(16, null);
+		ps.setDate(17, new java.sql.Date(new Date(dto.getEffectiveDate()).getTime()));
+		if(operation.equalsIgnoreCase("save"))
+			ps.setDate(18, new java.sql.Date(new Date(handler.getMessage("effectiveEndDate")).getTime()));
+		else
+			ps.setDate(18, new java.sql.Date(new Date(dto.getEffectiveDate()).getTime()-1));
+		ps.setString(19, telligentUser.getEmployeeId());
+		ps.setString(20, dto.getEmployeeId());
+	}
+	
+	public EmploymentDTO getEmployementDetails(String empId){
+		logger.info("in getEmployementDetails");
+		EmploymentDTO dto = new EmploymentDTO();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select SEQ_NO,STAT_CODE,STAT_CODE_REASON,STATUS,DATE_FORMAT(HIRE_DATE,'%m/%d/%Y') HIRE_DATE,DATE_FORMAT(LAST_HIRE_DATE,'%m/%d/%Y') LAST_HIRE_DATE,DATE_FORMAT(SENIORITY_DATE,'%m/%d/%Y') SENIORITY_DATE,DATE_FORMAT(BENEFIT_DATE,'%m/%d/%Y') BENEFIT_DATE,DATE_FORMAT(TERM_DATE,'%m/%d/%Y') TERM_DATE,FLSA_CATEGORY, ");
+			query.append("CLASSIFICATION,EMPL_CATEGORY,FTE,LEAV_STAT_CODE,LEAV_REASON,DATE_FORMAT(LEAV_START_DATE,'%m/%d/%Y') LEAV_START_DATE,DATE_FORMAT(LEAV_END_DATE,'%m/%d/%Y') LEAV_END_DATE, ");
+			query.append("DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,UPDATED_BY from EMP_EMPLOYEMENT where EMP_ID=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				EmployeeDTO dto1 = getEmployeeDetails(empId);
+				dto = setEmployementDetails(rs);
+				dto.setEmployeeId(dto1.getEmployeeId());
+				dto.setLastName(dto1.getLastName());
+				dto.setFirstName(dto1.getFirstName());
+				dto.setMiddleName(dto1.getMiddleName());
+			}else{
+				EmployeeDTO dto1 = dummyBlob(new EmployeeDTO());
+				dto.setPicture(dto1.getPicture());
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployementDetails "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return dto;
+	}
+	public ArrayList<EmploymentDTO> getEmployementDetailsHistory(String empId){
+		logger.info("in getEmployementDetailsHistory");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		ArrayList<EmploymentDTO> list = new ArrayList<EmploymentDTO>();
+		try{
+			query.append("select e.SEQ_NO,sc.value STAT_CODE,sr.value STAT_CODE_REASON,s.value STATUS,DATE_FORMAT(HIRE_DATE,'%m/%d/%Y') HIRE_DATE,DATE_FORMAT(LAST_HIRE_DATE,'%m/%d/%Y') LAST_HIRE_DATE,DATE_FORMAT(SENIORITY_DATE,'%m/%d/%Y') SENIORITY_DATE,DATE_FORMAT(BENEFIT_DATE,'%m/%d/%Y') BENEFIT_DATE,DATE_FORMAT(TERM_DATE,'%m/%d/%Y') TERM_DATE,flsa.value FLSA_CATEGORY, ");
+			query.append("c.value CLASSIFICATION,ec.value EMPL_CATEGORY,fte.value FTE,lsc.value LEAV_STAT_CODE,lsr.value LEAV_REASON,DATE_FORMAT(LEAV_START_DATE,'%m/%d/%Y') LEAV_START_DATE,DATE_FORMAT(LEAV_END_DATE,'%m/%d/%Y') LEAV_END_DATE, ");
+			query.append("DATE_FORMAT(e.EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(e.DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,e.UPDATED_BY UPDATED_BY,e.EMP_ID  EMP_ID ");
+			query.append("from EMP_EMPLOYEMENT_HIS e ");
+			query.append("left join Status_Code sc on sc.id = e.STAT_CODE ");
+			query.append("left join Status_Reason sr on sr.id = e.STAT_CODE_REASON ");
+			query.append("left join Status s on s.id = e.STATUS ");
+			query.append("left join FLSA_Category flsa on flsa.id = e.FLSA_CATEGORY ");
+			query.append("left join Classification c on c.id = e.CLASSIFICATION ");
+			query.append("left join Employement_Category ec on ec.id = e.EMPL_CATEGORY ");
+			query.append("left join Full_Time_Equivalency fte on fte.id = e.FTE ");
+			query.append("left join Leave_Status_code lsc on lsc.id = e.LEAV_STAT_CODE ");
+			query.append("left join Leave_Status_Reason lsr on lsr.id = e.LEAV_REASON ");
+			query.append("where e.EMP_ID=? order by seq_no desc"); 
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, empId);
+			rs = ps.executeQuery();
+			while(rs.next()){
+				EmploymentDTO dto = setEmployementDetails(rs);
+				dto.setEmployeeId(empId);
+				list.add(dto);
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployementDetailsHistory "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return list;
+	}
+	public EmploymentDTO getEmployementDetailsFromHistoryAjax(String seqNo){
+		logger.info("in getEmployementDetailsFromHistoryAjax");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuffer query = new StringBuffer();
+		try{
+			query.append("select SEQ_NO,STAT_CODE,STAT_CODE_REASON,STATUS,DATE_FORMAT(HIRE_DATE,'%m/%d/%Y') HIRE_DATE,DATE_FORMAT(LAST_HIRE_DATE,'%m/%d/%Y') LAST_HIRE_DATE,DATE_FORMAT(SENIORITY_DATE,'%m/%d/%Y') SENIORITY_DATE,DATE_FORMAT(BENEFIT_DATE,'%m/%d/%Y') BENEFIT_DATE,DATE_FORMAT(TERM_DATE,'%m/%d/%Y') TERM_DATE,FLSA_CATEGORY, ");
+			query.append("CLASSIFICATION,EMPL_CATEGORY,FTE,LEAV_STAT_CODE,LEAV_REASON,DATE_FORMAT(LEAV_START_DATE,'%m/%d/%Y') LEAV_START_DATE,DATE_FORMAT(LEAV_END_DATE,'%m/%d/%Y') LEAV_END_DATE, ");
+			query.append("DATE_FORMAT(EFFECTIVE_DATE,'%m/%d/%Y') EFFECTIVE_DATE,DATE_FORMAT(DATE_UPDATED,'%m/%d/%Y') DATE_UPDATED,UPDATED_BY,EMP_ID from EMP_EMPLOYEMENT_HIS where SEQ_NO=?");
+			conn = this.getConnection();
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(1, seqNo);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				EmploymentDTO dto = setEmployementDetails(rs);
+				dto.setEmployeeId(rs.getString("EMP_ID"));
+				EmployeeDTO dto1 = getEmployeeDetails(rs.getString("EMP_ID"));
+				dto.setFirstName(dto1.getFirstName());
+				dto.setLastName(dto1.getLastName());
+				dto.setMiddleName(dto1.getMiddleName());
+				return dto;
+			}
+		}catch (Exception ex) {
+			logger.info("Excpetion in getEmployementDetailsFromHistoryAjax "+ex.getMessage());
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+		return null;
+	}
+	private EmploymentDTO setEmployementDetails(ResultSet rs) throws SQLException{
+		EmploymentDTO dto = new EmploymentDTO();
+		dto.setSeqNo(rs.getString("SEQ_NO"));
+		dto.setStatusCode(rs.getString("STAT_CODE"));
+		dto.setStatusReason(rs.getString("STAT_CODE_REASON"));
+		dto.setStatus(rs.getString("STATUS"));
+		dto.setMostRecentHireDate(rs.getString("HIRE_DATE"));
+		dto.setLastHireDate(rs.getString("LAST_HIRE_DATE"));
+		dto.setSeniorityDate(rs.getString("SENIORITY_DATE"));
+		dto.setBenefitStartDate(rs.getString("BENEFIT_DATE"));
+		dto.setTerminationDate(rs.getString("TERM_DATE"));
+		dto.setFLSACategory(rs.getString("FLSA_CATEGORY"));
+		dto.setClassification(rs.getString("CLASSIFICATION"));
+		dto.setEmploymentCategory(rs.getString("EMPL_CATEGORY"));
+		dto.setFullTimeEquivalency(rs.getString("FTE"));
+		dto.setLeaveStatusCode(rs.getString("LEAV_STAT_CODE"));
+		dto.setLeaveReason(rs.getString("LEAV_REASON"));
+		dto.setLeaveStartDate(rs.getString("LEAV_START_DATE"));
+		dto.setExpectedLeaveEndDate(rs.getString("LEAV_END_DATE"));
+		dto.setEffectiveDate(rs.getString("EFFECTIVE_DATE"));
+		dto.setUpdatedBy(rs.getString("UPDATED_BY"));
+		dto.setUpdatedDate(rs.getString("DATE_UPDATED"));
+		EmployeeDTO dto1 = dummyBlob(new EmployeeDTO());
+		dto.setPicture(dto1.getPicture());
+		return dto;
 	}
 }
