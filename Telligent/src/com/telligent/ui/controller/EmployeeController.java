@@ -179,9 +179,9 @@ public class EmployeeController {
 	public @ResponseBody JSONObject getEmployeeCompensation(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
 		EmployeeDTO dto2 = employeeDAO.getEmployeeDetails(empId);
 		EmployeeCompensationDTO dto = employeeDAO.getEmployeeCompensationDetails(empId);
-		dto.setFirstName(dto.getFirstName());
-		dto.setLastName(dto.getLastName());
-		dto.setMiddleName(dto.getMiddleName());
+		dto.setFirstName(dto2.getFirstName());
+		dto.setLastName(dto2.getLastName());
+		dto.setMiddleName(dto2.getMiddleName());
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
 	
@@ -337,6 +337,12 @@ public class EmployeeController {
 	@RequestMapping(value="/getEmployeePositionDetails.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONObject getEmployeePositionDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
 		EmployeePositionDTO dto = employeeDAO.getEmployeePositionDetails(empId);
+		EmployeeDTO dto1 = employeeDAO.getEmployeeDetails(empId);
+		dto.setEmployeeId(dto1.getEmployeeId());
+		dto.setEmployeeName(dto1.getEmployeeName());
+		dto.setFirstName(dto1.getFirstName());
+		dto.setLastName(dto1.getLastName());
+		dto.setMiddleName(dto1.getMiddleName());
 		dto.setOperation("edit");
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
@@ -383,6 +389,12 @@ public class EmployeeController {
 	@RequestMapping(value="/getEmployeeOtherDetails.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONObject getEmployeeOtherDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
 		EmployeeOtherDTO dto = employeeDAO.getEmployeeOtherDetails(empId);
+		EmployeeDTO dto1 = employeeDAO.getEmployeeDetails(empId);
+		dto.setEmployeeId(dto1.getEmployeeId());
+		dto.setEmployeeName(dto1.getEmployeeName());
+		dto.setFirstName(dto1.getFirstName());
+		dto.setLastName(dto1.getLastName());
+		dto.setMiddleName(dto1.getMiddleName());
 		dto.setOperation("edit");
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
@@ -402,7 +414,15 @@ public class EmployeeController {
 	}
 	@RequestMapping(value="/getEmployementDetails.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONObject getEmployementDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		
+		EmployeeDTO dto1 = employeeDAO.getEmployeeDetails(empId);
+			
 		EmploymentDTO dto = employeeDAO.getEmployementDetails(empId);
+		dto.setEmployeeId(dto1.getEmployeeId());
+		dto.setEmployeeName(dto1.getEmployeeName());
+		dto.setFirstName(dto1.getFirstName());
+		dto.setLastName(dto1.getLastName());
+		dto.setMiddleName(dto1.getMiddleName());
 		dto.setOperation("edit");
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
