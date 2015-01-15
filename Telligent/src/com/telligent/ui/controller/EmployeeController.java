@@ -291,7 +291,7 @@ public class EmployeeController {
 		logger.info("In saveEmployeeEmployement");
 		employmentDTO.setSuccessMessage("");
 		employmentDTO.setErrorMessage("");
-		return employeeDAO.saveEmployementPosition(employmentDTO,telligentUtility.getTelligentUser(),messageHandler);
+		return employeeDAO.saveEmployement(employmentDTO,telligentUtility.getTelligentUser(),messageHandler);
 	}
 	@RequestMapping(value="/empPosition.htm", method = RequestMethod.POST)
 	public ModelAndView showEmpPositionScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmployeePositionDTO dto){
