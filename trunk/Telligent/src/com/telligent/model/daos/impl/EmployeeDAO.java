@@ -905,7 +905,7 @@ public class EmployeeDAO extends AbstractDBManager{
 			int i = ps.executeUpdate();
 			if(i>0){
 				conn.commit();
-				return "success";
+				return "Details Saved Succuessfully";
 			}else{
 				conn.rollback();
 				return "error:;Details Not Saved";
@@ -1167,7 +1167,7 @@ public class EmployeeDAO extends AbstractDBManager{
 			int i = ps.executeUpdate();
 			if(i>0){
 				conn.commit();
-				return "success";
+				return "Details Saved Succuessfully";
 			}else{
 				conn.rollback();
 				return "error:;Details Not Saved";
@@ -1378,8 +1378,8 @@ public class EmployeeDAO extends AbstractDBManager{
 		return null;
 	}
 	@SuppressWarnings("deprecation")
-	public String saveEmployementPosition(EmploymentDTO employmentDTO,TelligentUser telligentUser,MessageHandler messageHandler) {
-		logger.info("in saveEmployementPosition DAO");
+	public String saveEmployement(EmploymentDTO employmentDTO,TelligentUser telligentUser,MessageHandler messageHandler) {
+		logger.info("in saveEmployement DAO");
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1395,7 +1395,7 @@ public class EmployeeDAO extends AbstractDBManager{
 				ps.close();
 				if(flag){
 					conn.setAutoCommit(false);
-					query.append("update EMP_EMPLOYEMENT set STAT_CODE=?,STAT_CODE_REASON=?=?,STATUS=?,HIRE_DATE=?,LAST_HIRE_DATE=?,SENIORITY_DATE=?,BENEFIT_DATE=?,TERM_DATE=?,FLSA_CATEGORY=?, ");
+					query.append("update EMP_EMPLOYEMENT set STAT_CODE=?,STAT_CODE_REASON=?,STATUS=?,HIRE_DATE=?,LAST_HIRE_DATE=?,SENIORITY_DATE=?,BENEFIT_DATE=?,TERM_DATE=?,FLSA_CATEGORY=?, ");
 					query.append("CLASSIFICATION=?,EMPL_CATEGORY=?,FTE=?,LEAV_STAT_CODE=?,LEAV_REASON=?,LEAV_START_DATE=?,LEAV_END_DATE=?, ");
 					query.append("EFFECTIVE_DATE=?,END_EFFECTIVE_DATE=?,DATE_UPDATED=sysdate(),UPDATED_BY=? where EMP_ID=?");
 					ps = conn.prepareStatement(query.toString());
@@ -1416,7 +1416,7 @@ public class EmployeeDAO extends AbstractDBManager{
 			int i = ps.executeUpdate();
 			if(i>0){
 				conn.commit();
-				return "success";
+				return "Details Saved Succuessfully";
 			}else{
 				conn.rollback();
 				return "error:;Details Not Saved";
@@ -1427,7 +1427,7 @@ public class EmployeeDAO extends AbstractDBManager{
 			} catch (SQLException e) {}
 			ex.printStackTrace();
 			employmentDTO.setErrorMessage("error ::"+ex.getMessage());
-			logger.info("Excpetion in saveEmployementPosition :: "+ex.getMessage());
+			logger.info("Excpetion in saveEmployement :: "+ex.getMessage());
 		} finally {
 			this.closeAll(conn, ps, rs);
 		}
