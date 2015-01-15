@@ -39,9 +39,9 @@
 			<tr>
 				<td><label>Employee</label></td>
 				<td><form:input path="employeeId" readonly="true"/></td>
-				<td><form:input path="lastName" readonly="true"/></td>
-				<td><form:input path="middleName" readonly="true"/></td>
-				<td><form:input path="firstName" readonly="true"/></td>
+				<td><form:input path="lastName" readonly="true" placeholder="Last Name"/></td>
+				<td><form:input path="middleName" readonly="true" placeholder="Middle Name"/></td>
+				<td><form:input path="firstName" readonly="true" placeholder="First Name"/></td>
 				<td><label>Effective Date</label></td>
 				<td>
 					<form:hidden path="effectiveDate"/>
@@ -307,6 +307,7 @@ function save(){
 				closeloading();
 			},
 			success: function(obj){
+				empHistory(document.getElementById("employeeId").value);
 				alert(obj);
 				closeloading();
 			}});
