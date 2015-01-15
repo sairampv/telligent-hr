@@ -178,7 +178,7 @@
 		    	</th>
 			</tr>
 		</table>
-		<!-- <table id="employeePersonalHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
+		<table id="employementHistoryTable"  class="easyui-datagrid" title="History Table"  style="width:100%;height:170px;table-layout: fixed;"
 						data-options="collapsible:true
 										,method: 'post'
 										,pagination:false
@@ -193,29 +193,27 @@
 						</thead>
 						<thead>
 							<tr>
-								<th data-options="field:'badgeNo',width:100">Badge</th>
-								<th data-options="field:'socialSecNo',width:100">Social Sec No</th>
-								<th data-options="field:'firstName',width:100">First Name</th>
-								<th data-options="field:'middleName',width:100">Middle Name</th>
-								<th data-options="field:'lastName',width:100">Last Name</th>
-								<th data-options="field:'homePhone',width:100">Home Phone</th>
-								<th data-options="field:'mobilePhone',width:100">Mobile Phone</th>
-								<th data-options="field:'addressLine1',width:100">Address 1</th>
-								<th data-options="field:'addressLine2',width:100">Address 2</th>
-								<th data-options="field:'city',width:100">City</th>
-								<th data-options="field:'state',width:100">State</th>
-								<th data-options="field:'zipcode',width:100">ZIP</th>
-								<th data-options="field:'personalEmail',width:100">Perosonal Email</th>
-								<th data-options="field:'dateOfBirth',width:100">DOB</th>
-								<th data-options="field:'minor',width:100">Minor</th>
-								<th data-options="field:'workPhone',width:100">Work Phone</th>
-								<th data-options="field:'workMobilePhone',width:100">Work Mobile Phone</th>
-								<th data-options="field:'workEmail',width:100">Work Email</th>
+								<th data-options="field:'statusCode',width:100">Status Code</th>
+								<th data-options="field:'statusReason',width:100">Status Reason</th>
+								<th data-options="field:'status',width:100">Status</th>
+								<th data-options="field:'mostRecentHireDate',width:100">Hire Date</th>
+								<th data-options="field:'lastHireDate',width:100">Last Hire Date</th>
+								<th data-options="field:'seniorityDate',width:100">Seniority Date</th>
+								<th data-options="field:'benefitStartDate',width:100">Benefit Start Date</th>
+								<th data-options="field:'terminationDate',width:100">Termination Date</th>
+								<th data-options="field:'FLSACategory',width:100">FLSA Category</th>
+								<th data-options="field:'classification',width:100">Classification</th>
+								<th data-options="field:'employmentCategory',width:100">Category</th>
+								<th data-options="field:'fullTimeEquivalency',width:100">FTE</th>
+								<th data-options="field:'leaveStatusCode',width:100">Leave Status Code</th>
+								<th data-options="field:'leaveReason',width:100">Leave Reason</th>
+								<th data-options="field:'leaveStartDate',width:100">Leave Start Date</th>
+								<th data-options="field:'expectedLeaveEndDate',width:100">Leave End Date</th>
 								<th data-options="field:'updatedDate',width:100">Updated Date</th>
 								<th data-options="field:'updatedBy',width:100">Updated By</th>
 							</tr>
 						</thead>
-			</table> -->   
+			</table>  
 		</div>
 		</div>
 	</div>
@@ -228,6 +226,9 @@
 $(document).ready(function(){
 	highLightTab();
 	$("#employement").attr('class', 'buttonSelect');
+	var empId = document.getElementById("employeeId").value;
+	if(empId!=null && empId !="")
+		getEmployementDetails(empId);
 });
 function searchLastNameSelect(rec){
 	$('#firstNameInputId').combobox('clear');
@@ -271,7 +272,7 @@ function getEmployeeDetails(rec){
 			  		$("#"+i).val(item);   				  		
 			  	}			  		
 			});
-			closeloading();
+			getEmployementDetails(rec.id);
 		}});
 }
 function save(){
@@ -280,11 +281,25 @@ function save(){
 		return false;
 	}
 	var effectiveDate = $('#effectiveDateBox').datebox('getValue');
+	var mostRecentHireDate = $('#mostRecentHireDateBox').datebox('getValue');
+	var lastHireDate = $('#lastHireDateBox').datebox('getValue');
+	var leaveStartDate = $('#leaveStartDateBox').datebox('getValue');
+	var seniorityDate = $('#seniorityDateBox').datebox('getValue');
+	var expectedLeaveEndDate = $('#expectedLeaveEndDateBox').datebox('getValue');
+	var benefitStartDate = $('#benefitStartDateBox').datebox('getValue');
+	var terminationDate = $('#terminationDateBox').datebox('getValue');
 	if($('#employment').valid() && effectiveDate!=''){
 		document.getElementById("effectiveDate").value=effectiveDate;
+		document.getElementById("mostRecentHireDate").value=mostRecentHireDate;
+		document.getElementById("lastHireDate").value=lastHireDate;
+		document.getElementById("leaveStartDate").value=leaveStartDate;
+		document.getElementById("seniorityDate").value=seniorityDate;
+		document.getElementById("expectedLeaveEndDate").value=expectedLeaveEndDate;
+		document.getElementById("benefitStartDate").value=benefitStartDate;
+		document.getElementById("terminationDate").value=terminationDate;
 		loading();
 		$.ajax({
-			url:"saveEmployeeCompDetails.htm",
+			url:"saveEmployeeEmployement.htm",
 			type: "post",
 			data : $("#employment").serialize(),
 			error: function(obj){
@@ -296,5 +311,84 @@ function save(){
 				closeloading();
 			}});
 	}
+}
+
+function getEmployementDetails(rec){
+	loading();
+	// need to change from ajax to submit
+	$.ajax({
+		url:"getEmployementDetails.htm?empId="+rec,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+			alert(obj);
+		},
+		success: function(obj){
+			document.getElementById("updateble").value="yes";
+			setEmployementDetails(obj);
+			if(rec!=null)
+				empHistory(rec);
+			closeloading();
+		}});
+}
+function setEmployementDetails(obj){
+	$.each(obj, function(i, item){
+		if(i=='effectiveDate')
+  			$('#effectiveDateBox').datebox('setValue', item);
+		else if(i=='mostRecentHireDate')
+	  		$('#mostRecentHireDateBox').datebox('setValue', item);
+		else if(i=='lastHireDate')
+	  		$('#lastHireDateBox').datebox('setValue', item);
+		else if(i=='leaveStartDate')
+	  		$('#leaveStartDateBox').datebox('setValue', item);
+		else if(i=='seniorityDate')
+	  		$('#seniorityDateBox').datebox('setValue', item);
+		else if(i=='expectedLeaveEndDate')
+	  		$('#expectedLeaveEndDateBox').datebox('setValue', item);
+		else if(i=='benefitStartDate')
+	  		$('#benefitStartDateBox').datebox('setValue', item);
+		else if(i=='terminationDate')
+	  		$('#terminationDateBox').datebox('setValue', item);
+  		else if($("#"+i) != undefined)
+			$("#"+i).val(item);  
+	});
+	var effDate = $('#effectiveDateBox').datebox('getValue');
+	document.getElementById('empEffectiveDt').innerHTML= 'Effective Date &nbsp;&nbsp;&nbsp;&nbsp;   ' +effDate;
+	$('#effectiveDateBox').datebox('setValue', '');
+}
+function empHistory(empId){
+	$('#employementHistoryTable').datagrid('options').loadMsg = 'Processing, please wait .... ';  // change to other message
+	$('#employementHistoryTable').datagrid('loading');  // 
+	$.ajax({
+		url:"getEmployementDetailsHistory.htm?empId="+empId,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			$('#employementHistoryTable').datagrid('loaded');  // hide loading message
+		},
+		success: function(obj){
+			$('#employementHistoryTable').datagrid('loadData',obj); 
+			$('#employementHistoryTable').datagrid('loaded');  // hide loading message
+		}});
+}
+function formatDetail(value,row,index){
+	return '<a href="#" onclick="javascript:getEmployementDetailsFromHistoryAjax('+row.seqNo+')">'+value+'</a>';
+}
+function getEmployementDetailsFromHistoryAjax(id){
+	loading();
+	$.ajax({
+		url:"getEmployementDetailsFromHistoryAjax.htm?seqNo="+id,
+		type: "post",
+		dataType: 'json',
+		error: function(obj){
+			closeloading();
+			alert(obj);
+		},
+		success: function(obj){
+			document.getElementById("updateble").value="no";
+			setEmployementDetails(obj);
+			closeloading();
+		}});
 }
 </script>

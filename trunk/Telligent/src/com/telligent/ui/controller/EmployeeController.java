@@ -289,7 +289,9 @@ public class EmployeeController {
 	@RequestMapping(value="/saveEmployeeEmployement.htm", method = RequestMethod.POST)
 	public @ResponseBody String saveEmployeeEmployement(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@ModelAttribute(value="employement") EmploymentDTO employmentDTO){
 		logger.info("In saveEmployeeEmployement");
-		return "success";
+		employmentDTO.setSuccessMessage("");
+		employmentDTO.setErrorMessage("");
+		return employeeDAO.saveEmployementPosition(employmentDTO,telligentUtility.getTelligentUser(),messageHandler);
 	}
 	@RequestMapping(value="/empPosition.htm", method = RequestMethod.POST)
 	public ModelAndView showEmpPositionScreen(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,EmployeePositionDTO dto){
@@ -396,6 +398,21 @@ public class EmployeeController {
 	@RequestMapping(value="/getEmployeeCompDetailsFromHistoryAjax.htm", method = RequestMethod.POST)
 	public @ResponseBody JSONObject getEmployeeCompDetailsFromHistoryAjax(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("seqNo") String seqNo){
 		EmployeeCompensationDTO dto = employeeDAO.getEmployeeCompDetailsFromHistoryAjax(seqNo);
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
+	@RequestMapping(value="/getEmployementDetails.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployementDetails(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		EmploymentDTO dto = employeeDAO.getEmployementDetails(empId);
+		dto.setOperation("edit");
+		return (JSONObject) JSONSerializer.toJSON(dto);
+	}
+	@RequestMapping(value="/getEmployementDetailsHistory.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONArray getEmployementDetailsHistory(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("empId") String empId){
+		return (JSONArray) JSONSerializer.toJSON(employeeDAO.getEmployementDetailsHistory(empId));
+	}
+	@RequestMapping(value="/getEmployementDetailsFromHistoryAjax.htm", method = RequestMethod.POST)
+	public @ResponseBody JSONObject getEmployementDetailsFromHistoryAjax(HttpServletRequest req,HttpServletResponse res,ModelAndView mav,@RequestParam("seqNo") String seqNo){
+		EmploymentDTO dto = employeeDAO.getEmployementDetailsFromHistoryAjax(seqNo);
 		return (JSONObject) JSONSerializer.toJSON(dto);
 	}
 }
