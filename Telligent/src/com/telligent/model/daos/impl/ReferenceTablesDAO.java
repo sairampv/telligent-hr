@@ -22,30 +22,22 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 
 	public final Logger logger = Logger.getLogger(ReferenceTablesDAO.class);
 
-	public String saveBaseRateFreq(MapDTO dto,TelligentUser user){
-		logger.info("in saveBaseRateFreq");
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+	private String save(Connection conn,PreparedStatement ps,MapDTO dto,TelligentUser user,String query){
 		try {
-			conn = this.getConnection();
-			if(dto.getOperation().equalsIgnoreCase("update")){
-				String query = "update Base_Rate_Frequency set value=?,description=?,isActive=?,updated_date=sysdate(),updated_by=? where id=?";
-				return update(conn, ps, dto, user, query, dto.getId());
-			}else{
-				if(!checkRecordExistence(conn, ps, rs, "Base_Rate_Frequency", dto.getValue())){
-					String query = "insert into Base_Rate_Frequency (value,description,isActive,updated_date,updated_by) values(?,?,?,sysdate(),?)";
-					return save(conn,ps,dto,user,query);
-				}else{
-					return "error:;Base Rate Frequency already exists";
-				}
-			}
-		}catch (Exception ex) {
-			ex.printStackTrace();
-			logger.info("Exception in saveBaseRateFreq"+ex.getMessage());
+			ps = conn.prepareStatement(query);
+			ps.setString(1, dto.getValue());
+			ps.setString(2, dto.getDescription());
+			ps.setBoolean(3, Boolean.parseBoolean(dto.getIsActive()));
+			ps.setString(4, user.getEmployeeId());
+			int i = ps.executeUpdate();
+			if(i>0)
+				return "success:;Details Saved Successfully";
+			else
+				return "error:;Details not saved";
+		} catch (SQLException ex) {
+			logger.error("Exception in save");
+			logger.info("Exception in save"+ex.getMessage());
 			return "error :: "+ex.getMessage();
-		} finally {
-			this.closeAll(conn, ps, rs);
 		}
 	}
 	private String update(Connection conn,PreparedStatement ps,MapDTO dto,TelligentUser user,String query,String id){
@@ -67,24 +59,7 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 			return "error :: "+ex.getMessage();
 		}
 	}
-	private String save(Connection conn,PreparedStatement ps,MapDTO dto,TelligentUser user,String query){
-		try {
-			ps = conn.prepareStatement(query);
-			ps.setString(1, dto.getValue());
-			ps.setString(2, dto.getDescription());
-			ps.setBoolean(3, Boolean.parseBoolean(dto.getIsActive()));
-			ps.setString(4, user.getEmployeeId());
-			int i = ps.executeUpdate();
-			if(i>0)
-				return "success:;Details Saved Successfully";
-			else
-				return "error:;Details not saved";
-		} catch (SQLException ex) {
-			logger.error("Exception in save");
-			logger.info("Exception in save"+ex.getMessage());
-			return "error :: "+ex.getMessage();
-		}
-	}
+	
 	public boolean checkRecordExistence(Connection conn, PreparedStatement ps,ResultSet rs,String tableName,String value){
 		try {
 			ps = conn.prepareStatement("select value from "+tableName+" where upper(value)=?");
@@ -168,5 +143,32 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 			logger.error("Exception in getDetailsById "+e.getMessage());
 		}
 		return dto;
+	}
+	
+	public String saveBaseRateFreq(MapDTO dto,TelligentUser user){
+		logger.info("in saveBaseRateFreq");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = this.getConnection();
+			if(dto.getOperation().equalsIgnoreCase("update")){
+				String query = "update Base_Rate_Frequency set value=?,description=?,isActive=?,updated_date=sysdate(),updated_by=? where id=?";
+				return update(conn, ps, dto, user, query, dto.getId());
+			}else{
+				if(!checkRecordExistence(conn, ps, rs, "Base_Rate_Frequency", dto.getValue())){
+					String query = "insert into Base_Rate_Frequency (value,description,isActive,updated_date,updated_by) values(?,?,?,sysdate(),?)";
+					return save(conn,ps,dto,user,query);
+				}else{
+					return "error:;Base Rate Frequency already exists";
+				}
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			logger.info("Exception in saveBaseRateFreq"+ex.getMessage());
+			return "error :: "+ex.getMessage();
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
 	}
 }
