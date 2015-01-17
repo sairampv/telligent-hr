@@ -738,7 +738,7 @@ public class EmployeeDAO extends AbstractDBManager{
 	public ArrayList<MapDTO> getLookup(Connection conn,PreparedStatement ps,ResultSet rs,String tableName){
 		ArrayList<MapDTO> list = new ArrayList<MapDTO>();
 		try{
-			ps = conn.prepareStatement("select id,value from "+tableName);
+			ps = conn.prepareStatement("select id,value from "+tableName+" where isActive=1");
 			rs = ps.executeQuery();
 			while(rs.next()){
 				MapDTO dto = new MapDTO();
