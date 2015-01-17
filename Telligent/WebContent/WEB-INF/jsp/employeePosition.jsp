@@ -23,8 +23,8 @@
 	 	<div style="margin:0px;cursor:auto;" id="tab">
 	    <div class="wrap">
     	<%@include file="employeeButtons.jsp" %>  
-		<div style="background-color: #F5F6F7">
-		<table   width="100%" border="0" cellspacing="1" cellpadding="5" class="empPageTable">
+		<div>
+		<table   width="100%" border="0" cellspacing="1" cellpadding="5" class="data-table-new">
 			<tr>
 				<th colspan="8" style="text-align: left;padding-left: 10px" class="head">
 		    			Employee Position
@@ -53,7 +53,7 @@
 		    	</th>
 			</tr>
 		</table>   
-		<table   width="100%" border="0" cellspacing="1" cellpadding="5" class="empPageTable">
+		<table   width="100%" border="0" cellspacing="1" cellpadding="5" class="data-table-new">
 			<tr>
 				<td style="width: 12%"><label>Status Code</label></td>
 				<td style="width: 15%">
@@ -75,7 +75,7 @@
 		    	</th>
 			</tr>
 		</table>
-		<table   width="100%" border="0" cellspacing="0" cellpadding="2" class="empPageTable">
+		<table   width="100%" border="0" cellspacing="0" cellpadding="2" class="data-table-new">
 			<tr>
 				<td style="width: 15%"><label>Supervisor</label></td>
 				<td style="width: 15%">

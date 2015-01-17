@@ -324,28 +324,6 @@ function sendForApproval(){
 		}});
    }
    
-function showGridMessage(target,displayText) {
-	var vc = $(target).datagrid('getPanel').children(
-			'div.datagrid-view');
-	vc.children('div.datagrid-empty').remove();
-	if (!$(target).datagrid('getRows').length) {
-		var d = $('<div class="datagrid-empty"></div>').html(displayText).appendTo(vc);
-		d.css({
-			position : 'absolute',
-			left : 0,
-			top : 50,
-			width : '100%',
-			textAlign : 'center'
-		});
-	} else {
-		vc.children('div.datagrid-empty').remove();
-	}
-}
-function removeGridMessage(target){
-	var vc = $(target).datagrid('getPanel').children(
-	'div.datagrid-view');
-	vc.children('div.datagrid-empty').remove();
-}
 function onResizeColumn(field,width){
 	$.ajax({
 		url:"updateSalaryPlanningColumnWidth.htm?field="+field+"&width="+width,
