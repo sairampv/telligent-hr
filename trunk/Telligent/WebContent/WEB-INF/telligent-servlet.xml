@@ -31,6 +31,7 @@
 		<property name="definitions">
 			<list>
 				<value>/WEB-INF/tiles-def.xml</value>
+				<value>/WEB-INF/reftables-tiles-def.xml</value>
 			</list>
 		</property>
 	</bean>

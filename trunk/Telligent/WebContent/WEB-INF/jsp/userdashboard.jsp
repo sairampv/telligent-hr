@@ -9,6 +9,7 @@
 <a href="javascript:void(0);"><div class="boxes">Succession</div></a>
 <a href="showTeams.htm"><div class="boxes">Show Teams</div></a>
 <a href="employee.htm"><div class="boxes">Employee</div></a>
+<a href="referenceTables.htm"><div class="boxes">Reference Tables</div></a>
 </div>
 </div>
 

@@ -1,8 +1,10 @@
 package com.telligent.model.dtos;
 
-public class MapDTO {
+public class MapDTO extends CommonDTO{
 	private String id;
 	private String value;
+	private String description;
+	private String isActive;
 	
 	/**
 	 * @return the id
@@ -28,6 +30,28 @@ public class MapDTO {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
-	
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	/**
+	 * @return the isActive
+	 */
+	public String getIsActive() {
+		return isActive;
+	}
+	/**
+	 * @param isActive the isActive to set
+	 */
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
 }

@@ -36,8 +36,8 @@
 				</th>
 		      </tr>
 		    </table> -->
-		    <div style="background-color: #F5F6F7">
-		    <table  width="100%" border="0" cellspacing="1" cellpadding="2" id="employeeInformationTable" class="empPageTable">
+		    <div>
+		    <table  width="100%" border="0" cellspacing="1" cellpadding="2" id="employeeInformationTable" class="data-table-new">
 		    	<!-- <tr>
 		    		<th colspan="6" style="text-align: left;padding-left: 10px" class="head">
 		    			Employee Information
@@ -51,38 +51,38 @@
 		    		</td>
 		    	</tr>
 		    	<tr>
-		    		<td style="width: 10%" nowrap="nowrap">Employee Id <span style="color: red">*</span></td>
+		    		<td style="width: 10%" nowrap="nowrap"> <label>Employee Id </label><span style="color: red">*</span></td>
 		    		<td style="width: 15%"><form:input path="employeeId" cssClass="required"  maxlength="14"/></td>
-		    		<td style="width: 10%" nowrap="nowrap">Social Sec # </td>
+		    		<td style="width: 10%" nowrap="nowrap"> <label>Social Sec # </label></td>
 		    		<td style="width: 15%"><form:input path="socialSecNo" onKeyPress="return numbersonly(event, true,this.value)" maxlength="14"/></td>
-		    		<td style="width: 10%" nowrap="nowrap">Badge</td>
+		    		<td style="width: 10%" nowrap="nowrap"> <label>Badge</label></td>
 		    		<td style="width: 15%"><form:input path="badgeNo" maxlength="6"/></td>
-		    		<td style="width: 15%" rowspan="3" nowrap="nowrap">Picture</td>
+		    		<td style="width: 15%" rowspan="3" nowrap="nowrap"> <label>Picture</label></td>
 		    		<td rowspan="3">
 		    			<img id="image" src="view/images/no_image.jpg" height="100" width="150"/><br />
 						<input id="picture" type="file" name="picture" onchange="PreviewImage();" />
 		    		</td>
 		    	</tr>
 		    	<tr>
-		    		<td nowrap="nowrap">Last Name <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>Last Name</label> <span style="color: red">*</span></td>
 		    		<td><form:input path="lastName" cssClass="required" maxlength="25"/></td>
-		    		<td nowrap="nowrap">Middle Name <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>Middle Name </label><span style="color: red">*</span></td>
 		    		<td><form:input path="middleName" cssClass="required" maxlength="25"/></td>
-		    		<td nowrap="nowrap">First Name <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>First Name</label> <span style="color: red">*</span></td>
 		    		<td><form:input path="firstName" cssClass="required" maxlength="25"/></td>
 		    	</tr>
 		    	<tr>
-		    		<td nowrap="nowrap">Home Phone</td>
+		    		<td nowrap="nowrap"> <label>Home Phone</label></td>
 		    		<td><form:input path="homePhone"/></td>
-		    		<td nowrap="nowrap">Mobile Phone</td>
+		    		<td nowrap="nowrap"> <label>Mobile Phone</label></td>
 		    		<td><form:input path="mobilePhone"/></td>
-		    		<td nowrap="nowrap">Address 1 <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>Address 1</label> <span style="color: red">*</span></td>
 		    		<td><form:input path="addressLine1" cssClass="required" maxlength="65"/></td>
 		    	</tr>
 		    	<tr>
-		    		<td nowrap="nowrap">Address 2 <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>Address 2</label> <span style="color: red">*</span></td>
 		    		<td><form:input path="addressLine2" cssClass="required" maxlength="65"/></td>
-		    		<td nowrap="nowrap">State <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>State</label> <span style="color: red">*</span></td>
 		    		<td>
 		    			<form:select path="state" id="state" cssClass="required"  onchange="getCityList(this.value,'')">
 		    				<form:option value="">Select</form:option>
@@ -90,7 +90,7 @@
 		    			</form:select>
 		    			<%-- <form:input path="state" cssClass="required" maxlength="56"/> --%>
 		    		</td>
-		    		<td nowrap="nowrap">City <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>City</label> <span style="color: red">*</span></td>
 		    		<td>
 		    			<form:select path="city" cssClass="required">
 		    				<form:option value="">Select</form:option>
@@ -98,31 +98,31 @@
 		    			</form:select>
 		    		<%-- <form:input path="city" cssClass="required" maxlength="65"/> --%>
 		    		</td>
-		    		<td nowrap="nowrap">ZIP <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>ZIP</label> <span style="color: red">*</span></td>
 		    		<td><form:input path="zipcode" cssClass="required" maxlength="15"/></td>
 		    	</tr>
 		    	<tr>
-		    		<td nowrap="nowrap">Personal Email</td>
+		    		<td nowrap="nowrap"> <label>Personal Email</label></td>
 		    		<td><form:input path="personalEmail" maxlength="65"/></td>
-		    		<td style="width: 10%" nowrap="nowrap">Effective Date <span style="color: red">*</span></td>
+		    		<td style="width: 10%" nowrap="nowrap"> <label>Effective Date</label> <span style="color: red">*</span></td>
 		    		<td style="width: 10%">
 		    			<form:hidden path="effectiveDate"/>
 		    			<input id="effectiveDateBox" class="required easyui-datebox" required="true" width="150px"/>
 		    		</td>
-		    		<td nowrap="nowrap">Date Of Birth <span style="color: red">*</span></td>
+		    		<td nowrap="nowrap"> <label>Date Of Birth </label><span style="color: red">*</span></td>
 		    		<td>
 		    			<form:hidden path="dateOfBirth"/>
 		    			<input id="dateOfBirthBox" class="required easyui-datebox" required="true" onkeypress="return false;" data-options="onSelect:dateOfBirthSelect" width="150px"/>
 		    		</td>
-		    		<td nowrap="nowrap">Is Minor</td>
+		    		<td nowrap="nowrap"> <label>Is Minor</label></td>
 		    		<td><form:checkbox path="minor" id="minor"  onclick="return false" title="Depends on Data of Birth Selection"/></td>
 		    	</tr>
 		    	<tr>
-		    		<td nowrap="nowrap">Work Phone</td>
+		    		<td nowrap="nowrap"> <label>Work Phone</label></td>
 		    		<td><form:input path="workPhone"/></td>
-		    		<td nowrap="nowrap">Work Mobile Phone</td>
+		    		<td nowrap="nowrap"> <label>Work Mobile Phone</label></td>
 		    		<td><form:input path="workMobilePhone"/></td>
-		    		<td nowrap="nowrap">Work Email</td>
+		    		<td nowrap="nowrap"> <label>Work Email</label></td>
 		    		<td colspan="4"><form:input path="workEmail" maxlength="65"/></td>
 		    	</tr>
 		    </table>
