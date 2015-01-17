@@ -22,8 +22,9 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 
 	public final Logger logger = Logger.getLogger(ReferenceTablesDAO.class);
 
-	private String save(Connection conn,PreparedStatement ps,MapDTO dto,TelligentUser user,String query){
+	private String save(Connection conn,PreparedStatement ps,MapDTO dto,TelligentUser user,String table){
 		try {
+			String query = "insert into "+table+" (value,description,isActive,updated_date,updated_by) values(?,?,?,sysdate(),?)";
 			ps = conn.prepareStatement(query);
 			ps.setString(1, dto.getValue());
 			ps.setString(2, dto.getDescription());
@@ -40,8 +41,9 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 			return "error :: "+ex.getMessage();
 		}
 	}
-	private String update(Connection conn,PreparedStatement ps,MapDTO dto,TelligentUser user,String query,String id){
+	private String update(Connection conn,PreparedStatement ps,MapDTO dto,TelligentUser user,String tableName,String id){
 		try {
+			String query = "update "+tableName+" set value=?,description=?,isActive=?,updated_date=sysdate(),updated_by=? where id=?";
 			ps = conn.prepareStatement(query);
 			ps.setString(1, dto.getValue());
 			ps.setString(2, dto.getDescription());
@@ -150,15 +152,14 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		String tablName = "Base_Rate_Frequency";
 		try {
 			conn = this.getConnection();
 			if(dto.getOperation().equalsIgnoreCase("update")){
-				String query = "update Base_Rate_Frequency set value=?,description=?,isActive=?,updated_date=sysdate(),updated_by=? where id=?";
-				return update(conn, ps, dto, user, query, dto.getId());
+				return update(conn, ps, dto, user, tablName, dto.getId());
 			}else{
-				if(!checkRecordExistence(conn, ps, rs, "Base_Rate_Frequency", dto.getValue())){
-					String query = "insert into Base_Rate_Frequency (value,description,isActive,updated_date,updated_by) values(?,?,?,sysdate(),?)";
-					return save(conn,ps,dto,user,query);
+				if(!checkRecordExistence(conn, ps, rs,tablName , dto.getValue())){
+					return save(conn,ps,dto,user,tablName);
 				}else{
 					return "error:;Base Rate Frequency already exists";
 				}
