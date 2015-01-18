@@ -620,4 +620,8 @@ font-family:Arial, Helvetica, sans-serif;font-size:12px;
 font-weight : bold;
 font-family:Arial, Helvetica, sans-serif;font-size:12px;
 }
-
+.data-table-appUser{
+	width: 100%;
+	border: 3px solid;
+	border-color: #3178A9;
+}
