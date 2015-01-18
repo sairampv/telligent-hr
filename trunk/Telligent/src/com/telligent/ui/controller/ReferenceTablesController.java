@@ -28,7 +28,7 @@ import com.telligent.util.TelligentUtility;
 public class ReferenceTablesController {
 
 	
-	public final Logger logger = Logger.getLogger(MeritAdministrationController.class); 
+	public final Logger logger = Logger.getLogger(ReferenceTablesController.class); 
 
 	@Autowired
 	MessageHandler messageHandler;
