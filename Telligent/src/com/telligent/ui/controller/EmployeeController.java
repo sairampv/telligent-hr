@@ -36,7 +36,7 @@ import com.telligent.util.TelligentUtility;
 public class EmployeeController {
 
 	
-	public final Logger logger = Logger.getLogger(MeritAdministrationController.class); 
+	public final Logger logger = Logger.getLogger(EmployeeController.class); 
 
 	@Autowired
 	MessageHandler messageHandler;
