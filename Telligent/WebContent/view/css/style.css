@@ -116,7 +116,6 @@ margin-top: 70px;
 }
 .innerleft {
 float:left;width:23%;padding:8px;min-height:600px;
-border: 2px solid;
 border-color: #F5F6F7;
 /* background:#F5F6F7;*/
 }
@@ -125,7 +124,6 @@ text-decoration:none;color:#424242;
 }
 .innerright {
 float:right;width:74%;padding:8px;min-height:600px;
-border: 2px solid;
 border-color: #F5F6F7;
 /* background:#EAEBEC; */
 }
