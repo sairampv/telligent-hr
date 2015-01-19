@@ -42,7 +42,7 @@
 				<td><form:input path="lastName" readonly="true" placeholder="Last Name"/></td>
 				<td><form:input path="middleName" readonly="true" placeholder="Middle Name"/></td>
 				<td><form:input path="firstName" readonly="true" placeholder="First Name"/></td>
-				<td><label>Effective Date</label><span style="color: red">*</span></td>
+				<td nowrap="nowrap"><label>Effective Date</label><span style="color: red">*</span></td>
 				<td>
 					<form:hidden path="effectiveDate"/>
 		    		<input id="effectiveDateBox" class="required easyui-datebox" required="true" width="150px"/>
@@ -55,14 +55,14 @@
 		</table>   
 		<table   width="100%" border="0" cellspacing="1" cellpadding="5" class="data-table-new">
 			<tr>
-				<td style="width: 12%"><label>Compensation Action Type</label><span style="color: red">*</span></td>
+				<td style="width: 12%" nowrap="nowrap"><label>Compensation Action Type</label><span style="color: red">*</span></td>
 				<td style="width: 15%">
 					<form:select path="compActionType" cssClass="required" >
 	    				<form:option value="">Select</form:option>
 	    				<form:options items="${compActionList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
-				<td style="width: 14%"><label>Compensation Action Reason</label><span style="color: red">*</span></td>
+				<td style="width: 14%" nowrap="nowrap"><label>Compensation Action Reason</label><span style="color: red">*</span></td>
 				<td style="width: 30%">
 					<form:select path="compActionReason" cssClass="required">
 	    				<form:option value="">Select</form:option>
@@ -84,7 +84,7 @@
 	    				<form:options items="${payEntityList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
-				<td style="width: 15%"><label style="float: right;">Last Perf Evaluation Date</label> </td>
+				<td style="width: 15%" nowrap="nowrap"><label style="float: right;">Last Perf Evaluation Date</label> </td>
 				<td style="width: 21%">
 					<form:hidden path="lastperfEvaluationDate"/>
 		    		<input id="lastperfEvaluationDateBox" class="easyui-datebox" width="150px"/>
@@ -120,7 +120,7 @@
 	    				<form:options items="${payFreqList}" itemValue="id" itemLabel="value"/>
 	    			</form:select>
 				</td>
-				<td><label style="float: right;">Next Performance Date</label> </td>
+				<td><label style="float: right;" nowrap="nowrap">Next Performance Date</label> </td>
 				<td>
 					<form:hidden path="nextEvalDueDate"/>
 		    		<input id="nextEvalDueDateBox" class="easyui-datebox" width="150px"/>
