@@ -15,4 +15,27 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/referenceTables/baseRateFreq.jsp"></put-attribute>
 	</definition>
 	
+	<definition name="bonuPlan" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/referenceTables/bonusPlan.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="classification" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/referenceTables/classification.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="compensationAction" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/referenceTables/compensationAction.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="compensationActionReason" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/referenceTables/compensationActionReason.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="defaultEarningCode" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/referenceTables/defaultEarningCode.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="defaultHoursFrequency" extends="base.definition" >
+		<put-attribute name="body" value="/WEB-INF/jsp/referenceTables/defaultHoursFrequency.jsp"></put-attribute>
+	</definition>
 </tiles-definitions>
