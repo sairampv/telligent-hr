@@ -6,7 +6,6 @@
 <link rel="stylesheet" type="text/css" href="view/css/jquery/themes/icon.css">
 <link rel="stylesheet" type="text/css" href="view/css/jquery/demo.css">
 <script type="text/javascript" src="view/js/jquery/jquery.easyui.min.js"></script>
-<script type="text/javascript" src="view/js/jquery/jquery.usphone.js"></script>
 <script type="text/javascript" src="view/js/app/telligentCommon.js"></script>
 <script type="text/javascript" src="view/js/popup.js"></script>
 <form:form commandName="mapdto" id="mapdto" modelAttribute="mapdto" enctype="multipart/form-data">
