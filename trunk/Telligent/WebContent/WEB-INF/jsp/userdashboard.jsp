@@ -11,13 +11,14 @@
 	<a href="showTeams.htm"><div class="boxes">Show Teams</div></a>
 	<a href="employee.htm"><div class="boxes">Employee</div></a>
 	<a href="referenceTables.htm"><div class="boxes">Reference Tables</div></a>
-	<a href="#" onclick="javascript:appUser()"><div class="boxes">App User</div></a>
+	<a href="#" onclick="javascript:submit('appUser.htm')"><div class="boxes">App User</div></a>
+	<a href="#" onclick="javascript:submit('securityGroup.htm')"><div class="boxes">Security Group</div></a>
 	</div>
 	</div>
 </form>
 <script>
-function appUser(){
-	document.forms[0].action='appUser.htm';
+function submit(url){
+	document.forms[0].action=url;
 	document.forms[0].method = "post";
 	document.forms[0].submit();
 }
