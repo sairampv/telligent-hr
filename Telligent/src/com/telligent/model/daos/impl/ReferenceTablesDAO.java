@@ -38,7 +38,7 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 		} catch (SQLException ex) {
 			logger.error("Exception in save");
 			logger.info("Exception in save"+ex.getMessage());
-			return "error :: "+ex.getMessage();
+			return "error :; "+ex.getMessage();
 		}
 	}
 	private String update(Connection conn,PreparedStatement ps,MapDTO dto,TelligentUser user,String tableName,String id){
@@ -58,7 +58,7 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 		} catch (SQLException ex) {
 			logger.error("Exception in save");
 			logger.info("Exception in save"+ex.getMessage());
-			return "error :: "+ex.getMessage();
+			return "error :; "+ex.getMessage();
 		}
 	}
 	
@@ -167,7 +167,36 @@ public class ReferenceTablesDAO extends AbstractDBManager{
 		}catch (Exception ex) {
 			ex.printStackTrace();
 			logger.info("Exception in saveBaseRateFreq"+ex.getMessage());
-			return "error :: "+ex.getMessage();
+			return "error :; "+ex.getMessage();
+		} finally {
+			this.closeAll(conn, ps, rs);
+		}
+	}
+	
+	
+	
+	public String saveData(MapDTO dto,TelligentUser user,String tablName,String errorMsg){
+		logger.info("in saveBonusPlan");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		//String tablName = "Bonus_Plan";
+		try {
+			conn = this.getConnection();
+			if(dto.getOperation().equalsIgnoreCase("update")){
+				
+				return update(conn, ps, dto, user, tablName, dto.getId());
+			}else{
+				if(!checkRecordExistence(conn, ps, rs,tablName , dto.getValue())){
+					return save(conn,ps,dto,user,tablName);
+				}else{
+					return "error:;"+errorMsg+" already exists";
+				}
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+			logger.info("Exception in"+errorMsg+ex.getMessage());
+			return "error :; "+ex.getMessage();
 		} finally {
 			this.closeAll(conn, ps, rs);
 		}
