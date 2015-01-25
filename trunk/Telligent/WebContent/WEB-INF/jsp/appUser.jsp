@@ -93,6 +93,10 @@
 	    			</td>
 	    		</tr>
 	    		<tr>
+	    			<td nowrap="nowrap"><label>Email ID</label></td>
+	    			<td><form:input path="emailId" /> </td>
+	    		</tr>
+	    		<tr>
 	    			<td nowrap="nowrap"><label>Effective Date</label><span class="mandatory">*</span></td>
 					<td>
 						<form:hidden path="effectiveDate"/>
