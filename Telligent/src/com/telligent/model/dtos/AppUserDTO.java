@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class AppUserDTO extends CommonDTO{
 	private String userId;
 	private String employeeId;
+	private String emailId;
 	private String effectiveDate;
 	private String userIp;
 	private boolean badLoginCount;
@@ -19,6 +20,14 @@ public class AppUserDTO extends CommonDTO{
 	private String password;
 	private ArrayList<AppUserListDTO> appUserList = new ArrayList<AppUserListDTO>();
 	
+	
+	
+	public String getEmailId() {
+		return emailId;
+	}
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
 	/**
 	 * @return the userId
 	 */
