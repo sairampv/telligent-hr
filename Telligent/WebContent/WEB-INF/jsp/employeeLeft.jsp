@@ -1,10 +1,10 @@
 <div class="innerleft" style="min-height: 480px" id="col1">
-    	<table class="leftAccordion" cellspacing="1" cellpadding="5" id="employeeSearchTable">
+    	<table class="data-table-new" cellspacing="1" cellpadding="5" id="employeeSearchTable">
     		<tr>
 		        <th colspan="2" class="head" height="25" align="left">Search</th>
 		    </tr>
 		    <tr>
-		    	<td>Last Name</td>
+		    	<td><label>Last Name</label></td>
 		    	<td>
 		    		<input class="easyui-combobox" id="lastNameInputId" style="width:200px" data-options="
 						url:'searchLastName.htm',
@@ -18,7 +18,7 @@
 		    	</td>
 		    </tr>
 		    <tr>
-		    	<td>First Name</td>
+		    	<td><label>First Name</label></td>
 		    	<td>
 		    		<input class="easyui-combobox" id="firstNameInputId" style="width:200px" data-options="
 						url:'searchFirstName.htm',
@@ -32,7 +32,7 @@
 		    	</td>
 		    </tr>
 		    <tr>
-		    	<td>Employee Id</td>
+		    	<td><label>Employee Id</label></td>
 		    	<td>
 		    		<input class="easyui-combobox" id="employeeInpuId" style="width:200px" data-options="
 						url:'searchEmpId.htm',
@@ -46,7 +46,7 @@
 		    	</td>
 		    </tr>
 		    <tr>
-		    	<td>Team Name</td>
+		    	<td><label>Team Name</label></td>
 		    	<td>
 		    		<input class="easyui-combobox" id="teamInputId" style="width:200px" data-options="
 						url:'searchTeamEmployees.htm',

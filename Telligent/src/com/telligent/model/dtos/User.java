@@ -8,6 +8,7 @@ public class User {
 	private String role;
 	private String emailId;
 	private boolean changePassword;
+	private String pictureBase64;
 	
 	/**
 	 * @return the userName
@@ -80,6 +81,18 @@ public class User {
 	 */
 	public void setChangePassword(boolean changePassword) {
 		this.changePassword = changePassword;
+	}
+	/**
+	 * @return the pictureBase64
+	 */
+	public String getPictureBase64() {
+		return pictureBase64;
+	}
+	/**
+	 * @param pictureBase64 the pictureBase64 to set
+	 */
+	public void setPictureBase64(String pictureBase64) {
+		this.pictureBase64 = pictureBase64;
 	}
 	
 }
