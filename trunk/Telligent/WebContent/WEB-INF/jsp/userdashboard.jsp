@@ -5,7 +5,7 @@
 	<div class="contentArea1">
 	<div class="boxesArea">
 	<a href="meritAdministration.htm"><div class="boxes">Merit Administration</div></a>
-	<a href="javascript:void(0);"><div class="boxes">Performance Pay</div></a>
+	<a href="javascript:void(0);"><div class="boxes">Performance Manager</div></a>
 	<a href="javascript:void(0);"><div class="boxes">Bonus/Payout Administration</div></a>
 	<a href="javascript:void(0);"><div class="boxes">Succession</div></a>
 	<a href="showTeams.htm"><div class="boxes">Show Teams</div></a>
