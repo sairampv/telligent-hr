@@ -22,12 +22,24 @@
 	 	<a href="javascript:toggle()" title="Hide Nav 13" id="flowtab"></a>
 	 	<div style="margin:0px;cursor:auto;" id="tab">
 	    <div class="wrap">
+	   	 <table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="E3E3E3" align="right">
+		      <tr>
+		        <th class="head1" height="25" align="left">
+		        <div class="innerpage-breadcrum">
+					<a href="dashboard.htm">Dashboard</a> &nbsp;&gt;&nbsp; 
+					<a href="javascript:void(0);">Employee</a> &nbsp;&gt;&nbsp; 
+					<a href="javascript:void(0);" class="select">Employee Other Details</a>
+					<span style="float: right"><a href="dashboard.htm">Back</a></span>
+				</div>
+				</th>
+		      </tr>
+		    </table>
     	<%@include file="employeeButtons.jsp" %>  
 		<div>
 		<table   width="100%" border="0" cellspacing="1" cellpadding="5" class="data-table-new">
 			<tr>
 				<th colspan="8" style="text-align: left;padding-left: 10px" class="head">
-		    			Employee Position
+		    			Employee Other
 		    	</th>
 			</tr>
 			<tr>

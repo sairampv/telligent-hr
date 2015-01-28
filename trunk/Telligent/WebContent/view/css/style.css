@@ -117,7 +117,7 @@ margin-top: 70px;
 .innerleft {
 float:left;width:23%;padding:8px;min-height:600px;
 border-color: #F5F6F7;
-/* background:#F5F6F7;*/
+background:#F5F6F7;
 }
 .innerleft a { 
 text-decoration:none;color:#424242;
@@ -125,7 +125,7 @@ text-decoration:none;color:#424242;
 .innerright {
 float:right;width:74%;padding:8px;min-height:600px;
 border-color: #F5F6F7;
-/* background:#EAEBEC; */
+background:#EAEBEC;
 }
 .innerright .dataTable th {
 background: #ffffff; /* Old browsers */
@@ -596,6 +596,8 @@ margin: 0 5px 0 0;
 }
 .data-table-new label{
 	color: #00A2ED;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:12px;
 }
 .data-table-new input[type="text"] {
 border:1px solid #c9c9c9;
@@ -612,10 +614,6 @@ height:20px;
 width:255px;
 font-weight : normal;
 color : #777777;
-font-family:Arial, Helvetica, sans-serif;font-size:12px;
-}
-.data-table-new label {
-font-weight : bold;
 font-family:Arial, Helvetica, sans-serif;font-size:12px;
 }
 .data-table-appUser{

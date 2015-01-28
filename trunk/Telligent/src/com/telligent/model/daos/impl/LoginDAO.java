@@ -1,5 +1,6 @@
 package com.telligent.model.daos.impl;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.telligent.common.handlers.MessageHandler;
@@ -16,6 +18,7 @@ import com.telligent.model.daos.ILoginDAO;
 import com.telligent.model.db.AbstractDBManager;
 import com.telligent.model.db.Generic;
 import com.telligent.model.dtos.User;
+import com.telligent.util.BASE64DecodedMultipartFile;
 import com.telligent.util.BouncyCastleEncryptor;
 import com.telligent.util.MailUtility;
 
@@ -48,7 +51,7 @@ public class LoginDAO extends AbstractDBManager implements ILoginDAO{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 //		String query = "SELECT user_name,password,a.employee_id employee_id,role_name,email_id,isChangePassword FROM users a,role_master b,employee c WHERE user_name=? and a.role_id=b.role_id and a.employee_id=c.employee_id";
-		String query = "SELECT user_name,password,a.employee_id employee_id,role_name,work_email,isChangePassword FROM users a,role_master b,EMP_PERSONAL c WHERE user_name=? and a.role_id=b.role_id and a.employee_id=c.emp_id";
+		String query = "SELECT user_name,password,a.employee_id employee_id,role_name,work_email,isChangePassword,PICTURE FROM users a,role_master b,EMP_PERSONAL c WHERE user_name=? and a.role_id=b.role_id and a.employee_id=c.emp_id";
 		User user = new User();
 		try {
 			conn = this.getConnection();
@@ -62,6 +65,10 @@ public class LoginDAO extends AbstractDBManager implements ILoginDAO{
 				user.setRole(rs.getString("role_name"));
 				user.setEmailId(rs.getString("work_email"));;
 				user.setChangePassword(rs.getBoolean("isChangePassword"));
+				try {
+					Blob blob = rs.getBlob("PICTURE");
+					user.setPictureBase64(Base64.toBase64String(blob.getBytes(1, (int)blob.length())));
+				} catch (Exception e) {}
 			}
 		}catch (Exception ex) {
 			ex.printStackTrace();

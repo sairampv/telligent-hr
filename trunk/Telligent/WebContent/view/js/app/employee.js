@@ -23,6 +23,7 @@ $(function(){
 
 $(document).ready(function(){
 	highLightTab();
+	$("#employeeSavetr").css("display","block");
 	$("#personal").attr('class', 'buttonSelect');
 	if(document.getElementById("successMessage").value == 'success'){
 		alert("Employee Details Saved Successfully");

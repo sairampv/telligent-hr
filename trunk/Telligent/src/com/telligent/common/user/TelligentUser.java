@@ -26,6 +26,7 @@ public class TelligentUser extends org.springframework.security.core.userdetails
 	private String lastName;
 	private String role;
 	private boolean changePassword;
+	private String pictureBase64;
 	
 	public TelligentUser(String username, String password, boolean enabled,
 			boolean accountNonExpired, boolean credentialsNonExpired,
@@ -36,7 +37,8 @@ public class TelligentUser extends org.springframework.security.core.userdetails
 	}
 	public TelligentUser(String userName, String password, boolean enabled,
 			boolean accountNonExpired, boolean credentialsNonExpired,
-			boolean accountNonLocked, Collection<GrantedAuthority> authorities,boolean accountVerifier,String createDate,String email,String employeeId,String lastName,String role,boolean changePassword)
+			boolean accountNonLocked, Collection<GrantedAuthority> authorities,boolean accountVerifier,String createDate,String email,
+			String employeeId,String lastName,String role,boolean changePassword,String pictureBase64)
 			throws IllegalArgumentException {
 		super(userName, password, enabled, accountNonExpired, credentialsNonExpired,
 				accountNonLocked, authorities);
@@ -48,6 +50,7 @@ public class TelligentUser extends org.springframework.security.core.userdetails
 		this.lastName = lastName;
 		this.role = role;
 		this.changePassword = changePassword;
+		this.pictureBase64 = pictureBase64;
 		// TODO Auto-generated constructor stub
 	}
 	/**
@@ -146,4 +149,17 @@ public class TelligentUser extends org.springframework.security.core.userdetails
 	public void setChangePassword(boolean changePassword) {
 		this.changePassword = changePassword;
 	}
+	/**
+	 * @return the pictureBase64
+	 */
+	public String getPictureBase64() {
+		return pictureBase64;
+	}
+	/**
+	 * @param pictureBase64 the pictureBase64 to set
+	 */
+	public void setPictureBase64(String pictureBase64) {
+		this.pictureBase64 = pictureBase64;
+	}
+	
 }

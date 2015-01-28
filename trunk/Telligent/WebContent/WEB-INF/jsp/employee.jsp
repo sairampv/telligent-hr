@@ -23,8 +23,7 @@
 	 	<a href="javascript:toggle()" title="Hide Nav 13" id="flowtab"></a>
 	 	<div style="margin:0px;cursor:auto;" id="tab">
 	    <div class="wrap">
-	    	<%@include file="employeeButtons.jsp" %>  
-		   <!--  <table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="E3E3E3" align="right">
+		   <table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="E3E3E3" align="right">
 		      <tr>
 		        <th class="head1" height="25" align="left">
 		        <div class="innerpage-breadcrum">
@@ -35,20 +34,14 @@
 				</div>
 				</th>
 		      </tr>
-		    </table> -->
+		    </table>
 		    <div>
+		    <%@include file="employeeButtons.jsp" %>  
 		    <table  width="100%" border="0" cellspacing="1" cellpadding="2" id="employeeInformationTable" class="data-table-new">
-		    	<!-- <tr>
-		    		<th colspan="6" style="text-align: left;padding-left: 10px" class="head">
-		    			Employee Information
-		    		</th>
-		    	</tr> -->
 		    	<tr>
-		    		<td colspan="8">
-		    			<a href="#" onclick="javascript:reset()" class="easyui-linkbutton" iconCls="icon-add">Create Employee</a>
-		    			<a href="#" onclick="javascript:save()" class="easyui-linkbutton" iconCls="icon-save">Save</a>
-		    			<span id="empEffectiveDt" style="float: right; color: orange; padding-right: 20px"> </span>
-		    		</td>
+		    		<th colspan="8" style="text-align: left;padding-left: 10px" class="head">
+		    			Employee Personal Information
+		    		</th>
 		    	</tr>
 		    	<tr>
 		    		<td style="width: 10%" nowrap="nowrap"> <label>Employee Id </label><span style="color: red">*</span></td>
