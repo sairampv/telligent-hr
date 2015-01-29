@@ -3,7 +3,7 @@
 <div class="innertop">&nbsp;</div>
 <div class="innertop1"><h1>Talent Manager</h1>
 	<div class="logout-section">
-		<input type="hidden"  size="500" id="pictureBase64" value="<security:authentication property='principal.pictureBase64'/>">
+		<input type="hidden"   id="pictureBase64" value="<security:authentication property='principal.pictureBase64'/>">
 		 <div>
 		 	<ul class="drop">
 				  <li><img id="headerImage" alt="" border="0" width="40"  height="43" />
@@ -15,7 +15,7 @@
 				</ul>
 		 </div>
 	</div>
-	<span class="welcome">Welcome <security:authentication property="principal.userName"/></span>
+	<span style="vertical-align: text-bottom;" class="welcome">Welcome <security:authentication property="principal.userName"/></span>
 </div>
 </div>
 <script type="text/javascript">
